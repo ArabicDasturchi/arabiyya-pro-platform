@@ -143,14 +143,7 @@ app.use((req, res) => {
 });
 
 // Error Handler
-app.use((err, req, res, next) => {
-  console.error('Error:', err);
-  res.status(err.status || 500).json({
-    success: false,
-    message: err.message || 'Internal server error',
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
-  });
-});
+
 
 // ==========================================
 // PAYMENT & ORDER ROUTES
@@ -241,6 +234,16 @@ app.put('/api/admin/orders/:id/approve', async (req, res) => {
     console.error('Approve Error:', error);
     res.status(500).json({ success: false, message: error.message });
   }
+});
+
+// Global Error Handler
+app.use((err, req, res, next) => {
+  console.error('Error:', err);
+  res.status(err.status || 500).json({
+    success: false,
+    message: err.message || 'Internal server error',
+    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
+  });
 });
 
 // Start server
