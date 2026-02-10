@@ -134,13 +134,7 @@ app.get('/', (req, res) => {
   });
 });
 
-// 404 Handler
-app.use((req, res) => {
-  res.status(404).json({
-    success: false,
-    message: 'Endpoint not found'
-  });
-});
+
 
 // Error Handler
 
@@ -234,6 +228,14 @@ app.put('/api/admin/orders/:id/approve', async (req, res) => {
     console.error('Approve Error:', error);
     res.status(500).json({ success: false, message: error.message });
   }
+});
+
+// 404 Handler
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: 'Endpoint not found'
+  });
 });
 
 // Global Error Handler
