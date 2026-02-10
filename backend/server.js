@@ -185,6 +185,7 @@ app.get('/api/admin/orders', async (req, res) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findById(decoded.id);
 
+    if (!user) return res.status(404).json({ success: false, message: 'User topilmadi' });
     if (user.role !== 'admin') return res.status(403).json({ success: false });
 
     const orders = await Order.find().populate('user', 'name email').sort({ createdAt: -1 });
@@ -202,6 +203,7 @@ app.put('/api/admin/orders/:id/approve', async (req, res) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const admin = await User.findById(decoded.id);
 
+    if (!admin) return res.status(404).json({ success: false, message: 'Admin topilmadi' });
     if (admin.role !== 'admin') return res.status(403).json({ success: false });
 
     const order = await Order.findById(req.params.id);
