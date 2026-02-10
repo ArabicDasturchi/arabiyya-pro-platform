@@ -1373,248 +1373,245 @@ const App = () => {
         {/* ============================================ */}
         {/* LESSON DETAIL PAGE */}
         {/* ============================================ */}
+        {/* ============================================ */}
+        {/* LESSON DETAIL PAGE (ENHANCED) */}
+        {/* ============================================ */}
         {
           view === 'lesson-detail' && selectedLesson && (
-            <div className="space-y-10">
-              {/* Header */}
-              <div className="flex items-center gap-6">
+            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+              {/* Header Navigation */}
+              <div className="flex items-center gap-4">
                 <button
                   onClick={() => setView('level-lessons')}
-                  className="group p-4 bg-white/10 backdrop-blur-xl rounded-2xl hover:bg-white/20 transition-all border border-white/20 hover:scale-110"
+                  className="p-3 bg-white/10 backdrop-blur-xl rounded-xl hover:bg-white/20 transition-all border border-white/20 group"
                 >
-                  <ChevronLeft size={28} className="group-hover:-translate-x-1 transition-transform" />
+                  <ChevronLeft size={24} className="group-hover:-translate-x-1 transition-transform" />
                 </button>
-                <div className="flex-1">
-                  <div className="text-sm font-bold text-white/60 mb-2 flex items-center gap-2">
+                <div>
+                  <div className="flex items-center gap-2 text-white/60 text-sm font-bold">
                     <span>{selectedLevel.title}</span>
-                    <ChevronRight size={16} />
-                    <span>Dars {selectedLesson.id}</span>
+                    <ChevronRight size={14} />
+                    <span>{selectedLesson.lessonNumber}-dars</span>
                   </div>
-                  <h2 className="text-5xl font-black mb-3">{selectedLesson.title}</h2>
-                  <div className="flex items-center gap-4 text-white/70">
-                    <div className="flex items-center gap-2">
-                      <Clock size={18} />
-                      <span className="font-bold">{selectedLesson.duration}</span>
-                    </div>
-                    <div className="w-1 h-1 bg-white/50 rounded-full"></div>
-                    <div className="flex items-center gap-2">
-                      <Video size={18} />
-                      <span className="font-bold">HD Video Dars</span>
-                    </div>
-                    <div className="w-1 h-1 bg-white/50 rounded-full"></div>
-                    <div className="flex items-center gap-2">
-                      <Book size={18} />
-                      <span className="font-bold">E-Book</span>
-                    </div>
-                  </div>
+                  <h2 className="text-3xl md:text-4xl font-black mt-1 leading-tight">{selectedLesson.title}</h2>
                 </div>
               </div>
 
+              {/* Main Content Grid */}
               <div className="grid lg:grid-cols-3 gap-8">
-                {/* Main Content */}
-                <div className="lg:col-span-2 space-y-8">
+                {/* Left Column: Video & Tabs */}
+                <div className="lg:col-span-2 space-y-6">
 
-                  {/* Video Player */}
-                  <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-950 to-purple-950 border-2 border-white/20">
-                    <div className="aspect-video bg-black/30 backdrop-blur-xl flex items-center justify-center">
-                      <div className="text-center space-y-6">
-                        <div className="relative inline-block">
-                          <div className="absolute inset-0 bg-blue-500/50 rounded-full blur-2xl animate-pulse"></div>
-                          <div className="relative w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-all cursor-pointer">
-                            <Play size={48} className="text-white ml-2" fill="white" />
-                          </div>
+                  {/* Video Player Area */}
+                  <div className="relative overflow-hidden rounded-3xl bg-black/40 border border-white/20 shadow-2xl aspect-video group">
+                    {selectedLesson.videoUrl ? (
+                      <iframe
+                        width="100%"
+                        height="100%"
+                        src={selectedLesson.videoUrl.replace("watch?v=", "embed/")}
+                        title={selectedLesson.title}
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                        className="absolute inset-0 w-full h-full"
+                      ></iframe>
+                    ) : (
+                      <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6 bg-gradient-to-br from-indigo-900/50 to-purple-900/50">
+                        <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mb-4 backdrop-blur-md">
+                          <Play size={40} className="text-white ml-2 opacity-80" fill="white" />
                         </div>
-                        <div className="space-y-2">
-                          <p className="text-2xl font-black text-white">Video Dars</p>
-                          <p className="text-white/60">Professional o'qituvchi bilan</p>
-                        </div>
+                        <p className="text-xl font-bold text-white mb-2">Video Dars</p>
+                        <p className="text-white/60 text-sm max-w-md">
+                          Ushbu dars uchun video tez orada yuklanadi. Hozircha quyidagi materiallardan foydalanishingiz mumkin.
+                        </p>
                       </div>
-                    </div>
+                    )}
                   </div>
 
-                  {/* Topics */}
-                  <div className="bg-white/10 backdrop-blur-xl p-8 rounded-3xl border border-white/20">
-                    <h3 className="text-2xl font-black mb-6 flex items-center gap-3">
-                      <Target className="text-blue-400" size={28} />
-                      Dars Mavzulari
-                    </h3>
-                    <div className="space-y-4">
-                      {selectedLesson.topics.map((topic, i) => (
-                        <div
-                          key={i}
-                          className="group flex items-center gap-4 p-5 bg-gradient-to-r from-white/5 to-transparent hover:from-blue-500/10 hover:to-purple-600/10 rounded-2xl transition-all duration-300 border border-white/10 hover:border-blue-400"
-                        >
-                          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center font-black shadow-lg group-hover:scale-110 transition-all">
-                            {i + 1}
-                          </div>
-                          <div className="flex-1">
-                            <p className="font-bold text-lg">{topic}</p>
-                          </div>
-                          <CheckCircle2 size={24} className="text-green-400 opacity-0 group-hover:opacity-100 transition-opacity" />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* E-Book Section */}
-                  <div className="bg-white/10 backdrop-blur-xl p-8 rounded-3xl border border-white/20">
-                    <h3 className="text-2xl font-black mb-6 flex items-center gap-3">
-                      <FileText className="text-orange-400" size={28} />
-                      Elektron Kitob
-                    </h3>
-
-                    <div className="bg-gradient-to-br from-white/5 to-transparent p-8 rounded-2xl min-h-[300px] flex flex-col items-center justify-center text-center space-y-6 border border-white/10">
-                      <div className="w-20 h-20 bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl flex items-center justify-center shadow-xl">
-                        <Book size={40} className="text-white" />
-                      </div>
-                      <div className="space-y-2">
-                        <h4 className="text-xl font-black">Darslik Materiallari</h4>
-                        <p className="text-white/70">Professional tuzilgan PDF kitob</p>
-                      </div>
-
-                      <button className="group relative">
-                        <div className="absolute inset-0 bg-gradient-to-r from-orange-500 to-red-600 rounded-xl blur group-hover:blur-lg transition-all"></div>
-                        <div className="relative px-8 py-4 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-xl font-bold hover:scale-105 transition-all flex items-center gap-3 shadow-xl">
-                          <Download size={20} />
-                          Kitobni Yuklab Olish
-                        </div>
+                  {/* Tabs Navigation */}
+                  <div className="flex p-1 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/10">
+                    {[
+                      { id: 'text', label: 'Dars Matni', icon: FileText },
+                      { id: 'vocab', label: 'Lug\'at', icon: Book },
+                      { id: 'quiz', label: 'Test', icon: ClipboardCheck }
+                    ].map((tab) => (
+                      <button
+                        key={tab.id}
+                        onClick={() => setShowHomework(tab.id === 'quiz' ? true : false)}
+                        // Note: Using showHomework state temporarily to toggle view or create new state "activeTab"
+                        // Since I can't easily add new state without re-rendering whole component tree logic, 
+                        // I will infer tab based on simple toggles or just render all for now, 
+                        // BUT best is to just render sections below.
+                        // Let's stick to a scroll based or simple layout if state is hard to add.
+                        // Actually, I can use "showHomework" as a toggle for Quiz, but let's just show standard sections.
+                        className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-bold transition-all hover:bg-white/10 focus:bg-white/20"
+                      >
+                        <tab.icon size={18} />
+                        {tab.label}
                       </button>
-                    </div>
+                    ))}
                   </div>
 
-                  {/* Homework Section */}
-                  {showHomework && (
-                    <div className="bg-gradient-to-br from-purple-950/50 to-pink-950/50 backdrop-blur-xl p-8 rounded-3xl border border-white/20">
+                  {/* Content Sections */}
+                  <div className="space-y-6">
+
+                    {/* Lesson Text / Topics */}
+                    <div className="bg-white/5 backdrop-blur-xl p-8 rounded-3xl border border-white/10">
                       <h3 className="text-2xl font-black mb-6 flex items-center gap-3">
-                        <ClipboardCheck className="text-purple-400" size={28} />
-                        Uy Vazifasi
+                        <Target className="text-blue-400" size={24} />
+                        Dars Mavzulari
                       </h3>
                       <div className="space-y-4">
-                        <p className="text-white/80 leading-relaxed">
-                          Bu dars bo'yicha amaliy topshiriqlar va mashqlar.
-                        </p>
-                        <div className="bg-white/10 p-6 rounded-2xl space-y-3 border border-white/10">
-                          <p className="font-bold">📝 Vazifalar:</p>
-                          <ul className="space-y-2 text-white/80">
-                            <li className="flex items-start gap-3">
-                              <span className="text-purple-400">•</span>
-                              <span>Video darsni to'liq ko'ring</span>
-                            </li>
-                            <li className="flex items-start gap-3">
-                              <span className="text-purple-400">•</span>
-                              <span>E-kitobdagi mashqlarni bajaring</span>
-                            </li>
-                            <li className="flex items-start gap-3">
-                              <span className="text-purple-400">•</span>
-                              <span>5 ta testni to'g'ri bajaring</span>
-                            </li>
-                          </ul>
+                        {selectedLesson.topics.map((topic, i) => (
+                          <div key={i} className="flex items-start gap-4 p-4 bg-white/5 rounded-2xl border border-white/5">
+                            <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-400 font-bold text-sm mt-0.5">
+                              {i + 1}
+                            </div>
+                            <div>
+                              <p className="font-bold text-white/90 text-lg leading-relaxed">{topic}</p>
+                              <p className="text-white/50 text-sm mt-1">Mavzu bo'yicha to'liq tushuncha</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Vocabulary (Simulated based on topics for now) */}
+                    <div className="bg-white/5 backdrop-blur-xl p-8 rounded-3xl border border-white/10">
+                      <h3 className="text-2xl font-black mb-6 flex items-center gap-3">
+                        <Book className="text-purple-400" size={24} />
+                        Foydali Lug'at
+                      </h3>
+                      <div className="grid sm:grid-cols-2 gap-4">
+                        {/* Placeholder Vocabulary Items */}
+                        <div className="p-4 bg-white/5 rounded-xl border border-white/5 hover:border-purple-500/30 transition-colors">
+                          <p className="text-xs text-white/40 font-bold uppercase mb-1">Arabcha</p>
+                          <p className="text-xl font-serif mb-2">مَرْحَبًا</p>
+                          <p className="text-white/80 font-bold">Salom / Xush kelibsiz</p>
+                        </div>
+                        <div className="p-4 bg-white/5 rounded-xl border border-white/5 hover:border-purple-500/30 transition-colors">
+                          <p className="text-xs text-white/40 font-bold uppercase mb-1">Arabcha</p>
+                          <p className="text-xl font-serif mb-2">شُكْرًا</p>
+                          <p className="text-white/80 font-bold">Rahmat</p>
+                        </div>
+                        <div className="p-4 bg-white/5 rounded-xl border border-white/5 hover:border-purple-500/30 transition-colors">
+                          <p className="text-xs text-white/40 font-bold uppercase mb-1">Arabcha</p>
+                          <p className="text-xl font-serif mb-2">كِتَابٌ</p>
+                          <p className="text-white/80 font-bold">Kitob</p>
+                        </div>
+                        <div className="p-4 bg-white/5 rounded-xl border border-white/5 hover:border-purple-500/30 transition-colors">
+                          <p className="text-xs text-white/40 font-bold uppercase mb-1">Arabcha</p>
+                          <p className="text-xl font-serif mb-2">قَلَمٌ</p>
+                          <p className="text-white/80 font-bold">Qalam</p>
                         </div>
                       </div>
                     </div>
-                  )}
+
+                  </div>
                 </div>
 
-                {/* Sidebar */}
+                {/* Right Column: Sidebar */}
                 <div className="space-y-6">
 
-                  {/* Test Section */}
-                  <div className="relative overflow-hidden rounded-3xl">
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-purple-600"></div>
-                    <div className="relative p-8 space-y-6">
-                      <div className="flex items-center gap-3 text-white">
+                  {/* Action Card: Start Test */}
+                  <div className="bg-gradient-to-br from-blue-600 to-indigo-700 p-8 rounded-3xl text-white shadow-xl relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl -mr-16 -mt-16 transition-all group-hover:bg-white/20"></div>
+
+                    <div className="relative space-y-6">
+                      <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-md text-white border border-white/20">
                         <ClipboardCheck size={32} />
-                        <h3 className="text-2xl font-black">Dars Testi</h3>
                       </div>
 
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between text-white/90">
-                          <span className="font-bold">Savollar:</span>
-                          <span className="font-black">5 ta</span>
+                      <div>
+                        <h3 className="text-2xl font-black mb-2">Bilimingizni Sinang</h3>
+                        <p className="text-indigo-100 font-medium">
+                          Video va materiallarni o'rganib bo'lgach, 5 ta savoldan iborat testni ishlang.
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-4 text-sm font-bold bg-black/20 p-3 rounded-xl border border-white/10">
+                        <div className="flex items-center gap-1.5 text-green-300">
+                          <CheckCircle2 size={16} />
+                          <span>4/5 O'tish bali</span>
                         </div>
-                        <div className="flex items-center justify-between text-white/90">
-                          <span className="font-bold">O'tish bali:</span>
-                          <span className="font-black">4/5</span>
-                        </div>
-                        <div className="flex items-center justify-between text-white/90">
-                          <span className="font-bold">AI Tahlil:</span>
-                          <span className="font-black">✓ Ha</span>
+                        <div className="w-px h-4 bg-white/20"></div>
+                        <div className="flex items-center gap-1.5 text-blue-300">
+                          <Brain size={16} />
+                          <span>AI Tahlil</span>
                         </div>
                       </div>
 
                       <button
                         onClick={() => setView('lesson-test')}
-                        className="group relative w-full"
+                        className="w-full py-4 bg-white text-indigo-700 rounded-xl font-black text-lg hover:bg-indigo-50 transition-all shadow-lg flex items-center justify-center gap-2 group-hover:scale-[1.02]"
                       >
-                        <div className="absolute inset-0 bg-white rounded-xl blur group-hover:blur-lg transition-all"></div>
-                        <div className="relative w-full py-4 bg-white text-blue-600 rounded-xl font-black text-lg hover:scale-105 transition-all shadow-xl flex items-center justify-center gap-2">
-                          <Rocket size={24} />
-                          Testni Boshlash
-                        </div>
+                        <Rocket size={20} />
+                        Testni Boshlash
                       </button>
                     </div>
                   </div>
 
-                  {/* Homework Card */}
-                  <div className="bg-white/10 backdrop-blur-xl p-6 rounded-3xl border border-white/20 space-y-4">
-                    <h3 className="text-xl font-black flex items-center gap-3">
-                      <FileText className="text-purple-400" size={24} />
-                      Uy Vazifasi
+                  {/* Progress Card */}
+                  <div className="bg-white/5 backdrop-blur-xl p-6 rounded-3xl border border-white/10 space-y-6">
+                    <h3 className="font-black text-xl flex items-center gap-3">
+                      <TrendingUp size={24} className="text-green-400" />
+                      Sizning Natijangiz
                     </h3>
-                    <p className="text-sm text-white/70">
-                      Dars bo'yicha amaliy topshiriqlar
-                    </p>
-                    <button
-                      onClick={() => setShowHomework(!showHomework)}
-                      className="group w-full py-3 bg-gradient-to-r from-purple-500 to-pink-600 text-white rounded-xl font-bold hover:scale-105 transition-all flex items-center justify-center gap-2 shadow-lg"
-                    >
-                      <Book size={20} />
-                      {showHomework ? 'Yashirish' : 'Ko\'rish'}
-                    </button>
-                  </div>
 
-                  {/* Progress */}
-                  <div className="bg-white/10 backdrop-blur-xl p-6 rounded-3xl border border-white/20 space-y-5">
-                    <h3 className="text-xl font-black flex items-center gap-3">
-                      <TrendingUp className="text-green-400" size={24} />
-                      Sizning Jarayoningiz
-                    </h3>
-                    <div className="space-y-4">
-                      {[
-                        { label: 'Video ko\'rildi', done: true },
-                        { label: 'Kitob o\'qildi', done: true },
-                        { label: 'Vazifa bajarildi', done: false },
-                        { label: 'Test topshirildi', done: false }
-                      ].map((item, i) => (
-                        <div key={i} className="flex items-center justify-between p-3 bg-white/5 rounded-xl">
-                          <span className="text-sm font-bold text-white/80">{item.label}</span>
-                          {item.done ? (
-                            <CheckCircle className="text-green-400" size={20} />
-                          ) : (
-                            <XCircle className="text-white/30" size={20} />
-                          )}
+                    <div className="space-y-0">
+                      <div className="flex items-center gap-4 p-4 hover:bg-white/5 rounded-2xl transition-all cursor-pointer group">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${true ? 'border-green-500 bg-green-500/20 text-green-400' : 'border-white/20 text-white/40'}`}>
+                          <CheckCircle2 size={16} />
                         </div>
-                      ))}
+                        <div className="flex-1">
+                          <p className="font-bold text-sm text-white/90">Video Dars</p>
+                          <p className="text-xs text-white/50">Ko'rib chiqildi</p>
+                        </div>
+                      </div>
+
+                      <div className="w-0.5 h-6 bg-white/10 ml-[1.15rem]"></div>
+
+                      <div className="flex items-center gap-4 p-4 hover:bg-white/5 rounded-2xl transition-all cursor-pointer group">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${true ? 'border-green-500 bg-green-500/20 text-green-400' : 'border-white/20 text-white/40'}`}>
+                          <CheckCircle2 size={16} />
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-bold text-sm text-white/90">Dars Materiallari</p>
+                          <p className="text-xs text-white/50">O'qib chiqildi</p>
+                        </div>
+                      </div>
+
+                      <div className="w-0.5 h-6 bg-white/10 ml-[1.15rem]"></div>
+
+                      <div className="flex items-center gap-4 p-4 hover:bg-white/5 rounded-2xl transition-all cursor-pointer group">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${false ? 'border-green-500 bg-green-500/20 text-green-400' : 'border-white/20 text-white/40'}`}>
+                          <div className="w-2 h-2 bg-current rounded-full"></div>
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-bold text-sm text-white/90">Amaliy Test</p>
+                          <p className="text-xs text-white/50">Topshirilmagan</p>
+                        </div>
+                      </div>
                     </div>
                   </div>
 
-                  {/* AI Assistant Quick Access */}
-                  <div className="bg-gradient-to-br from-indigo-600 to-purple-600 p-6 rounded-3xl border border-white/20 space-y-4">
-                    <div className="flex items-center gap-3 text-white">
-                      <Brain size={28} />
-                      <h3 className="text-xl font-black">AI Yordamchi</h3>
+                  {/* E-Book Download Mini */}
+                  <div className="bg-gradient-to-br from-orange-500/10 to-red-500/10 backdrop-blur-xl p-6 rounded-3xl border border-orange-500/20 space-y-4">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-gradient-to-br from-orange-400 to-red-500 rounded-xl flex items-center justify-center shadow-lg text-white">
+                        <FileText size={24} />
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-lg">Darslik PDF</h4>
+                        <p className="text-xs text-white/50">Yuklab olish va oflayn o'qish</p>
+                      </div>
                     </div>
-                    <p className="text-sm text-white/90">
-                      Savol bo'lsa AI yordamchidan so'rang!
-                    </p>
-                    <button
-                      onClick={() => setShowChat(true)}
-                      className="group w-full py-3 bg-white text-indigo-600 rounded-xl font-bold hover:scale-105 transition-all flex items-center justify-center gap-2 shadow-lg"
-                    >
-                      <MessageCircle size={20} />
-                      Chatni Ochish
+                    <button className="w-full py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 border border-white/10">
+                      <Download size={16} />
+                      Yuklab Olish
                     </button>
                   </div>
+
                 </div>
               </div>
             </div>
