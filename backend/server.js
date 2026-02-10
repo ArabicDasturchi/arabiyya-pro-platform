@@ -70,6 +70,24 @@ app.get('/api/seed-levels', async (req, res) => {
   }
 });
 
+// Temporary Admin Promotion Endpoint
+import User from './models/User.js';
+app.get('/api/make-admin', async (req, res) => {
+  const { email } = req.query;
+  if (!email) return res.status(400).json({ success: false, message: 'Email required' });
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+
+    user.role = 'admin';
+    await user.save();
+    res.json({ success: true, message: `User ${email} is now an ADMIN!` });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({
