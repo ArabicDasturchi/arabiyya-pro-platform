@@ -83,64 +83,9 @@ app.get('/api/debug/users', async (req, res) => {
 });
 
 // Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/levels', levelRoutes);
-app.use('/api/lessons', lessonRoutes);
-app.use('/api/tests', testRoutes);
-app.use('/api/certificates', certificateRoutes);
-app.use('/api/ai', aiRoutes);
-app.use('/api/admin', adminRoutes);
-
-// Database Seeding Endpoint
-app.get('/api/seed-levels', async (req, res) => {
-  try {
-    await seedDB();
-    res.json({ success: true, message: 'Database seeded successfully!' });
-  } catch (error) {
-    console.error('Seeding error:', error);
-    res.status(500).json({ success: false, message: 'Seeding failed', error: error.message });
-  }
-});
-
-// Duplicate route removed
-
-
-// Health check endpoint
-app.get('/api/health', (req, res) => {
-  res.json({
-    status: 'OK',
-    message: 'Arabiyya Pro API is running',
-    timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV
-  });
-});
-
-// Root endpoint
-app.get('/', (req, res) => {
-  res.json({
-    message: 'Welcome to Arabiyya Pro API',
-    version: '1.0.0',
-    endpoints: {
-      health: '/api/health',
-      auth: '/api/auth',
-      users: '/api/users',
-      levels: '/api/levels',
-      lessons: '/api/lessons',
-      tests: '/api/tests',
-      certificates: '/api/certificates',
-      ai: '/api/ai'
-    }
-  });
-});
-
-
-
-// Error Handler
-
 
 // ==========================================
-// PAYMENT & ORDER ROUTES
+// PAYMENT & ORDER ROUTES (Priority)
 // ==========================================
 
 // Create Purchase Order
@@ -231,6 +176,67 @@ app.put('/api/admin/orders/:id/approve', async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 });
+app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/levels', levelRoutes);
+app.use('/api/lessons', lessonRoutes);
+app.use('/api/tests', testRoutes);
+app.use('/api/certificates', certificateRoutes);
+app.use('/api/ai', aiRoutes);
+app.use('/api/admin', adminRoutes);
+
+// Database Seeding Endpoint
+app.get('/api/seed-levels', async (req, res) => {
+  try {
+    await seedDB();
+    res.json({ success: true, message: 'Database seeded successfully!' });
+  } catch (error) {
+    console.error('Seeding error:', error);
+    res.status(500).json({ success: false, message: 'Seeding failed', error: error.message });
+  }
+});
+
+// Duplicate route removed
+
+
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.json({
+    status: 'OK',
+    message: 'Arabiyya Pro API is running',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV
+  });
+});
+
+// Root endpoint
+app.get('/', (req, res) => {
+  res.json({
+    message: 'Welcome to Arabiyya Pro API',
+    version: '1.0.0',
+    endpoints: {
+      health: '/api/health',
+      auth: '/api/auth',
+      users: '/api/users',
+      levels: '/api/levels',
+      lessons: '/api/lessons',
+      tests: '/api/tests',
+      certificates: '/api/certificates',
+      ai: '/api/ai'
+    }
+  });
+});
+
+
+
+// Error Handler
+
+
+// ==========================================
+// PAYMENT & ORDER ROUTES
+// ==========================================
+
+
 
 // 404 Handler
 app.use((req, res) => {
