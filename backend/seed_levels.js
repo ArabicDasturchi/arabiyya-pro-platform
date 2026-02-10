@@ -94,9 +94,10 @@ export const seedDB = async () => {
         }
 
         console.log('Seeding completed successfully');
+        // Do not process.exit(0) when called from API
     } catch (error) {
         console.error('Seeding error:', error);
-        throw error;
+        throw error; // Re-throw to be caught by the API handler
     }
 };
 
