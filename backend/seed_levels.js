@@ -145,10 +145,9 @@ export const seedDB = async () => {
         ];
 
         for (const levelData of levelsData) {
-            const currentLevelLessonsData = lessonsData.findOne(l => l.id === levelData.id)?.lessons || [];
-
-            // To'g'ri find logika ishlatish kerak. Array uchun .find() bo'ladi, .findOne() emas.
-            const levelSpecificLessons = lessonsData.find(l => l.id === levelData.id)?.lessons || [];
+            // Find lessons for this level
+            const levelFound = lessonsData.find(l => l.id === levelData.id);
+            const levelSpecificLessons = levelFound ? levelFound.lessons : [];
 
             const lessonIds = [];
 
