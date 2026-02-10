@@ -92,7 +92,8 @@ const App = () => {
 
   const fetchLevels = async () => {
     try {
-      const res = await fetch('https://arabiyya-pro-backend.onrender.com/api/levels');
+      // Add timestamp to prevent caching
+      const res = await fetch(`https://arabiyya-pro-backend.onrender.com/api/levels?t=${Date.now()}`);
       const data = await res.json();
       if (data.success) {
         // Map _id to id for frontend compatibility
@@ -118,6 +119,13 @@ const App = () => {
       console.error('Error fetching levels:', err);
     }
   };
+
+  // Re-fetch levels when switching to Admin Courses tab
+  useEffect(() => {
+    if (view === 'admin' && adminTab === 'courses') {
+      fetchLevels();
+    }
+  }, [view, adminTab]);
 
   useEffect(() => {
     fetchLevels();
