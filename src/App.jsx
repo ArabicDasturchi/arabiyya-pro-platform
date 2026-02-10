@@ -1246,7 +1246,28 @@ const App = () => {
               <div className="grid md:grid-cols-2 gap-6">
                 {selectedLevel.lessons.map((lesson, idx) => {
                   const isCompleted = completedLessons.includes(`${selectedLevel.id}-${lesson.id}`);
-                  const isLocked = idx > 0 && !completedLessons.includes(`${selectedLevel.id}-${selectedLevel.lessons[idx - 1].id}`);
+
+                  // Level unlocking logic based on user's current level
+                  const levelOrder = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+                  const userLevelIndex = levelOrder.indexOf(user?.level || 'A1');
+                  const currentLevelIndex = levelOrder.indexOf(selectedLevel.id);
+
+                  // Helper: Check if previous lesson is completed (for sequential flow)
+                  const prevLessonCompleted = idx > 0 ? completedLessons.includes(`${selectedLevel.id}-${selectedLevel.lessons[idx - 1].id}`) : true;
+
+                  let isLocked = false;
+
+                  if (currentLevelIndex < userLevelIndex) {
+                    // Lower levels are FULLY unlocked
+                    isLocked = false;
+                  } else if (currentLevelIndex === userLevelIndex) {
+                    // Current level: Sequel logic (unlocked if previous is completed)
+                    isLocked = !prevLessonCompleted;
+                  } else {
+                    // Higher levels: Locked (should be handled at level selection, but safeguard here)
+                    isLocked = true;
+                  }
+
                   const isActive = !isCompleted && !isLocked;
 
                   return (
