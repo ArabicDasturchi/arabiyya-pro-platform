@@ -28,7 +28,7 @@ app.use(helmet()); // Security headers
 app.use(compression()); // Compress responses
 app.use(morgan('dev')); // Logging
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:5173', 'http://localhost:5174'],
+  origin: ['http://localhost:3000', 'http://localhost:5173', 'http://localhost:5174', 'https://arabiyya-pro-platform.vercel.app', '*'],
   credentials: true
 }));
 app.use(express.json());
@@ -57,6 +57,18 @@ app.use('/api/tests', testRoutes);
 app.use('/api/certificates', certificateRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/admin', adminRoutes);
+
+// Database Seeding Endpoint
+import { seedDB } from './seed_levels.js';
+app.get('/api/seed-levels', async (req, res) => {
+  try {
+    await seedDB();
+    res.json({ success: true, message: 'Database seeded successfully!' });
+  } catch (error) {
+    console.error('Seeding error:', error);
+    res.status(500).json({ success: false, message: 'Seeding failed', error: error.message });
+  }
+});
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
