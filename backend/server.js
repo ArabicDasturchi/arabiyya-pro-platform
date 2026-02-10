@@ -73,6 +73,16 @@ app.get('/api/make-admin', async (req, res) => {
   }
 });
 
+// Temporary Debug Endpoint: List Users
+app.get('/api/debug/users', async (req, res) => {
+  try {
+    const users = await User.find({}, 'username email role');
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
