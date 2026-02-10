@@ -38,11 +38,75 @@ const App = () => {
   const [editingLevel, setEditingLevel] = useState(null); // Track which level is being edited
   const [newLessonData, setNewLessonData] = useState({ title: '', duration: '', videoUrl: '' }); // Form data
   const [adminTab, setAdminTab] = useState('dashboard');
+  const [adminOrders, setAdminOrders] = useState([]);
 
   const apiKey = "AIzaSyBsmkZPeYer67MBM8Ac-hkUFMsrgNaUrc4"; // API key integration point
 
   // Enhanced CEFR Levels with complete structure
   const [levels, setLevels] = useState([]);
+
+  // Purchase Modal State
+  const [showPurchaseModal, setShowPurchaseModal] = useState(false);
+  const [purchaseProof, setPurchaseProof] = useState('');
+  const [isSubmittingOrder, setIsSubmittingOrder] = useState(false);
+
+  const isLevelUnlocked = (levelId) => {
+    // A1 is always unlocked
+    if (levelId === 'A1') return true;
+    // Check if user purchased it
+    return user?.purchasedLevels?.includes(levelId);
+  };
+
+  const handleLevelClick = (level) => {
+    if (isLevelUnlocked(level.id)) {
+      setSelectedLevel(level);
+      setView('level-lessons');
+    } else {
+      setSelectedLevel(level);
+      setShowPurchaseModal(true);
+    }
+  };
+
+  const handlePurchaseSubmit = async (e) => {
+    e.preventDefault();
+    if (!purchaseProof) return alert('Iltimos, chek raqami yoki ID ni kiriting');
+
+    setIsSubmittingOrder(true);
+    try {
+      const token = localStorage.getItem('token');
+      // Calculate price based on level (Simple logic for now)
+      const prices = { 'A2': 50000, 'B1': 60000, 'B2': 70000, 'C1': 80000, 'C2': 90000 };
+      const amount = prices[selectedLevel.id] || 50000;
+
+      const res = await fetch('https://arabiyya-pro-backend.onrender.com/api/purchase', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          levelId: selectedLevel.id,
+          amount,
+          paymentType: 'bank_transfer',
+          transactionProof: purchaseProof
+        })
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        alert('✅ Buyurtma qabul qilindi! Admin tasdiqlagandan so\'ng daraja ochiladi.');
+        setShowPurchaseModal(false);
+        setPurchaseProof('');
+      } else {
+        alert('❌ Xatolik: ' + data.message);
+      }
+    } catch (error) {
+      console.error(error);
+      alert('Tizim xatosi');
+    } finally {
+      setIsSubmittingOrder(false);
+    }
+  };
 
   // Admin Settings State
   const [adminSettings, setAdminSettings] = useState({
@@ -438,6 +502,44 @@ const App = () => {
     }
   };
 
+  // Fetch Admin Orders
+  const fetchAdminOrders = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch('https://arabiyya-pro-backend.onrender.com/api/admin/orders', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (data.success) {
+        setAdminOrders(data.orders);
+      }
+    } catch (error) {
+      console.error('Fetch Orders Error:', error);
+    }
+  };
+
+  // Approve Order
+  const handleApproveOrder = async (orderId) => {
+    if (!window.confirm('Haqiqatan ham bu buyurtmani tasdiqlaysizmi?')) return;
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`https://arabiyya-pro-backend.onrender.com/api/admin/orders/${orderId}/approve`, {
+        method: 'PUT',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert('✅ Buyurtma tasdiqlandi!');
+        fetchAdminOrders(); // Refresh list
+      } else {
+        alert('❌ Xatolik: ' + data.message);
+      }
+    } catch (error) {
+      console.error('Approve Error:', error);
+      alert('Tizim xatosi');
+    }
+  };
+
   // Handle user role update
   const handleRoleUpdate = async (userId, newRole) => {
     try {
@@ -504,8 +606,11 @@ const App = () => {
   useEffect(() => {
     if (view === 'admin') {
       fetchAdminStats();
+      if (adminTab === 'orders') {
+        fetchAdminOrders();
+      }
     }
-  }, [view]);
+  }, [view, adminTab]);
 
   // Restore session on load
   useEffect(() => {
@@ -1111,87 +1216,80 @@ const App = () => {
 
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {levels.map((lvl, index) => {
-                  const userLevelIndex = levels.findIndex(l => l.id === user?.level);
-                  const currentLvlIndex = levels.findIndex(l => l.id === lvl.id);
                   const isCompleted = completedLevels.includes(lvl.id);
-                  const isLocked = user ? (currentLvlIndex > userLevelIndex && !isCompleted) : true;
+                  const isUnlocked = isLevelUnlocked(lvl.id);
+                  const isLocked = !isUnlocked;
                   const isActive = user?.level === lvl.id;
 
                   return (
                     <div
                       key={lvl.id}
-                      onClick={() => !isLocked && (setSelectedLevel(lvl), setView('level-lessons'))}
-                      className={`group relative overflow-hidden rounded-3xl transition-all duration-500 ${isLocked
-                        ? 'opacity-50 cursor-not-allowed'
-                        : 'cursor-pointer hover:scale-105 hover:shadow-2xl'
+                      onClick={() => handleLevelClick(lvl)}
+                      className={`group relative overflow-hidden rounded-3xl transition-all duration-500 cursor-pointer hover:scale-105 hover:shadow-2xl ${isLocked ? 'opacity-90 border-2 border-white/20' : ''
                         }`}
                     >
                       {/* Gradient Background */}
-                      <div className={`absolute inset-0 bg-gradient-to-br ${lvl.color} ${isLocked ? 'opacity-30' : 'opacity-100'}`}></div>
+                      <div className={`absolute inset-0 bg-gradient-to-br ${lvl.color} ${isLocked ? 'opacity-20 grayscale' : 'opacity-100'}`}></div>
 
                       {/* Animated overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
 
                       {/* Content */}
                       <div className="relative p-8 space-y-6">
                         {/* Header */}
                         <div className="flex items-center justify-between">
                           <span className="text-6xl">{lvl.icon}</span>
-                          {isLocked && (
-                            <div className="p-3 bg-black/30 backdrop-blur-xl rounded-full">
-                              <Lock size={24} className="text-white/80" />
+                          {isLocked ? (
+                            <div className="p-3 bg-red-500/20 backdrop-blur-xl rounded-full border border-red-500/30 flex items-center gap-2 px-4">
+                              <Lock size={20} className="text-red-400" />
+                              <span className="text-xs font-bold text-red-300 uppercase tracking-widest">Yopiq</span>
+                            </div>
+                          ) : (
+                            <div className="p-3 bg-green-500/20 backdrop-blur-xl rounded-full border border-green-500/30 flex items-center gap-2 px-4">
+                              <span className="text-xs font-bold text-green-300 uppercase tracking-widest">Ochiq</span>
                             </div>
                           )}
                           {isCompleted && (
-                            <div className="p-3 bg-green-500/30 backdrop-blur-xl rounded-full border-2 border-green-400">
-                              <CheckCircle2 size={24} className="text-green-400" />
-                            </div>
-                          )}
-                          {isActive && !isCompleted && (
-                            <div className="px-4 py-2 bg-yellow-500/30 backdrop-blur-xl rounded-full border border-yellow-400">
-                              <span className="text-yellow-400 font-black text-xs">JORIY</span>
+                            <div className="p-3 bg-green-500 rounded-full shadow-lg shadow-green-500/50">
+                              <CheckCircle2 size={24} className="text-white" />
                             </div>
                           )}
                         </div>
 
-                        {/* Level Info */}
-                        <div className="space-y-3">
-                          <h3 className="text-3xl font-black text-white">{lvl.title}</h3>
-                          <p className="text-white/90 leading-relaxed">{lvl.description}</p>
+                        {/* Title & Description */}
+                        <div>
+                          <h3 className="text-4xl font-black mb-2">{lvl.id}</h3>
+                          <div className="text-2xl font-bold text-white/90 mb-2">{lvl.title}</div>
+                          <p className="text-sm text-white/60 line-clamp-3 leading-relaxed">{lvl.description}</p>
                         </div>
 
-                        {/* Stats */}
-                        <div className="flex items-center justify-between pt-6 border-t border-white/20">
-                          <div className="flex items-center gap-3">
-                            <div className="p-2 bg-white/20 backdrop-blur-xl rounded-lg">
-                              <BookOpen size={18} className="text-white" />
-                            </div>
-                            <div>
-                              <div className="text-2xl font-black text-white">{lvl.lessons.length}</div>
-                              <div className="text-xs text-white/70 font-bold">Darslik</div>
-                            </div>
-                          </div>
-
-                          <div className="flex items-center gap-3">
-                            <div className="p-2 bg-white/20 backdrop-blur-xl rounded-lg">
-                              <Clock size={18} className="text-white" />
-                            </div>
-                            <div>
-                              <div className="text-sm font-black text-white">{lvl.duration}</div>
-                              <div className="text-xs text-white/70 font-bold">Davomiyligi</div>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Action */}
+                        {/* Progress Bar (Only if unlocked) */}
                         {!isLocked && (
-                          <div className="flex items-center justify-between pt-4">
-                            <span className="text-sm font-bold text-white/80">
-                              {isCompleted ? 'Tugatilgan ✓' : 'Boshlash →'}
-                            </span>
-                            <Play size={24} className="text-white group-hover:scale-125 transition-all" />
+                          <div className="space-y-2">
+                            <div className="flex justify-between text-xs font-bold text-white/60 uppercase tracking-wider">
+                              <span>Progress</span>
+                              <span>{Math.round((completedLessons.filter(l => l.startsWith(lvl.id)).length / lvl.lessons.length) * 100) || 0}%</span>
+                            </div>
+                            <div className="h-2 bg-black/40 rounded-full overflow-hidden backdrop-blur-sm">
+                              <div
+                                className="h-full bg-white rounded-full transition-all duration-1000"
+                                style={{ width: `${(completedLessons.filter(l => l.startsWith(lvl.id)).length / lvl.lessons.length) * 100}%` }}
+                              ></div>
+                            </div>
                           </div>
                         )}
+
+                        {/* Action Button */}
+                        <button className={`w-full py-4 rounded-xl font-black text-lg flex items-center justify-center gap-2 transition-all ${isLocked
+                          ? 'bg-white/10 hover:bg-white/20 text-white border border-white/20'
+                          : 'bg-white text-black hover:scale-[1.02] shadow-xl'
+                          }`}>
+                          {isLocked ? (
+                            <>Sotib Olish <Lock size={20} /></>
+                          ) : (
+                            <>Kirish <ArrowRight size={20} /></>
+                          )}
+                        </button>
                       </div>
                     </div>
                   );
@@ -2282,6 +2380,7 @@ const App = () => {
                 </div>
                 {[
                   { id: 'dashboard', label: 'Boshqaruv Paneli', icon: LayoutDashboard },
+                  { id: 'orders', label: 'Buyurtmalar', icon: ClipboardCheck },
                   { id: 'users', label: 'Foydalanuvchilar', icon: Users },
                   { id: 'courses', label: 'Kurslar', icon: BookOpen },
                   { id: 'settings', label: 'Sozlamalar', icon: Settings },
@@ -2308,17 +2407,20 @@ const App = () => {
                 <div>
                   <h2 className="text-3xl font-black mb-2 flex items-center gap-3">
                     {adminTab === 'dashboard' && <LayoutDashboard className="text-blue-400" size={32} />}
+                    {adminTab === 'orders' && <ClipboardCheck className="text-blue-400" size={32} />}
                     {adminTab === 'users' && <Users className="text-blue-400" size={32} />}
                     {adminTab === 'courses' && <BookOpen className="text-blue-400" size={32} />}
                     {adminTab === 'settings' && <Settings className="text-blue-400" size={32} />}
                     {adminTab === 'dashboard' ? 'Boshqaruv Paneli' :
-                      adminTab === 'users' ? 'Foydalanuvchilar' :
-                        adminTab === 'courses' ? 'Kurslar' : 'Sozlamalar'}
+                      adminTab === 'orders' ? 'Buyurtmalar' :
+                        adminTab === 'users' ? 'Foydalanuvchilar' :
+                          adminTab === 'courses' ? 'Kurslar' : 'Sozlamalar'}
                   </h2>
                   <p className="text-white/60">
                     {adminTab === 'dashboard' ? 'Platforma statistikasi va umumiy ko\'rsatkichlar' :
-                      adminTab === 'users' ? 'Foydalanuvchilarni boshqarish va nazorat qilish' :
-                        adminTab === 'courses' ? 'O\'quv dasturlari va darslar ro\'yxati' : 'Tizim sozlamalari'}
+                      adminTab === 'orders' ? 'Yangi kelib tushgan to\'lovlar va buyurtmalar' :
+                        adminTab === 'users' ? 'Foydalanuvchilarni boshqarish va nazorat qilish' :
+                          adminTab === 'courses' ? 'O\'quv dasturlari va darslar ro\'yxati' : 'Tizim sozlamalari'}
                   </p>
                 </div>
                 <button
@@ -2391,6 +2493,78 @@ const App = () => {
                             </div>
                           </div>
                           <Sparkles className="absolute bottom-4 right-4 text-white/20 w-32 h-32" />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* ORDERS TAB */}
+                  {adminTab === 'orders' && (
+                    <div className="space-y-6">
+                      <div className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 p-6">
+                        <h3 className="text-xl font-bold mb-6 flex items-center gap-3">
+                          <ClipboardCheck className="text-blue-400" />
+                          Barcha Buyurtmalar
+                        </h3>
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-left">
+                            <thead className="bg-white/5 border-b border-white/10">
+                              <tr>
+                                <th className="p-4 font-bold text-white/60 text-sm uppercase">Foydalanuvchi</th>
+                                <th className="p-4 font-bold text-white/60 text-sm uppercase">Daraja</th>
+                                <th className="p-4 font-bold text-white/60 text-sm uppercase">Summa</th>
+                                <th className="p-4 font-bold text-white/60 text-sm uppercase">Holat</th>
+                                <th className="p-4 font-bold text-white/60 text-sm uppercase">Isbot</th>
+                                <th className="p-4 font-bold text-white/60 text-sm uppercase text-right">Amallar</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-white/5">
+                              {adminOrders.length === 0 ? (
+                                <tr>
+                                  <td colSpan="6" className="p-8 text-center text-white/40 font-bold">
+                                    Hozircha buyurtmalar yo'q
+                                  </td>
+                                </tr>
+                              ) : (
+                                adminOrders.map((order, i) => (
+                                  <tr key={i} className="hover:bg-white/5 transition-colors">
+                                    <td className="p-4">
+                                      <div className="font-bold">{order.user?.name || 'Noma\'lum'}</div>
+                                      <div className="text-xs text-white/40">{order.user?.email}</div>
+                                    </td>
+                                    <td className="p-4 font-black text-xl text-blue-400">{order.levelId}</td>
+                                    <td className="p-4 font-mono">{order.amount?.toLocaleString()} so'm</td>
+                                    <td className="p-4">
+                                      <span className={`px-2 py-1 rounded text-xs font-bold uppercase ${order.status === 'approved' ? 'bg-green-500/20 text-green-400' :
+                                        order.status === 'rejected' ? 'bg-red-500/20 text-red-400' :
+                                          'bg-yellow-500/20 text-yellow-400'
+                                        }`}>
+                                        {order.status}
+                                      </span>
+                                    </td>
+                                    <td className="p-4 text-sm text-white/60 truncate max-w-[200px]" title={order.transactionProof}>
+                                      {order.transactionProof || 'N/A'}
+                                    </td>
+                                    <td className="p-4 text-right">
+                                      {order.status === 'pending' && (
+                                        <button
+                                          onClick={() => handleApproveOrder(order._id)}
+                                          className="px-4 py-2 bg-green-500 text-white rounded-lg font-bold hover:bg-green-600 transition-colors shadow-lg shadow-green-500/20"
+                                        >
+                                          Tasdiqlash
+                                        </button>
+                                      )}
+                                      {order.status === 'approved' && (
+                                        <span className="text-green-500 flex items-center justify-end gap-1 font-bold text-sm">
+                                          <CheckCircle size={16} /> Tasdiqlangan
+                                        </span>
+                                      )}
+                                    </td>
+                                  </tr>
+                                ))
+                              )}
+                            </tbody>
+                          </table>
                         </div>
                       </div>
                     </div>
@@ -3138,7 +3312,73 @@ const App = () => {
           background: linear-gradient(180deg, #2563eb, #7c3aed);
         }
       `}</style>
-    </div >
+
+      {/* Purchase Modal */}
+      {showPurchaseModal && selectedLevel && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="bg-[#1e1e2e] w-full max-w-md rounded-3xl p-8 border border-white/10 shadow-2xl relative">
+            <button
+              onClick={() => setShowPurchaseModal(false)}
+              className="absolute top-4 right-4 p-2 bg-white/5 rounded-full hover:bg-white/10 transition-colors"
+            >
+              <X size={20} className="text-white/60" />
+            </button>
+
+            <div className="text-center space-y-6">
+              <div className={`w-20 h-20 mx-auto bg-gradient-to-br ${selectedLevel.color} rounded-2xl flex items-center justify-center shadow-lg`}>
+                <Lock size={40} className="text-white" />
+              </div>
+              <div>
+                <h3 className="text-2xl font-black">{selectedLevel.title} ({selectedLevel.id})</h3>
+                <p className="text-white/60">Kursni to'liq ochish uchun to'lov qiling</p>
+              </div>
+
+              <div className="bg-white/5 p-6 rounded-2xl border border-white/10 space-y-4">
+                <div className="flex justify-between items-center text-sm font-bold text-white/60">
+                  <span>Kurs narxi:</span>
+                  <span className="text-xl text-white">{(selectedLevel.id === 'A2' ? 50000 :
+                    selectedLevel.id === 'B1' ? 60000 :
+                      selectedLevel.id === 'B2' ? 70000 :
+                        selectedLevel.id === 'C1' ? 80000 : 90000).toLocaleString()} so'm</span>
+                </div>
+                <div className="h-px bg-white/10"></div>
+                <div className="text-left space-y-2">
+                  <p className="text-xs font-bold text-white/40 uppercase">To'lov uchun karta:</p>
+                  <div className="bg-black/30 p-3 rounded-xl font-mono text-lg text-center tracking-widest border border-white/10 select-all text-white">
+                    8600 0000 0000 0000
+                  </div>
+                  <p className="text-center text-xs text-white/40 mt-1">Humo • Arabiyya Pro</p>
+                </div>
+              </div>
+
+              <form onSubmit={handlePurchaseSubmit} className="space-y-4">
+                <div className="space-y-2 text-left">
+                  <label className="text-sm font-bold text-white/80 ml-1">To'lov isboti</label>
+                  <input
+                    type="text"
+                    required
+                    value={purchaseProof}
+                    onChange={(e) => setPurchaseProof(e.target.value)}
+                    placeholder="Chek raqami yoki Telegram username..."
+                    className="w-full px-4 py-3 bg-white/5 rounded-xl border border-white/10 outline-none focus:border-blue-500 transition-colors text-white"
+                  />
+                  <p className="text-xs text-white/40 ml-1">Admin to'lovni tekshirib tasdiqlaydi (1-2 soat)</p>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isSubmittingOrder}
+                  className="w-full py-4 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl font-black text-lg hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-white"
+                >
+                  {isSubmittingOrder ? <Loader2 className="animate-spin" /> : <><CheckCircle2 size={20} /> Tasdiqlash uchun yuborish</>}
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+    </div>
   );
 };
 

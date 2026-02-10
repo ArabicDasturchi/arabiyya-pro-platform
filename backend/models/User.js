@@ -22,6 +22,10 @@ const userSchema = new mongoose.Schema({
     enum: ['user', 'admin'],
     default: 'user'
   },
+  purchasedLevels: {
+    type: [String],
+    default: ['A1'] // A1 is free by default
+  },
   password: {
     type: String,
     required: [true, 'Parol kiritish majburiy'],
