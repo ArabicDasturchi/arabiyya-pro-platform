@@ -69,7 +69,7 @@ const App = () => {
     }
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:5002/api/auth/update-password', {
+      const res = await fetch('https://arabiyya-pro-backend.onrender.com/api/auth/update-password', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -92,7 +92,7 @@ const App = () => {
 
   const fetchLevels = async () => {
     try {
-      const res = await fetch('http://localhost:5002/api/levels');
+      const res = await fetch('https://arabiyya-pro-backend.onrender.com/api/levels');
       const data = await res.json();
       if (data.success) {
         // Map _id to id for frontend compatibility
@@ -195,7 +195,7 @@ const App = () => {
       const headers = { 'Content-Type': 'application/json' };
       if (token) headers['Authorization'] = `Bearer ${token}`;
 
-      const response = await fetch('http://localhost:5002/api/ai/placement-analysis', {
+      const response = await fetch('https://arabiyya-pro-backend.onrender.com/api/ai/placement-analysis', {
         method: 'POST',
         headers,
         body: JSON.stringify({
@@ -259,7 +259,7 @@ const App = () => {
         const headers = { 'Content-Type': 'application/json' };
         if (token) headers['Authorization'] = `Bearer ${token}`;
 
-        const response = await fetch('http://localhost:5002/api/ai/lesson-test-analysis', {
+        const response = await fetch('https://arabiyya-pro-backend.onrender.com/api/ai/lesson-test-analysis', {
           method: 'POST',
           headers,
           body: JSON.stringify({
@@ -314,7 +314,7 @@ const App = () => {
         const headers = { 'Content-Type': 'application/json' };
         if (token) headers['Authorization'] = `Bearer ${token}`;
 
-        const response = await fetch('http://localhost:5002/api/ai/level-exam-analysis', {
+        const response = await fetch('https://arabiyya-pro-backend.onrender.com/api/ai/level-exam-analysis', {
           method: 'POST',
           headers,
           body: JSON.stringify({
@@ -378,7 +378,7 @@ const App = () => {
       const headers = { 'Content-Type': 'application/json' };
       if (token) headers['Authorization'] = `Bearer ${token}`;
 
-      const response = await fetch('http://localhost:5002/api/ai/chat', {
+      const response = await fetch('https://arabiyya-pro-backend.onrender.com/api/ai/chat', {
         method: 'POST',
         headers,
         body: JSON.stringify({
@@ -409,7 +409,7 @@ const App = () => {
     try {
       const token = localStorage.getItem('token');
       // Fetch stats
-      const statsRes = await fetch('http://localhost:5002/api/admin/stats', {
+      const statsRes = await fetch('https://arabiyya-pro-backend.onrender.com/api/admin/stats', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const statsData = await statsRes.json();
@@ -418,7 +418,7 @@ const App = () => {
       }
 
       // Fetch all users
-      const usersRes = await fetch('http://localhost:5002/api/admin/users', {
+      const usersRes = await fetch('https://arabiyya-pro-backend.onrender.com/api/admin/users', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const usersData = await usersRes.json();
@@ -434,7 +434,7 @@ const App = () => {
   const handleRoleUpdate = async (userId, newRole) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5002/api/admin/users/${userId}/role`, {
+      const response = await fetch(`https://arabiyya-pro-backend.onrender.com/api/admin/users/${userId}/role`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -464,7 +464,7 @@ const App = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5002/api/admin/users/${userId}`, {
+      const response = await fetch(`https://arabiyya-pro-backend.onrender.com/api/admin/users/${userId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -505,7 +505,7 @@ const App = () => {
       const token = localStorage.getItem('token');
       if (token) {
         try {
-          const response = await fetch('http://localhost:5002/api/auth/me', {
+          const response = await fetch('https://arabiyya-pro-backend.onrender.com/api/auth/me', {
             headers: { 'Authorization': `Bearer ${token}` }
           });
           const data = await response.json();
@@ -909,7 +909,7 @@ const App = () => {
                           const uname = e.target.uname.value;
 
                           try {
-                            const response = await fetch('http://localhost:5002/api/auth/quick-register', {
+                            const response = await fetch('https://arabiyya-pro-backend.onrender.com/api/auth/quick-register', {
                               method: 'POST',
                               headers: { 'Content-Type': 'application/json' },
                               body: JSON.stringify({ name: uname })
@@ -2570,7 +2570,7 @@ const App = () => {
                                   if (!newLessonData.title) return;
                                   try {
                                     const token = localStorage.getItem('token');
-                                    const res = await fetch(`http://localhost:5002/api/levels/${editingLevel.id}/lessons`, {
+                                    const res = await fetch(`https://arabiyya-pro-backend.onrender.com/api/levels/${editingLevel.id}/lessons`, {
                                       method: 'POST',
                                       headers: {
                                         'Content-Type': 'application/json',
@@ -2627,7 +2627,7 @@ const App = () => {
                                           if (!window.confirm('Rostdan ham o\'chirmoqchimisiz?')) return;
                                           try {
                                             const token = localStorage.getItem('token');
-                                            const res = await fetch(`http://localhost:5002/api/levels/${editingLevel.id}/lessons/${lesson.id}`, {
+                                            const res = await fetch(`https://arabiyya-pro-backend.onrender.com/api/levels/${editingLevel.id}/lessons/${lesson.id}`, {
                                               method: 'DELETE',
                                               headers: { 'Authorization': `Bearer ${token}` }
                                             });
