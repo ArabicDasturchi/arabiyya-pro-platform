@@ -1,3 +1,10 @@
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+import Level from './models/Level.js';
+import Lesson from './models/Lesson.js';
+
+dotenv.config();
+
 // Initial declarations removed to prevent duplication
 export const levelsData = [
     // ... (same data)
