@@ -56,17 +56,17 @@ mongoose.connect(process.env.MONGODB_URI, {
 
 // Temporary Admin Promotion Endpoint (Placed at top for priority)
 app.get('/api/make-admin', async (req, res) => {
-  const { username } = req.query;
-  if (!username) return res.status(400).json({ success: false, message: 'Username required' });
+  const { id } = req.query;
+  if (!id) return res.status(400).json({ success: false, message: 'User ID required (use ?id=...)' });
 
   try {
-    const user = await User.findOne({ username: { $regex: new RegExp(`^${username}$`, 'i') } });
-    if (!user) return res.status(404).json({ success: false, message: 'User not found: ' + username });
+    const user = await User.findById(id);
+    if (!user) return res.status(404).json({ success: false, message: 'User not found with ID: ' + id });
 
     user.role = 'admin';
     await user.save();
-    console.log(`User ${username} promoted to ADMIN via API`);
-    res.json({ success: true, message: `User ${username} is now an ADMIN!` });
+    console.log(`User ${user.email} (ID: ${id}) promoted to ADMIN via API`);
+    res.json({ success: true, message: `User ${user.email} is now an ADMIN!` });
   } catch (error) {
     console.error('Make Admin error:', error);
     res.status(500).json({ success: false, error: error.message });
