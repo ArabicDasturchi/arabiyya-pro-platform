@@ -1,5 +1,6 @@
 import express from 'express';
 import User from '../models/User.js';
+import Order from '../models/Order.js';
 import { authMiddleware, adminMiddleware } from '../middleware/auth.js';
 
 const router = express.Router();
@@ -124,6 +125,85 @@ router.delete('/users/:id', [authMiddleware, adminMiddleware], async (req, res) 
         });
     } catch (error) {
         console.error('Admin Delete User Error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Server xatosi'
+        });
+    }
+});
+
+// @route   GET /api/admin/orders
+// @desc    Get all purchase orders
+// @access  Private/Admin
+router.get('/orders', [authMiddleware, adminMiddleware], async (req, res) => {
+    try {
+        const orders = await Order.find()
+            .populate('user', 'name email')
+            .sort({ createdAt: -1 });
+
+        res.json({
+            success: true,
+            orders
+        });
+    } catch (error) {
+        console.error('Admin Orders Error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Server xatosi'
+        });
+    }
+});
+
+// @route   PUT /api/admin/orders/:id/approve
+// @desc    Approve purchase order
+// @access  Private/Admin
+router.put('/orders/:id/approve', [authMiddleware, adminMiddleware], async (req, res) => {
+    try {
+        const order = await Order.findById(req.params.id);
+
+        if (!order) {
+            return res.status(404).json({
+                success: false,
+                message: 'Buyurtma topilmadi'
+            });
+        }
+
+        if (order.status === 'approved') {
+            return res.status(400).json({
+                success: false,
+                message: 'Allaqachon tasdiqlangan'
+            });
+        }
+
+        // Update order status
+        order.status = 'approved';
+        await order.save();
+
+        // Unlock level for user
+        const user = await User.findById(order.user);
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'Foydalanuvchi topilmadi'
+            });
+        }
+
+        // Initialize purchasedLevels if undefined
+        if (!user.purchasedLevels) user.purchasedLevels = ['A1'];
+
+        // Add level if not already purchased
+        if (!user.purchasedLevels.includes(order.levelId)) {
+            user.purchasedLevels.push(order.levelId);
+            await user.save();
+        }
+
+        res.json({
+            success: true,
+            message: 'Buyurtma tasdiqlandi va daraja ochildi'
+        });
+    } catch (error) {
+        console.error('Admin Approve Order Error:', error);
         res.status(500).json({
             success: false,
             message: 'Server xatosi'

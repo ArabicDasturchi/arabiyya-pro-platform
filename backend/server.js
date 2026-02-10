@@ -121,61 +121,7 @@ app.post('/api/purchase', async (req, res) => {
   }
 });
 
-// Admin: Get All Orders
-app.get('/api/admin/orders', async (req, res) => {
-  try {
-    const token = req.headers.authorization?.split(' ')[1];
-    if (!token) return res.status(401).json({ success: false });
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.id);
-
-    if (!user) return res.status(404).json({ success: false, message: 'User topilmadi' });
-    if (user.role !== 'admin') return res.status(403).json({ success: false });
-
-    const orders = await Order.find().populate('user', 'name email').sort({ createdAt: -1 });
-    res.json({ success: true, orders });
-  } catch (error) {
-    console.error('Admin Orders Error:', error);
-    res.status(500).json({ success: false, message: error.message });
-  }
-});
-
-// Admin: Approve Order
-app.put('/api/admin/orders/:id/approve', async (req, res) => {
-  try {
-    const token = req.headers.authorization?.split(' ')[1];
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const admin = await User.findById(decoded.id);
-
-    if (!admin) return res.status(404).json({ success: false, message: 'Admin topilmadi' });
-    if (admin.role !== 'admin') return res.status(403).json({ success: false });
-
-    const order = await Order.findById(req.params.id);
-    if (!order) return res.status(404).json({ success: false, message: 'Order topilmadi' });
-
-    if (order.status === 'approved') return res.status(400).json({ success: false, message: 'Allaqachon tasdiqlangan' });
-
-    order.status = 'approved';
-    await order.save();
-
-    // Unlock level for user
-    const user = await User.findById(order.user);
-
-    // Initialize purchasedLevels if undefined (for old users)
-    if (!user.purchasedLevels) user.purchasedLevels = ['A1'];
-
-    if (!user.purchasedLevels.includes(order.levelId)) {
-      user.purchasedLevels.push(order.levelId);
-      await user.save();
-    }
-
-    res.json({ success: true, message: 'Buyurtma tasdiqlandi va daraja ochildi' });
-  } catch (error) {
-    console.error('Approve Error:', error);
-    res.status(500).json({ success: false, message: error.message });
-  }
-});
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/levels', levelRoutes);
