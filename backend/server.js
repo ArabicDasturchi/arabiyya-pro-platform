@@ -48,6 +48,26 @@ mongoose.connect(process.env.MONGODB_URI, {
     process.exit(1);
   });
 
+// Temporary Admin Promotion Endpoint (Placed at top for priority)
+import User from './models/User.js';
+app.get('/api/make-admin', async (req, res) => {
+  const { email } = req.query;
+  if (!email) return res.status(400).json({ success: false, message: 'Email required' });
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ success: false, message: 'User not found: ' + email });
+
+    user.role = 'admin';
+    await user.save();
+    console.log(`User ${email} promoted to ADMIN via API`);
+    res.json({ success: true, message: `User ${email} is now an ADMIN!` });
+  } catch (error) {
+    console.error('Make Admin error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
