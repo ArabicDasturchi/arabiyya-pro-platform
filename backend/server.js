@@ -6,8 +6,8 @@ import helmet from 'helmet';
 import compression from 'compression';
 import morgan from 'morgan';
 
-// Load environment variables
-dotenv.config();
+// Import models
+import User from './models/User.js';
 
 // Import routes
 import authRoutes from './routes/auth.js';
@@ -18,6 +18,12 @@ import testRoutes from './routes/tests.js';
 import certificateRoutes from './routes/certificates.js';
 import aiRoutes from './routes/ai.js';
 import adminRoutes from './routes/admin.js';
+
+// Import seed function
+import { seedDB } from './seed_levels.js';
+
+// Load environment variables
+dotenv.config();
 
 // Initialize Express
 const app = express();
@@ -49,7 +55,6 @@ mongoose.connect(process.env.MONGODB_URI, {
   });
 
 // Temporary Admin Promotion Endpoint (Placed at top for priority)
-import User from './models/User.js';
 app.get('/api/make-admin', async (req, res) => {
   const { email } = req.query;
   if (!email) return res.status(400).json({ success: false, message: 'Email required' });
@@ -79,7 +84,6 @@ app.use('/api/ai', aiRoutes);
 app.use('/api/admin', adminRoutes);
 
 // Database Seeding Endpoint
-import { seedDB } from './seed_levels.js';
 app.get('/api/seed-levels', async (req, res) => {
   try {
     await seedDB();
