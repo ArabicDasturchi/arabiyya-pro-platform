@@ -42,6 +42,35 @@ const App = () => {
 
   const apiKey = "AIzaSyBsmkZPeYer67MBM8Ac-hkUFMsrgNaUrc4"; // API key integration point
 
+  // Check for existing session on load
+  useEffect(() => {
+    const checkAuth = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      try {
+        const res = await fetch('https://arabiyya-pro-backend.onrender.com/api/auth/me', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          setUser(data.user);
+          // If user was on a protected view, stay there, otherwise go to levels
+          // For simplicity, we can redirect to levels if currently on home/auth
+          if (view === 'auth') setView('levels');
+        } else {
+          localStorage.removeItem('token');
+        }
+      } catch (err) {
+        console.error('Auth check failed', err);
+        localStorage.removeItem('token');
+      }
+    };
+
+    checkAuth();
+  }, []);
+
   // Enhanced CEFR Levels with complete structure
   const [levels, setLevels] = useState([]);
 
