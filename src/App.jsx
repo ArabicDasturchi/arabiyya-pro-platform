@@ -74,9 +74,8 @@ const App = () => {
     setIsSubmittingOrder(true);
     try {
       const token = localStorage.getItem('token');
-      // Calculate price based on level (Simple logic for now)
-      const prices = { 'A2': 50000, 'B1': 60000, 'B2': 70000, 'C1': 80000, 'C2': 90000 };
-      const amount = prices[selectedLevel.id] || 50000;
+      // Set fixed price for all levels
+      const amount = 300000;
 
       const res = await fetch('https://arabiyya-pro-backend.onrender.com/api/purchase', {
         method: 'POST',
@@ -3336,18 +3335,15 @@ const App = () => {
               <div className="bg-white/5 p-6 rounded-2xl border border-white/10 space-y-4">
                 <div className="flex justify-between items-center text-sm font-bold text-white/60">
                   <span>Kurs narxi:</span>
-                  <span className="text-xl text-white">{(selectedLevel.id === 'A2' ? 50000 :
-                    selectedLevel.id === 'B1' ? 60000 :
-                      selectedLevel.id === 'B2' ? 70000 :
-                        selectedLevel.id === 'C1' ? 80000 : 90000).toLocaleString()} so'm</span>
+                  <span className="text-xl text-green-400 font-black">300,000 so'm</span>
                 </div>
                 <div className="h-px bg-white/10"></div>
                 <div className="text-left space-y-2">
                   <p className="text-xs font-bold text-white/40 uppercase">To'lov uchun karta:</p>
-                  <div className="bg-black/30 p-3 rounded-xl font-mono text-lg text-center tracking-widest border border-white/10 select-all text-white">
+                  <div className="bg-black/40 p-4 rounded-xl font-mono text-xl text-center tracking-widest border border-white/10 select-all text-white font-bold shadow-inner">
                     8600 0000 0000 0000
                   </div>
-                  <p className="text-center text-xs text-white/40 mt-1">Humo • Arabiyya Pro</p>
+                  <p className="text-center text-xs text-white/40 mt-1 uppercase font-bold tracking-wider">Humo • Arabiyya Pro</p>
                 </div>
               </div>
 

@@ -144,6 +144,8 @@ app.get('/api/seed-levels', async (req, res) => {
 
 // Duplicate route removed
 
+// Handle favicon.ico requests to prevent 404 logs
+app.get('/favicon.ico', (req, res) => res.status(204).end());
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
