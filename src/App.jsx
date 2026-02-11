@@ -3341,7 +3341,7 @@ const App = () => {
                 <div className="text-left space-y-2">
                   <p className="text-xs font-bold text-white/40 uppercase">To'lov uchun karta:</p>
                   <div className="bg-black/40 p-4 rounded-xl font-mono text-xl text-center tracking-widest border border-white/10 select-all text-white font-bold shadow-inner">
-                    8600 0000 0000 0000
+                    9860 0825 3462 9983
                   </div>
                   <p className="text-center text-xs text-white/40 mt-1 uppercase font-bold tracking-wider">Humo • Arabiyya Pro</p>
                 </div>
