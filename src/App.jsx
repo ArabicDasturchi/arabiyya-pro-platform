@@ -2868,6 +2868,36 @@ const App = () => {
                       {!editingLevel ? (
                         // VIEW MODE: List of Levels
                         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                          {/* Alphabet Course Card (Admin) */}
+                          <div className="bg-gradient-to-br from-amber-600/20 to-orange-700/20 backdrop-blur-xl rounded-3xl border border-amber-500/30 overflow-hidden group hover:border-amber-500/50 transition-all">
+                            <div className="h-2 bg-gradient-to-r from-amber-500 to-orange-600"></div>
+                            <div className="p-6">
+                              <div className="flex items-start justify-between mb-4">
+                                <div className="text-4xl text-amber-400 font-serif">ا ب ت</div>
+                                <span className="px-3 py-1 bg-amber-500/10 rounded-lg text-xs font-bold border border-amber-500/20 text-amber-200">
+                                  5 ta Modul
+                                </span>
+                              </div>
+                              <div className="mb-4">
+                                <h3 className="text-2xl font-black mb-1 text-white">Arab Harflari</h3>
+                                <div className="text-sm font-bold text-white/50">Boshlang'ich (Bepul)</div>
+                                <p className="text-sm text-white/60 mt-2 line-clamp-2">
+                                  Arab alifbosi va harflarini o'rganish uchun maxsus bo'lim.
+                                </p>
+                              </div>
+                              <div className="bg-white/5 rounded-xl p-3 flex items-center justify-between text-xs font-bold text-white/60 mb-4 border border-white/5">
+                                <span>Jami: 30 ta dars</span>
+                                <span>Cheksiz o'quvchi</span>
+                              </div>
+                              <button
+                                onClick={() => alert('Tez orada: Arab harflari darslarini boshqarish tizimi ishga tushadi')}
+                                className="w-full mt-6 py-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20"
+                              >
+                                <Settings size={16} />
+                                Boshqarish
+                              </button>
+                            </div>
+                          </div>
                           {levels.map((level) => (
                             <div key={level.id} className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 overflow-hidden group hover:border-white/20 transition-all">
                               <div className={`h-2 bg-gradient-to-r ${level.color}`}></div>
