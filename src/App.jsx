@@ -2890,7 +2890,14 @@ const App = () => {
                                 <span>Cheksiz o'quvchi</span>
                               </div>
                               <button
-                                onClick={() => alert('Tez orada: Arab harflari darslarini boshqarish tizimi ishga tushadi')}
+                                onClick={() => {
+                                  const alphabetLevel = levels.find(l => l.id === 'ALPHABET');
+                                  if (alphabetLevel) {
+                                    setEditingLevel(alphabetLevel);
+                                  } else {
+                                    alert('Arab harflari darajasi topilmadi. Iltimos, serverni yangilang.');
+                                  }
+                                }}
                                 className="w-full mt-6 py-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20"
                               >
                                 <Settings size={16} />

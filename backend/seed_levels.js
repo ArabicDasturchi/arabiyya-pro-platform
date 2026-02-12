@@ -7,6 +7,14 @@ dotenv.config();
 
 export const levelsData = [
     {
+        id: 'ALPHABET',
+        title: "Arab Harflari",
+        description: "Arab tilini noldan o'rganuvchilar uchun maxsus bo'lim. Harflar, talaffuz va yozish qoidalarini mukammal o'rganing.",
+        color: "from-amber-500 to-orange-600",
+        icon: "ا ب ت",
+        order: 0
+    },
+    {
         id: 'A1',
         title: "Boshlang'ich",
         description: "Arab alifbosi va oddiy so'zlashuvlarni o'rganing. Bu daraja arab tilini noldan boshlovchilar uchun mo'ljallangan.",
@@ -69,6 +77,15 @@ export const seedDB = async () => {
         console.log('Cleared existing levels and lessons');
 
         const lessonsData = [
+            {
+                id: 'ALPHABET', lessons: [
+                    { lessonNumber: 1, title: '1-Modul: Alif, Ba, Ta, Sa', topics: ['Harflar shakli', 'Maxrajlar', 'Yozish mashqlari'], duration: '30 daqiqa' },
+                    { lessonNumber: 2, title: '2-Modul: Jim, Ha, Xo, Dal', topics: ['Yangi harflar', 'So\'z boshida', 'Talaffuz'], duration: '30 daqiqa' },
+                    { lessonNumber: 3, title: '3-Modul: Zal, Ro, Za, Sin', topics: ['Zal va Ro farqi', 'Sin talaffuzi', 'Mashqlar'], duration: '30 daqiqa' },
+                    { lessonNumber: 4, title: '4-Modul: Shin, Sod, Dod, To', topics: ['Shin darsi', 'Sod va Dod qiyin harflar', 'O\'qish'], duration: '30 daqiqa' },
+                    { lessonNumber: 5, title: '5-Modul: Zo, Ayn, G\'ayn, Fa', topics: ['Oxirgi harflar', 'Takrorlash', 'Yozish'], duration: '30 daqiqa' }
+                ]
+            },
             {
                 id: 'A1', lessons: [
                     { lessonNumber: 1, title: 'Arab alifbosi - 1 qism', topics: ['Harflar: أ ب ت ث', 'Talaffuz asoslari', 'Yozish texnikasi'], duration: '45 daqiqa' },
