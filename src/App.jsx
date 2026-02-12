@@ -7,7 +7,7 @@ import {
   FileText, Send, Menu, LogOut, Download, Book, Target,
   TrendingUp, Zap, Headphones, CheckCircle, XCircle, Volume2,
   GraduationCap, Brain, Rocket, Clock, Users, BarChart,
-  Lightbulb, Heart, Flag, Compass, ZoomIn, Search, LayoutDashboard, Settings, Layers, Trash2, ArrowLeft, Plus
+  Lightbulb, Heart, Flag, Compass, ZoomIn, Search, LayoutDashboard, Settings, Layers, Trash2, ArrowLeft, Plus, Activity, Upload
 } from 'lucide-react';
 
 const App = () => {
@@ -1390,8 +1390,8 @@ const App = () => {
                           key={mod}
                           onClick={() => { setAlphabetModule(mod); setAlphabetTab('video'); }}
                           className={`w-full text-left p-4 rounded-xl flex items-center justify-between transition-all ${alphabetModule === mod
-                              ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg scale-[1.02]'
-                              : 'bg-white/5 text-white/60 hover:bg-white/10 hover:text-white'
+                            ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg scale-[1.02]'
+                            : 'bg-white/5 text-white/60 hover:bg-white/10 hover:text-white'
                             }`}
                         >
                           <span className="font-bold">Modul {mod}</span>
@@ -1419,8 +1419,8 @@ const App = () => {
                           key={tab.id}
                           onClick={() => setAlphabetTab(tab.id)}
                           className={`flex items-center gap-2 px-5 py-3 rounded-xl font-bold whitespace-nowrap transition-all ${alphabetTab === tab.id
-                              ? 'bg-white text-black shadow-lg scale-105'
-                              : 'bg-white/5 text-white/60 hover:bg-white/10'
+                            ? 'bg-white text-black shadow-lg scale-105'
+                            : 'bg-white/5 text-white/60 hover:bg-white/10'
                             }`}
                         >
                           <tab.icon size={18} />
