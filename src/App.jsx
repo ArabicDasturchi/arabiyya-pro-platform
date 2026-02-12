@@ -1379,7 +1379,7 @@ const App = () => {
                     <ArrowLeft size={20} /> Orqaga qaytish
                   </button>
 
-                  <div className="bg-[#1e1e2e] rounded-3xl p-6 border border-white/10 shadow-xl">
+                  <div className="bg-gradient-to-br from-emerald-900/40 to-teal-900/40 backdrop-blur-3xl rounded-3xl p-6 border border-white/10 shadow-xl">
                     <h3 className="text-xl font-black mb-6 text-white flex items-center gap-3">
                       <BookOpen className="text-emerald-400" />
                       Modullar
@@ -1404,7 +1404,7 @@ const App = () => {
 
                 {/* Main Content Area */}
                 <div className="lg:w-3/4 space-y-6">
-                  <div className="bg-[#1e1e2e] rounded-3xl p-8 border border-white/10 min-h-[600px] shadow-2xl relative overflow-hidden">
+                  <div className="bg-gradient-to-br from-emerald-900/60 to-cyan-900/60 backdrop-blur-3xl rounded-3xl p-8 border border-white/10 min-h-[600px] shadow-2xl relative overflow-hidden">
                     {/* Tab Navigation */}
                     <div className="flex overflow-x-auto pb-4 gap-2 mb-6 border-b border-white/10 scrollbar-hide">
                       {[
