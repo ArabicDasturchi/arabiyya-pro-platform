@@ -1379,7 +1379,7 @@ const App = () => {
                     <ArrowLeft size={20} /> Orqaga qaytish
                   </button>
 
-                  <div className="bg-gradient-to-br from-emerald-900/40 to-teal-900/40 backdrop-blur-3xl rounded-3xl p-6 border border-white/10 shadow-xl">
+                  <div className="bg-gradient-to-br from-amber-600/90 to-orange-700/90 backdrop-blur-3xl rounded-3xl p-6 border border-white/20 shadow-2xl">
                     <h3 className="text-xl font-black mb-6 text-white flex items-center gap-3">
                       <BookOpen className="text-emerald-400" />
                       Modullar
@@ -1404,7 +1404,7 @@ const App = () => {
 
                 {/* Main Content Area */}
                 <div className="lg:w-3/4 space-y-6">
-                  <div className="bg-gradient-to-br from-emerald-900/60 to-cyan-900/60 backdrop-blur-3xl rounded-3xl p-8 border border-white/10 min-h-[600px] shadow-2xl relative overflow-hidden">
+                  <div className="bg-gradient-to-br from-emerald-600/90 to-green-800/90 backdrop-blur-3xl rounded-3xl p-8 border border-white/20 min-h-[600px] shadow-2xl relative overflow-hidden">
                     {/* Tab Navigation */}
                     <div className="flex overflow-x-auto pb-4 gap-2 mb-6 border-b border-white/10 scrollbar-hide">
                       {[
@@ -1436,7 +1436,7 @@ const App = () => {
 
                       {/* Placeholder Content Areas */}
                       {alphabetTab === 'video' && (
-                        <div className="aspect-video bg-black/40 rounded-2xl flex items-center justify-center border border-white/10 group cursor-pointer relative overflow-hidden">
+                        <div className="aspect-video bg-white/20 backdrop-blur-xl rounded-2xl flex items-center justify-center border-2 border-white/30 group cursor-pointer relative overflow-hidden shadow-inner">
                           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                           <Play size={64} className="text-white group-hover:scale-110 transition-transform relative z-10" fill="white" />
                           <p className="absolute bottom-6 left-6 text-white font-bold text-xl z-10">Dars videosini ko'rish</p>
