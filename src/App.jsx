@@ -40,6 +40,10 @@ const App = () => {
   const [adminTab, setAdminTab] = useState('dashboard');
   const [adminOrders, setAdminOrders] = useState([]);
 
+  // Alphabet Learning State
+  const [alphabetModule, setAlphabetModule] = useState(1);
+  const [alphabetTab, setAlphabetTab] = useState('video');
+
   const apiKey = "AIzaSyBsmkZPeYer67MBM8Ac-hkUFMsrgNaUrc4"; // API key integration point
 
   // Check for existing session on load
@@ -80,8 +84,6 @@ const App = () => {
   const [isSubmittingOrder, setIsSubmittingOrder] = useState(false);
 
   const isLevelUnlocked = (levelId) => {
-    // A1 is always unlocked
-    if (levelId === 'A1') return true;
     // Check if user purchased it
     return user?.purchasedLevels?.includes(levelId);
   };
@@ -1061,15 +1063,18 @@ const App = () => {
                             if (data.success) {
                               localStorage.setItem('token', data.token);
                               setUser(data.user);
+                              setView('levels');
                             } else {
                               // Fallback if API fails
                               console.warn('Auth API failed:', data.message);
                               setUser({ name: uname });
+                              setView('levels');
                             }
                           } catch (error) {
                             console.error('Auth Error:', error);
                             // Fallback so user can still proceed
                             setUser({ name: uname });
+                            setView('levels');
                           }
                         }}
                         className="space-y-8"
@@ -1243,6 +1248,36 @@ const App = () => {
               </div>
 
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {/* Special Alphabet Learning Card */}
+                <div
+                  onClick={() => setView('alphabet-learning')}
+                  className="md:col-span-2 lg:col-span-3 relative bg-gradient-to-r from-emerald-500 to-teal-600 rounded-3xl p-8 cursor-pointer hover:scale-[1.01] transition-all shadow-2xl group overflow-hidden border-2 border-white/20"
+                >
+                  <div className="absolute top-0 right-0 p-8 opacity-10 transform rotate-12 group-hover:rotate-0 transition-transform duration-700">
+                    <span className="text-9xl font-black text-white">ا ب ت</span>
+                  </div>
+                  <div className="relative z-10 space-y-6">
+                    <div className="flex flex-col md:flex-row md:items-center gap-6">
+                      <div className="w-20 h-20 bg-white/10 rounded-2xl backdrop-blur-md flex items-center justify-center border border-white/20 shadow-lg">
+                        <BookOpen size={40} className="text-white" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-3 mb-2">
+                          <h3 className="text-3xl md:text-4xl font-black text-white">Arab Harflari</h3>
+                          <span className="bg-white/20 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest text-white border border-white/20 shadow-sm">Bepul</span>
+                        </div>
+                        <p className="text-lg text-emerald-100 max-w-2xl font-medium">
+                          Arab tilini noldan o'rganuvchilar uchun maxsus bo'lim. Harflar, talaffuz va yozish qoidalarini mukammal o'rganing.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3 text-white font-bold group-hover:gap-5 transition-all bg-white/10 w-fit px-6 py-3 rounded-xl hover:bg-white/20">
+                      <span>Darslarni Boshlash</span>
+                      <ArrowRight size={20} />
+                    </div>
+                  </div>
+                </div>
                 {levels.map((lvl, index) => {
                   const isCompleted = completedLevels.includes(lvl.id);
                   const isUnlocked = isLevelUnlocked(lvl.id);
@@ -1328,7 +1363,138 @@ const App = () => {
         }
 
         {/* ============================================ */}
-        {/* LEVEL LESSONS PAGE */}
+        {/* ALPHABET LEARNING PAGE */}
+        {/* ============================================ */}
+        {
+          view === 'alphabet-learning' && (
+            <div className="space-y-8 animate-in fade-in duration-500">
+              {/* Header & Navigation */}
+              <div className="flex flex-col lg:flex-row gap-8">
+                {/* Sidebar Navigation */}
+                <div className="lg:w-1/4 space-y-6">
+                  <button
+                    onClick={() => setView('levels')}
+                    className="flex items-center gap-2 text-white/60 hover:text-white transition-colors mb-4 font-bold"
+                  >
+                    <ArrowLeft size={20} /> Orqaga qaytish
+                  </button>
+
+                  <div className="bg-[#1e1e2e] rounded-3xl p-6 border border-white/10 shadow-xl">
+                    <h3 className="text-xl font-black mb-6 text-white flex items-center gap-3">
+                      <BookOpen className="text-emerald-400" />
+                      Modullar
+                    </h3>
+                    <div className="space-y-3">
+                      {[1, 2, 3, 4, 5].map((mod) => (
+                        <button
+                          key={mod}
+                          onClick={() => { setAlphabetModule(mod); setAlphabetTab('video'); }}
+                          className={`w-full text-left p-4 rounded-xl flex items-center justify-between transition-all ${alphabetModule === mod
+                              ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg scale-[1.02]'
+                              : 'bg-white/5 text-white/60 hover:bg-white/10 hover:text-white'
+                            }`}
+                        >
+                          <span className="font-bold">Modul {mod}</span>
+                          {alphabetModule === mod && <CheckCircle2 size={18} />}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Main Content Area */}
+                <div className="lg:w-3/4 space-y-6">
+                  <div className="bg-[#1e1e2e] rounded-3xl p-8 border border-white/10 min-h-[600px] shadow-2xl relative overflow-hidden">
+                    {/* Tab Navigation */}
+                    <div className="flex overflow-x-auto pb-4 gap-2 mb-6 border-b border-white/10 scrollbar-hide">
+                      {[
+                        { id: 'video', label: 'Video Dars', icon: Video },
+                        { id: 'topic', label: 'Mavzu', icon: FileText },
+                        { id: 'book', label: 'Kitob', icon: Book },
+                        { id: 'exercise', label: 'Mashq', icon: Activity },
+                        { id: 'homework', label: 'Vazifa', icon: Upload },
+                        { id: 'test', label: 'Test (AI)', icon: Brain },
+                      ].map((tab) => (
+                        <button
+                          key={tab.id}
+                          onClick={() => setAlphabetTab(tab.id)}
+                          className={`flex items-center gap-2 px-5 py-3 rounded-xl font-bold whitespace-nowrap transition-all ${alphabetTab === tab.id
+                              ? 'bg-white text-black shadow-lg scale-105'
+                              : 'bg-white/5 text-white/60 hover:bg-white/10'
+                            }`}
+                        >
+                          <tab.icon size={18} />
+                          {tab.label}
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* Content Render */}
+                    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
+                      <h2 className="text-3xl font-black text-white mb-2">Modul {alphabetModule}: {alphabetTab === 'video' ? 'Video Dars' : alphabetTab === 'topic' ? 'Mavzu Matni' : alphabetTab === 'book' ? 'Darslik (PDF)' : alphabetTab === 'exercise' ? 'Amaliy Mashqlar' : alphabetTab === 'homework' ? 'Uyga Vazifa' : 'AI Test Tahlili'}</h2>
+                      <p className="text-white/60 text-lg mb-8">Bu yerda {alphabetModule}-modulning {alphabetTab} qismi bo'ladi.</p>
+
+                      {/* Placeholder Content Areas */}
+                      {alphabetTab === 'video' && (
+                        <div className="aspect-video bg-black/40 rounded-2xl flex items-center justify-center border border-white/10 group cursor-pointer relative overflow-hidden">
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                          <Play size={64} className="text-white group-hover:scale-110 transition-transform relative z-10" fill="white" />
+                          <p className="absolute bottom-6 left-6 text-white font-bold text-xl z-10">Dars videosini ko'rish</p>
+                        </div>
+                      )}
+
+                      {alphabetTab === 'topic' && (
+                        <div className="prose prose-invert max-w-none">
+                          <div className="bg-white/5 p-8 rounded-2xl border border-white/10">
+                            <h3 className="text-2xl font-bold text-white mb-4">Arab Alifbosi: Kirish</h3>
+                            <p className="text-white/80 leading-relaxed">
+                              Arab tili o'ngdan chapga qarab yoziladi. Alifboda 28 ta harf mavjud. Harflar so'z ichida kelgan o'rniga qarab (boshida, o'rtasida, oxirida) shaklini o'zgartiradi.
+                            </p>
+                            <div className="my-6 grid grid-cols-4 gap-4 text-center">
+                              <div className="p-4 bg-white/10 rounded-xl">
+                                <span className="text-4xl font-serif block mb-2">ا</span>
+                                <span className="text-sm opacity-60">Alif</span>
+                              </div>
+                              <div className="p-4 bg-white/10 rounded-xl">
+                                <span className="text-4xl font-serif block mb-2">ب</span>
+                                <span className="text-sm opacity-60">Ba</span>
+                              </div>
+                              <div className="p-4 bg-white/10 rounded-xl">
+                                <span className="text-4xl font-serif block mb-2">ت</span>
+                                <span className="text-sm opacity-60">Ta</span>
+                              </div>
+                              <div className="p-4 bg-white/10 rounded-xl">
+                                <span className="text-4xl font-serif block mb-2">ث</span>
+                                <span className="text-sm opacity-60">Sa</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {alphabetTab === 'test' && (
+                        <div className="text-center py-12 space-y-6">
+                          <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto shadow-2xl animate-pulse">
+                            <Brain size={48} className="text-white" />
+                          </div>
+                          <h3 className="text-2xl font-bold text-white">AI Test Tizimi</h3>
+                          <p className="text-white/60 max-w-md mx-auto">
+                            5 ta savoldan iborat testni ishlang. Sun'iy intellekt sizning natijangizni tahlil qilib, xatolaringiz ustida ishlashga yordam beradi.
+                          </p>
+                          <button className="bg-white text-black px-8 py-3 rounded-xl font-black hover:scale-105 transition-transform">
+                            Testni Boshlash
+                          </button>
+                        </div>
+                      )}
+
+                      {/* Add placeholders for other tabs similar to above... */}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )
+        }
         {/* ============================================ */}
         {
           view === 'level-lessons' && selectedLevel && (

@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema({
   },
   purchasedLevels: {
     type: [String],
-    default: ['A1'] // A1 is free by default
+    default: [] // All levels must be purchased
   },
   password: {
     type: String,
