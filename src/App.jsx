@@ -1411,8 +1411,8 @@ const App = () => {
                         { id: 'video', label: 'Video Dars', icon: Video },
                         { id: 'topic', label: 'Mavzu', icon: FileText },
                         { id: 'book', label: 'Kitob', icon: Book },
-                        { id: 'exercise', label: 'Mashq', icon: Activity },
-                        { id: 'homework', label: 'Vazifa', icon: Upload },
+                        { id: 'exercise', label: 'Mashq', icon: Zap },
+                        { id: 'homework', label: 'Vazifa', icon: Download },
                         { id: 'test', label: 'Test (AI)', icon: Brain },
                       ].map((tab) => (
                         <button
