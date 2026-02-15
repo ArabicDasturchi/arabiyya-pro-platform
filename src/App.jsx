@@ -1538,8 +1538,8 @@ const App = () => {
                       key={tab.id}
                       onClick={() => setModuleTab(tab.id)}
                       className={`flex items-center gap-2 px-5 py-3 rounded-xl font-bold whitespace-nowrap transition-all ${moduleTab === tab.id
-                          ? 'bg-white text-black shadow-lg scale-105'
-                          : 'bg-white/5 text-white/60 hover:bg-white/10'
+                        ? 'bg-white text-black shadow-lg scale-105'
+                        : 'bg-white/5 text-white/60 hover:bg-white/10'
                         }`}
                     >
                       <tab.icon size={18} />
