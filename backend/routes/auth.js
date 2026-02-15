@@ -81,6 +81,7 @@ router.post('/login', [
         email: user.email,
         role: user.role, // Added role
         currentLevel: user.currentLevel,
+        purchasedLevels: user.purchasedLevels, // MUHIM: Sotib olingan darajalar
         completedLessons: user.completedLessons,
         completedLevels: user.completedLevels
       }
@@ -137,6 +138,7 @@ router.get('/me', authMiddleware, async (req, res) => {
         email: user.email,
         role: user.role,
         currentLevel: user.currentLevel,
+        purchasedLevels: user.purchasedLevels, // MUHIM: Sotib olingan darajalar
         completedLessons: user.completedLessons,
         completedLevels: user.completedLevels,
         chatHistory: user.chatHistory
