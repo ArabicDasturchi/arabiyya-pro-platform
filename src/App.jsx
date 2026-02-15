@@ -1008,38 +1008,52 @@ const App = () => {
                 </div>
 
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {levels.map((level, i) => (
-                    <div
-                      key={level.id}
-                      className="group relative bg-white/5 backdrop-blur-xl p-8 rounded-3xl border border-white/10 hover:bg-white/10 transition-all duration-300 hover:scale-105 cursor-pointer"
-                      onClick={() => user ? (setSelectedLevel(level), setView('level-lessons')) : setView('auth')}
-                    >
-                      <div className={`absolute inset-0 bg-gradient-to-br ${level.color} opacity-10 group-hover:opacity-20 rounded-3xl transition-opacity duration-300`}></div>
+                  {levels.map((level, i) => {
+                    const isUnlocked = isLevelUnlocked(level.id);
+                    const isLocked = user && user.role !== 'admin' && !isUnlocked;
 
-                      <div className="relative z-10">
-                        <div className="flex items-center justify-between mb-6">
-                          <span className="text-5xl">{level.icon}</span>
-                          <div className={`px-4 py-2 rounded-xl font-bold text-sm bg-gradient-to-r ${level.color} text-white shadow-lg`}>
-                            {level.lessons.length} Dars
+                    return (
+                      <div
+                        key={level.id}
+                        className="group relative bg-white/5 backdrop-blur-xl p-8 rounded-3xl border border-white/10 hover:bg-white/10 transition-all duration-300 hover:scale-105 cursor-pointer overflow-hidden"
+                        onClick={() => user ? handleLevelClick(level) : setView('auth')}
+                      >
+                        <div className={`absolute inset-0 bg-gradient-to-br ${level.color} opacity-10 group-hover:opacity-20 rounded-3xl transition-opacity duration-300`}></div>
+
+                        {/* Lock Overlay if locked */}
+                        {isLocked && (
+                          <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] flex items-center justify-center z-20 group-hover:bg-black/50 transition-all">
+                            <div className="bg-white/10 p-4 rounded-full backdrop-blur-xl border border-white/20 shadow-2xl">
+                              <Lock size={32} className="text-white" />
+                            </div>
                           </div>
-                        </div>
+                        )}
 
-                        <h3 className="text-2xl font-black mb-3">{level.title}</h3>
-                        <p className="text-white/70 mb-4 leading-relaxed">{level.description}</p>
-
-                        <div className="flex items-center gap-4 text-sm text-white/60">
-                          <div className="flex items-center gap-2">
-                            <Clock size={16} />
-                            <span>{level.duration}</span>
+                        <div className="relative z-10">
+                          <div className="flex items-center justify-between mb-6">
+                            <span className="text-5xl">{level.icon}</span>
+                            <div className={`px-4 py-2 rounded-xl font-bold text-sm bg-gradient-to-r ${level.color} text-white shadow-lg`}>
+                              {level.lessons.length} Dars
+                            </div>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <Play size={16} />
-                            <span>Video</span>
+
+                          <h3 className="text-2xl font-black mb-3">{level.title}</h3>
+                          <p className="text-white/70 mb-4 leading-relaxed">{level.description}</p>
+
+                          <div className="flex items-center gap-4 text-sm text-white/60">
+                            <div className="flex items-center gap-2">
+                              <Clock size={16} />
+                              <span>{level.duration}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Play size={16} />
+                              <span>Video</span>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
 
