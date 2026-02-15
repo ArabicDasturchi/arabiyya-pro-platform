@@ -1286,7 +1286,7 @@ const App = () => {
                 {levels.map((lvl, index) => {
                   const isCompleted = completedLevels.includes(lvl.id);
                   const isUnlocked = isLevelUnlocked(lvl.id);
-                  const isLocked = !isUnlocked;
+                  const isLocked = false; // VAQTINCHALIK: Test uchun barcha darajalar ochiq
                   const isActive = user?.level === lvl.id;
 
                   return (
@@ -1628,8 +1628,8 @@ const App = () => {
                       key={tab.id}
                       onClick={() => setLessonTab(tab.id)}
                       className={`px-5 py-3 rounded-xl font-bold whitespace-nowrap transition-all ${lessonTab === tab.id
-                          ? 'bg-white text-black shadow-lg scale-105'
-                          : 'bg-white/5 text-white/60 hover:bg-white/10'
+                        ? 'bg-white text-black shadow-lg scale-105'
+                        : 'bg-white/5 text-white/60 hover:bg-white/10'
                         }`}
                     >
                       {tab.label}
@@ -3091,7 +3091,7 @@ const App = () => {
                                 <div className="flex items-start justify-between mb-4">
                                   <div className="text-4xl">{level.icon}</div>
                                   <span className="px-3 py-1 bg-white/5 rounded-lg text-xs font-bold border border-white/10">
-                                    {level.lessons.length} ta dars
+                                    {Math.ceil(level.lessons.length / 5)} ta modul • {level.lessons.length} dars
                                   </span>
                                 </div>
                                 <h3 className="text-xl font-black mb-2">{level.title}</h3>
