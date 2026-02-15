@@ -255,12 +255,23 @@ const App = () => {
     }
   }, [view, adminTab]);
 
-  // Refresh user data when viewing levels (to get updated purchasedLevels)
+  // Refresh user data (background polling) to catch updates instantly
   useEffect(() => {
-    if (user) {
-      refreshUser();
+    // Only run if user is logged in
+    if (!user) return;
+
+    // Refresh initially
+    refreshUser();
+
+    // If on levels page, refresh frequently (every 10s) to catch grants
+    if (view === 'levels') {
+      const interval = setInterval(() => {
+        refreshUser();
+      }, 10000); // 10 soniyada bir marta tekshirish
+
+      return () => clearInterval(interval);
     }
-  }, [view, user?.id]); // Refresh when view changes OR when user first loads
+  }, [view, user?.id]);
 
   useEffect(() => {
     fetchLevels();
