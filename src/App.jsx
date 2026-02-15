@@ -263,8 +263,8 @@ const App = () => {
     // Refresh initially
     refreshUser();
 
-    // If on levels page OR home page, refresh frequently (every 10s) to catch grants
-    if (view === 'levels' || view === 'home') {
+    // If on levels page, refresh frequently (every 10s) to catch grants
+    if (view === 'levels') {
       const interval = setInterval(() => {
         refreshUser();
       }, 10000); // 10 soniyada bir marta tekshirish
@@ -1009,31 +1009,48 @@ const App = () => {
 
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {levels.map((level, i) => {
-                    const isUnlocked = isLevelUnlocked(level.id);
-                    const isLocked = user && user.role !== 'admin' && !isUnlocked;
+                    const isUnlocked = user && (user.role === 'admin' || user.purchasedLevels?.includes(level.id));
+                    const isLocked = !isUnlocked;
 
                     return (
                       <div
                         key={level.id}
-                        className="group relative bg-white/5 backdrop-blur-xl p-8 rounded-3xl border border-white/10 hover:bg-white/10 transition-all duration-300 hover:scale-105 cursor-pointer overflow-hidden"
-                        onClick={() => user ? handleLevelClick(level) : setView('auth')}
+                        className={`group relative bg-white/5 backdrop-blur-xl p-8 rounded-3xl border transition-all duration-300 hover:scale-105 cursor-pointer ${!user ? 'border-white/10 hover:bg-white/10' :
+                            isLocked ? 'border-white/10 hover:border-red-500/30' : 'border-green-500/30 hover:border-green-500/60 bg-green-500/5'
+                          }`}
+                        onClick={() => {
+                          if (!user) {
+                            setView('auth');
+                          } else {
+                            if (isUnlocked) {
+                              setSelectedLevel(level);
+                              setView('level-lessons');
+                            } else {
+                              setSelectedLevel(level);
+                              setShowPurchaseModal(true);
+                            }
+                          }
+                        }}
                       >
-                        <div className={`absolute inset-0 bg-gradient-to-br ${level.color} opacity-10 group-hover:opacity-20 rounded-3xl transition-opacity duration-300`}></div>
-
-                        {/* Lock Overlay if locked */}
-                        {isLocked && (
-                          <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] flex items-center justify-center z-20 group-hover:bg-black/50 transition-all">
-                            <div className="bg-white/10 p-4 rounded-full backdrop-blur-xl border border-white/20 shadow-2xl">
-                              <Lock size={32} className="text-white" />
-                            </div>
-                          </div>
-                        )}
+                        <div className={`absolute inset-0 bg-gradient-to-br ${level.color} opacity-5 group-hover:opacity-10 rounded-3xl transition-opacity duration-300`}></div>
 
                         <div className="relative z-10">
                           <div className="flex items-center justify-between mb-6">
                             <span className="text-5xl">{level.icon}</span>
-                            <div className={`px-4 py-2 rounded-xl font-bold text-sm bg-gradient-to-r ${level.color} text-white shadow-lg`}>
-                              {level.lessons.length} Dars
+                            <div className="flex flex-col items-end gap-2">
+                              {user && (
+                                <div className={`px-3 py-1 rounded-lg text-xs font-bold flex items-center gap-1 ${isUnlocked ? 'bg-green-500/20 text-green-400' : 'bg-white/10 text-white/40'
+                                  }`}>
+                                  {isUnlocked ? (
+                                    <><CheckCircle2 size={12} /> Ochiq</>
+                                  ) : (
+                                    <><Lock size={12} /> Yopiq</>
+                                  )}
+                                </div>
+                              )}
+                              <div className={`px-4 py-2 rounded-xl font-bold text-sm bg-gradient-to-r ${level.color} text-white shadow-lg`}>
+                                {level.lessons.length} Dars
+                              </div>
                             </div>
                           </div>
 
@@ -1042,12 +1059,9 @@ const App = () => {
 
                           <div className="flex items-center gap-4 text-sm text-white/60">
                             <div className="flex items-center gap-2">
-                              <Clock size={16} />
-                              <span>{level.duration}</span>
-                            </div>
-                            <div className="flex items-center gap-2">
+                              {/* Duration removed as it's not in level object currently, or replace with generic */}
                               <Play size={16} />
-                              <span>Video</span>
+                              <span>Video Darslar</span>
                             </div>
                           </div>
                         </div>
