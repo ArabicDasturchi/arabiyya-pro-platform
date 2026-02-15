@@ -80,6 +80,25 @@ const App = () => {
     checkAuth();
   }, []);
 
+  // Function to refresh user data (to get updated purchasedLevels)
+  const refreshUser = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    try {
+      const res = await fetch('https://arabiyya-pro-backend.onrender.com/api/auth/me', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        setUser(data.user);
+      }
+    } catch (err) {
+      console.error('User refresh failed', err);
+    }
+  };
+
   // Enhanced CEFR Levels with complete structure
   const [levels, setLevels] = useState([]);
 
@@ -231,6 +250,13 @@ const App = () => {
       fetchLevels();
     }
   }, [view, adminTab]);
+
+  // Refresh user data when viewing levels (to get updated purchasedLevels)
+  useEffect(() => {
+    if (view === 'levels' && user) {
+      refreshUser();
+    }
+  }, [view]);
 
   useEffect(() => {
     fetchLevels();
