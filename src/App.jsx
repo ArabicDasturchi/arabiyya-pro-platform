@@ -11,17 +11,8 @@ import {
 } from 'lucide-react';
 
 const App = () => {
-  // Initialize view from storage or default to 'home'
-  const [view, setView] = useState(() => localStorage.getItem('lastView') || 'home');
+  const [view, setView] = useState('home');
   const [user, setUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(true); // Loading state for auth check
-
-  // Save view to storage whenever it changes
-  useEffect(() => {
-    if (view !== 'auth' && view !== 'home') {
-      localStorage.setItem('lastView', view);
-    }
-  }, [view]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [testStep, setTestStep] = useState(0);
   const [testAnswers, setTestAnswers] = useState([]);
@@ -64,10 +55,7 @@ const App = () => {
   useEffect(() => {
     const checkAuth = async () => {
       const token = localStorage.getItem('token');
-      if (!token) {
-        setIsLoading(false);
-        return;
-      }
+      if (!token) return;
 
       try {
         const res = await fetch('https://arabiyya-pro-backend.onrender.com/api/auth/me', {
@@ -77,29 +65,20 @@ const App = () => {
 
         if (data.success) {
           setUser(data.user);
-          // Restore saved view OR default to 'levels'
-          const savedView = localStorage.getItem('lastView');
-          if (savedView && savedView !== 'home' && savedView !== 'auth') {
-            setView(savedView);
-          } else {
-            setView('levels');
-          }
+          // If user was on a protected view, stay there, otherwise go to levels
+          // For simplicity, we can redirect to levels if currently on home/auth
+          if (view === 'auth') setView('levels');
         } else {
           localStorage.removeItem('token');
-          setView('home');
         }
       } catch (err) {
         console.error('Auth check failed', err);
         localStorage.removeItem('token');
-        setView('home');
-      } finally {
-        setIsLoading(false);
       }
     };
 
     checkAuth();
   }, []);
-
 
   // Function to refresh user data (to get updated purchasedLevels)
   const refreshUser = async () => {
@@ -715,13 +694,29 @@ const App = () => {
     }
   }, [view, adminTab]);
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        <Loader2 className="animate-spin text-blue-500" size={48} />
-      </div>
-    );
-  }
+  // Restore session on load
+  useEffect(() => {
+    const checkUser = async () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          const response = await fetch('https://arabiyya-pro-backend.onrender.com/api/auth/me', {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          const data = await response.json();
+          if (data.success) {
+            setUser(data.user);
+          } else {
+            localStorage.removeItem('token');
+          }
+        } catch (error) {
+          console.error('Session restore error:', error);
+          localStorage.removeItem('token');
+        }
+      }
+    };
+    checkUser();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-950 via-indigo-900 to-purple-950 text-white font-sans relative overflow-x-hidden">
