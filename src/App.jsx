@@ -94,19 +94,14 @@ const App = () => {
   };
 
   const handleLevelClick = (level) => {
-    // VAQTINCHALIK: Test uchun to'g'ridan-to'g'ri ochish
-    setSelectedLevel(level);
-    setView('level-lessons');
-
-    /* TO'LOV TIZIMI (keyinroq qaytariladi):
-    if (isLevelUnlocked(level.id)) {
+    // Admin uchun barcha darajalar bepul, boshqalar uchun to'lov kerak
+    if (user?.role === 'admin' || isLevelUnlocked(level.id)) {
       setSelectedLevel(level);
       setView('level-lessons');
     } else {
       setSelectedLevel(level);
       setShowPurchaseModal(true);
     }
-    */
   };
 
   const handlePurchaseSubmit = async (e) => {
@@ -1292,7 +1287,7 @@ const App = () => {
                 {levels.map((lvl, index) => {
                   const isCompleted = completedLevels.includes(lvl.id);
                   const isUnlocked = isLevelUnlocked(lvl.id);
-                  const isLocked = false; // VAQTINCHALIK: Test uchun barcha darajalar ochiq
+                  const isLocked = user?.role !== 'admin' && !isUnlocked; // Admin uchun barcha ochiq
                   const isActive = user?.level === lvl.id;
 
                   return (
