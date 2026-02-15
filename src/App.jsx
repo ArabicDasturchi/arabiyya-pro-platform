@@ -7,7 +7,7 @@ import {
   FileText, Send, Menu, LogOut, Download, Book, Target,
   TrendingUp, Zap, Headphones, CheckCircle, XCircle, Volume2,
   GraduationCap, Brain, Rocket, Clock, Users, BarChart,
-  Lightbulb, Heart, Flag, Compass, ZoomIn, Search, LayoutDashboard, Settings, Layers, Trash2, ArrowLeft, Plus, Activity, Upload
+  Lightbulb, Heart, Flag, Compass, ZoomIn, Search, LayoutDashboard, Settings, Layers, Trash2, ArrowLeft, Plus, Activity, Upload, Gift
 } from 'lucide-react';
 
 const App = () => {
