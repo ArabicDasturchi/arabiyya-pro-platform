@@ -44,6 +44,10 @@ const App = () => {
   const [alphabetModule, setAlphabetModule] = useState(1);
   const [alphabetTab, setAlphabetTab] = useState('video');
 
+  // Module Learning State (for A1-C2 levels)
+  const [selectedModule, setSelectedModule] = useState(null);
+  const [moduleTab, setModuleTab] = useState('video');
+
   const apiKey = "AIzaSyBsmkZPeYer67MBM8Ac-hkUFMsrgNaUrc4"; // API key integration point
 
   // Check for existing session on load
@@ -1495,6 +1499,156 @@ const App = () => {
             </div>
           )
         }
+
+        {/* ============================================ */}
+        {/* MODULE DETAIL PAGE (6 Tabs) */}
+        {/* ============================================ */}
+        {
+          view === 'module-detail' && selectedModule && selectedLevel && (
+            <div className="space-y-8 animate-in fade-in duration-500">
+              {/* Header */}
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={() => setView('level-lessons')}
+                  className="p-3 bg-white/10 hover:bg-white/20 rounded-xl transition-all"
+                >
+                  <ArrowLeft size={24} />
+                </button>
+                <div>
+                  <div className={`inline-block px-4 py-1 rounded-lg bg-gradient-to-r ${selectedLevel.color} text-white font-bold text-xs mb-2`}>
+                    {selectedLevel.icon} {selectedLevel.id}
+                  </div>
+                  <h2 className="text-3xl font-black">{selectedModule.title}</h2>
+                  <p className="text-white/60 text-sm">{selectedModule.duration}</p>
+                </div>
+              </div>
+
+              {/* Tab Navigation */}
+              <div className="bg-white/5 backdrop-blur-xl rounded-3xl p-2 border border-white/10">
+                <div className="flex overflow-x-auto gap-2 scrollbar-hide">
+                  {[
+                    { id: 'video', label: 'Video Dars', icon: Video },
+                    { id: 'topic', label: 'Mavzu', icon: FileText },
+                    { id: 'book', label: 'Kitob', icon: Book },
+                    { id: 'exercise', label: 'Mashq', icon: Zap },
+                    { id: 'homework', label: 'Vazifa', icon: Download },
+                    { id: 'test', label: 'Test (AI)', icon: Brain },
+                  ].map((tab) => (
+                    <button
+                      key={tab.id}
+                      onClick={() => setModuleTab(tab.id)}
+                      className={`flex items-center gap-2 px-5 py-3 rounded-xl font-bold whitespace-nowrap transition-all ${moduleTab === tab.id
+                          ? 'bg-white text-black shadow-lg scale-105'
+                          : 'bg-white/5 text-white/60 hover:bg-white/10'
+                        }`}
+                    >
+                      <tab.icon size={18} />
+                      {tab.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Tab Content */}
+              <div className="bg-white/5 backdrop-blur-xl rounded-3xl p-8 border border-white/10 min-h-[500px]">
+                {/* Video Tab */}
+                {moduleTab === 'video' && (
+                  <div className="space-y-6">
+                    <h3 className="text-2xl font-black">Video Dars</h3>
+                    <div className="aspect-video bg-black/40 rounded-2xl flex items-center justify-center border border-white/10 group cursor-pointer relative overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                      <Play size={64} className="text-white group-hover:scale-110 transition-transform relative z-10" fill="white" />
+                      <p className="absolute bottom-6 left-6 text-white font-bold text-xl z-10">Videoni boshlash</p>
+                    </div>
+                    <p className="text-white/70">Bu yerda dars videosu joylashuvi kerak.</p>
+                  </div>
+                )}
+
+                {/* Topic Tab */}
+                {moduleTab === 'topic' && (
+                  <div className="space-y-6">
+                    <h3 className="text-2xl font-black">Mavzu Matni</h3>
+                    <div className="prose prose-invert max-w-none">
+                      <div className="bg-white/5 p-6 rounded-2xl space-y-4">
+                        <p className="text-white/80 leading-relaxed">
+                          Bu yerda dars mavzusining batafsil matni bo'ladi.
+                        </p>
+                        <div className="grid grid-cols-3 gap-4 mt-6">
+                          {selectedModule.topics.map((topic, i) => (
+                            <div key={i} className="p-4 bg-white/10 rounded-xl text-center">
+                              <h4 className="font-bold text-sm">{topic}</h4>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Book Tab */}
+                {moduleTab === 'book' && (
+                  <div className="space-y-6 text-center py-12">
+                    <Book size={64} className="mx-auto text-blue-400" />
+                    <h3 className="text-2xl font-black">Darslik (PDF)</h3>
+                    <p className="text-white/60 max-w-md mx-auto">
+                      Bu yerda darslik PDF fayli yuklanadi yoki ko'rsatiladi.
+                    </p>
+                    <button className="bg-blue-500 text-white px-6 py-3 rounded-xl font-bold hover:scale-105 transition-transform">
+                      Darslikni Yuklab Olish
+                    </button>
+                  </div>
+                )}
+
+                {/* Exercise Tab */}
+                {moduleTab === 'exercise' && (
+                  <div className="space-y-6">
+                    <h3 className="text-2xl font-black">Amaliy Mashqlar</h3>
+                    <div className="grid gap-4">
+                      {[1, 2, 3, 4, 5].map((num) => (
+                        <div key={num} className="p-6 bg-white/5 rounded-2xl border border-white/10 hover:bg-white/10 transition-all cursor-pointer">
+                          <h4 className="font-bold mb-2">Mashq {num}</h4>
+                          <p className="text-white/60 text-sm">Bu yerda mashq topshiriqlari bo'ladi.</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Homework Tab */}
+                {moduleTab === 'homework' && (
+                  <div className="space-y-6 text-center py-12">
+                    <Download size={64} className="mx-auto text-green-400" />
+                    <h3 className="text-2xl font-black">Uyga Vazifa</h3>
+                    <p className="text-white/60 max-w-md mx-auto">
+                      Uy vazifasi topshiriqlarini bajarish va yuklash.
+                    </p>
+                    <button className="bg-green-500 text-white px-6 py-3 rounded-xl font-bold hover:scale-105 transition-transform">
+                      Vazifa Yuklash
+                    </button>
+                  </div>
+                )}
+
+                {/* Test Tab */}
+                {moduleTab === 'test' && (
+                  <div className="text-center py-12 space-y-6">
+                    <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto shadow-2xl animate-pulse">
+                      <Brain size={48} className="text-white" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-white">AI Test Tizimi</h3>
+                    <p className="text-white/60 max-w-md mx-auto">
+                      5 ta savoldan iborat testni ishlang. Sun'iy intellekt sizning natijangizni tahlil qilib, xatolaringiz ustida ishlashga yordam beradi.
+                    </p>
+                    <button className="bg-white text-black px-8 py-3 rounded-xl font-black hover:scale-105 transition-transform">
+                      Testni Boshlash
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          )
+        }
+        {/* ============================================ */}
+        {/* LEVEL MODULES PAGE (Modullar ro'yxati) */}
         {/* ============================================ */}
         {
           view === 'level-lessons' && selectedLevel && (
@@ -1534,53 +1688,30 @@ const App = () => {
                 </div>
               </div>
 
-              {/* Lessons Grid */}
+              {/* Modules Grid */}
               <div className="grid md:grid-cols-2 gap-6">
                 {selectedLevel.lessons.map((lesson, idx) => {
                   const isCompleted = completedLessons.includes(`${selectedLevel.id}-${lesson.id}`);
-
-                  // Level unlocking logic based on user's current level
-                  const levelOrder = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
-                  const userLevelIndex = levelOrder.indexOf(user?.level || 'A1');
-                  const currentLevelIndex = levelOrder.indexOf(selectedLevel.id);
-
-                  // Helper: Check if previous lesson is completed (for sequential flow)
                   const prevLessonCompleted = idx > 0 ? completedLessons.includes(`${selectedLevel.id}-${selectedLevel.lessons[idx - 1].id}`) : true;
-
-                  let isLocked = false;
-
-                  if (currentLevelIndex < userLevelIndex) {
-                    // Lower levels are FULLY unlocked
-                    isLocked = false;
-                  } else if (currentLevelIndex === userLevelIndex) {
-                    // Current level: Sequel logic (unlocked if previous is completed)
-                    isLocked = !prevLessonCompleted;
-                  } else {
-                    // Higher levels: Locked (should be handled at level selection, but safeguard here)
-                    isLocked = true;
-                  }
-
+                  const isLocked = !prevLessonCompleted;
                   const isActive = !isCompleted && !isLocked;
 
                   return (
                     <div
                       key={lesson.id}
-                      onClick={() => !isLocked && (setSelectedLesson(lesson), setView('lesson-detail'))}
+                      onClick={() => !isLocked && (setSelectedModule(lesson), setModuleTab('video'), setView('module-detail'))}
                       className={`group relative overflow-hidden rounded-3xl transition-all duration-300 ${isLocked
                         ? 'bg-white/5 border-2 border-white/10 opacity-50 cursor-not-allowed'
                         : 'bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border-2 border-white/20 cursor-pointer hover:scale-105 hover:shadow-2xl hover:border-white/40'
                         }`}
                     >
-                      {/* Animated background for active lesson */}
                       {isActive && (
                         <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-600/10 animate-pulse"></div>
                       )}
 
                       <div className="relative p-6 space-y-5">
-                        {/* Header */}
                         <div className="flex items-start justify-between gap-4">
                           <div className="flex items-center gap-4">
-                            {/* Lesson Number */}
                             <div className={`w-14 h-14 rounded-2xl flex items-center justify-center font-black text-lg shadow-lg ${isCompleted
                               ? 'bg-green-500 text-white'
                               : isLocked
@@ -1590,7 +1721,6 @@ const App = () => {
                               {isCompleted ? <CheckCircle size={28} /> : lesson.id}
                             </div>
 
-                            {/* Lesson Title */}
                             <div>
                               <h3 className="font-black text-lg leading-tight mb-1">{lesson.title}</h3>
                               <div className="flex items-center gap-3 text-xs text-white/60">
@@ -1598,28 +1728,14 @@ const App = () => {
                                   <Clock size={14} />
                                   <span>{lesson.duration}</span>
                                 </div>
-                                {lesson.video && (
-                                  <div className="flex items-center gap-1">
-                                    <Video size={14} />
-                                    <span>Video</span>
-                                  </div>
-                                )}
-                                {lesson.ebook && (
-                                  <div className="flex items-center gap-1">
-                                    <Book size={14} />
-                                    <span>PDF</span>
-                                  </div>
-                                )}
                               </div>
                             </div>
                           </div>
 
-                          {/* Status Icon */}
                           {isLocked && <Lock size={20} className="text-white/50" />}
                           {isActive && <ArrowRight size={20} className="text-blue-400 group-hover:translate-x-1 transition-transform" />}
                         </div>
 
-                        {/* Topics */}
                         <div className="flex flex-wrap gap-2">
                           {lesson.topics.map((topic, i) => (
                             <span
