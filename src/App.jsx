@@ -114,6 +114,57 @@ const App = () => {
   const [grantingLevelTo, setGrantingLevelTo] = useState(null);
   const [selectedGrantLevel, setSelectedGrantLevel] = useState('');
 
+  // Google Sign-In Logic
+  const handleGoogleCallback = async (response) => {
+    try {
+      const res = await fetch('https://arabiyya-pro-backend.onrender.com/api/auth/google', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: response.credential })
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        localStorage.setItem('token', data.token);
+        setUser(data.user);
+        setView('levels');
+      } else {
+        alert('Xatolik: ' + data.message);
+      }
+    } catch (error) {
+      console.error('Google Sign-In Error:', error);
+      alert('Tizim xatosi');
+    }
+  };
+
+  useEffect(() => {
+    if (view === 'auth' && window.google) {
+      const initGoogle = () => {
+        if (window.google?.accounts) {
+          window.google.accounts.id.initialize({
+            client_id: "645466008042-5c2r49etqtdd0srgou6tfvqrlo9vr272.apps.googleusercontent.com",
+            callback: handleGoogleCallback
+          });
+
+          const googleDiv = document.getElementById("googleDiv");
+          if (googleDiv) {
+            window.google.accounts.id.renderButton(
+              googleDiv,
+              { theme: "outline", size: "large", width: 400, text: "continue_with" }
+            );
+          }
+        }
+      };
+
+      // Check if script loaded, if not wait a bit or it runs on load
+      if (typeof window.google === 'undefined') {
+        setTimeout(initGoogle, 500);
+      } else {
+        initGoogle();
+      }
+    }
+  }, [view]);
+
   const isLevelUnlocked = (levelId) => {
     // Check if user purchased it
     const unlocked = user?.purchasedLevels?.includes(levelId);
@@ -1184,6 +1235,14 @@ const App = () => {
                           </div>
                         </button>
                       </form>
+
+                      <div className="relative flex py-5 items-center">
+                        <div className="flex-grow border-t border-white/20"></div>
+                        <span className="flex-shrink-0 mx-4 text-white/40 font-bold">YOKI</span>
+                        <div className="flex-grow border-t border-white/20"></div>
+                      </div>
+
+                      <div id="googleDiv" className="flex justify-center w-full"></div>
 
                       <div className="text-center text-sm text-white/50">
                         Ro'yxatdan o'tish orqali siz <a href="#" className="text-blue-400 hover:underline">Foydalanish shartlari</a> va <a href="#" className="text-blue-400 hover:underline">Maxfiylik siyosati</a>ga rozilik bildirasiz
