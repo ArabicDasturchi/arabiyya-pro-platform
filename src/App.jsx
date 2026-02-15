@@ -263,8 +263,8 @@ const App = () => {
     // Refresh initially
     refreshUser();
 
-    // If on levels page, refresh frequently (every 10s) to catch grants
-    if (view === 'levels') {
+    // If on levels page or home page, refresh frequently (every 10s) to catch grants
+    if (view === 'levels' || view === 'home') {
       const interval = setInterval(() => {
         refreshUser();
       }, 10000); // 10 soniyada bir marta tekshirish
@@ -1016,7 +1016,7 @@ const App = () => {
                       <div
                         key={level.id}
                         className={`group relative bg-white/5 backdrop-blur-xl p-8 rounded-3xl border transition-all duration-300 hover:scale-105 cursor-pointer ${!user ? 'border-white/10 hover:bg-white/10' :
-                            isLocked ? 'border-white/10 hover:border-red-500/30' : 'border-green-500/30 hover:border-green-500/60 bg-green-500/5'
+                          isLocked ? 'border-white/10 hover:border-red-500/30' : 'border-green-500/30 hover:border-green-500/60 bg-green-500/5'
                           }`}
                         onClick={() => {
                           if (!user) {
