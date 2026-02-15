@@ -1,5 +1,6 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
+import { OAuth2Client } from 'google-auth-library';
 import { body, validationResult } from 'express-validator';
 import User from '../models/User.js';
 import { authMiddleware } from '../middleware/auth.js';
@@ -118,6 +119,63 @@ router.post('/quick-register', [
   } catch (error) {
     console.error('Quick register error:', error);
     res.status(500).json({ success: false, message: 'Server xatosi' });
+  }
+});
+
+// @route   POST /api/auth/google
+// @desc    Google login/register
+// @access  Public
+router.post('/google', async (req, res) => {
+  try {
+    const { token } = req.body;
+    const CLIENT_ID = "645466008042-5c2r49etqtdd0srgou6tfvqrlo9vr272.apps.googleusercontent.com";
+    const client = new OAuth2Client(CLIENT_ID);
+
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: CLIENT_ID,
+    });
+    const payload = ticket.getPayload();
+    const { name, email } = payload;
+
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      // Create new user if doesn't exist
+      // Generate a random secure password since they use Google
+      const randomPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8);
+
+      user = new User({
+        name,
+        email,
+        password: randomPassword
+      });
+      await user.save();
+    } else {
+      await user.updateLastActive();
+    }
+
+    const jwtToken = generateToken(user._id);
+
+    res.json({
+      success: true,
+      message: 'Google orqali kirdingiz',
+      token: jwtToken,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        currentLevel: user.currentLevel,
+        purchasedLevels: user.purchasedLevels,
+        completedLessons: user.completedLessons,
+        completedLevels: user.completedLevels
+      }
+    });
+
+  } catch (error) {
+    console.error('Google Auth Error:', error);
+    res.status(401).json({ success: false, message: 'Google tizimi xatosi yoki token yaroqsiz' });
   }
 });
 
