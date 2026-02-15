@@ -1554,13 +1554,13 @@ const App = () => {
                 </div>
               </div>
 
-              {/* 5 ta Dars - Har biri alohida sahifa */}
+              {/* 5 ta Dars - Modul ichidagi real darslar */}
               <div className="grid md:grid-cols-2 gap-6">
-                {[1, 2, 3, 4, 5].map((lessonNum) => (
+                {selectedModule.lessons && selectedModule.lessons.map((lesson, lessonIndex) => (
                   <div
-                    key={lessonNum}
+                    key={lesson.id}
                     onClick={() => {
-                      setSelectedLesson({ id: lessonNum, title: `Dars ${lessonNum}` });
+                      setSelectedLesson(lesson);
                       setLessonTab('video');
                       setView('lesson-detail');
                     }}
@@ -1570,19 +1570,31 @@ const App = () => {
                       {/* Lesson Number */}
                       <div className="flex items-start justify-between">
                         <div className={`w-14 h-14 rounded-2xl flex items-center justify-center font-black text-xl shadow-lg bg-gradient-to-br ${selectedLevel.color} text-white`}>
-                          {lessonNum}
+                          {lessonIndex + 1}
                         </div>
                         <ArrowRight size={20} className="text-white/60 group-hover:translate-x-1 group-hover:text-white transition-all" />
                       </div>
 
                       {/* Lesson Title */}
                       <div>
-                        <h3 className="font-black text-xl leading-tight mb-2">Dars {lessonNum}</h3>
-                        <p className="text-sm text-white/60">Mavzu mazmuni admin paneldan qo'shiladi</p>
+                        <h3 className="font-black text-xl leading-tight mb-2">{lesson.title}</h3>
+                        <div className="flex items-center gap-2 text-xs text-white/60">
+                          <Clock size={14} />
+                          <span>{lesson.duration}</span>
+                        </div>
+                      </div>
+
+                      {/* Topics preview */}
+                      <div className="flex flex-wrap gap-2">
+                        {lesson.topics.slice(0, 3).map((topic, idx) => (
+                          <span key={idx} className="px-2 py-1 bg-white/10 rounded-lg text-xs text-white/70">
+                            {topic}
+                          </span>
+                        ))}
                       </div>
 
                       {/* 5 Sahifa Icons */}
-                      <div className="flex gap-2 flex-wrap">
+                      <div className="flex gap-2 flex-wrap pt-2 border-t border-white/10">
                         <span className="px-2 py-1 bg-white/10 rounded-lg text-xs">📹 Video</span>
                         <span className="px-2 py-1 bg-white/10 rounded-lg text-xs">📝 Amaliy</span>
                         <span className="px-2 py-1 bg-white/10 rounded-lg text-xs">📖 Nazariy</span>
@@ -1757,63 +1769,87 @@ const App = () => {
                 </div>
               </div>
 
-              {/* Modules Grid */}
+              {/* Modules Grid - 5 ta darsdan 1 modul */}
               <div className="grid md:grid-cols-2 gap-6">
-                {selectedLevel.lessons.map((lesson, idx) => {
-                  const isCompleted = completedLessons.includes(`${selectedLevel.id}-${lesson.id}`);
-                  const prevLessonCompleted = idx > 0 ? completedLessons.includes(`${selectedLevel.id}-${selectedLevel.lessons[idx - 1].id}`) : true;
-                  const isLocked = !prevLessonCompleted;
-                  const isActive = !isCompleted && !isLocked;
+                {Array.from({ length: Math.ceil(selectedLevel.lessons.length / 5) }, (_, moduleIndex) => {
+                  const moduleLessons = selectedLevel.lessons.slice(moduleIndex * 5, (moduleIndex + 1) * 5);
+                  const moduleNumber = moduleIndex + 1;
+                  const completedCount = moduleLessons.filter(lesson =>
+                    completedLessons.includes(`${selectedLevel.id}-${lesson.id}`)
+                  ).length;
+                  const isCompleted = completedCount === moduleLessons.length;
 
                   return (
                     <div
-                      key={lesson.id}
-                      onClick={() => !isLocked && (setSelectedModule(lesson), setModuleTab('video'), setView('module-detail'))}
-                      className={`group relative overflow-hidden rounded-3xl transition-all duration-300 ${isLocked
-                        ? 'bg-white/5 border-2 border-white/10 opacity-50 cursor-not-allowed'
-                        : 'bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border-2 border-white/20 cursor-pointer hover:scale-105 hover:shadow-2xl hover:border-white/40'
-                        }`}
+                      key={moduleIndex}
+                      onClick={() => {
+                        setSelectedModule({
+                          id: moduleIndex,
+                          title: `Modul ${moduleNumber}`,
+                          lessons: moduleLessons
+                        });
+                        setView('module-detail');
+                      }}
+                      className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border-2 border-white/20 cursor-pointer hover:scale-105 hover:shadow-2xl hover:border-white/40 transition-all duration-300"
                     >
-                      {isActive && (
-                        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-600/10 animate-pulse"></div>
-                      )}
-
                       <div className="relative p-6 space-y-5">
                         <div className="flex items-start justify-between gap-4">
                           <div className="flex items-center gap-4">
-                            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center font-black text-lg shadow-lg ${isCompleted
-                              ? 'bg-green-500 text-white'
-                              : isLocked
-                                ? 'bg-white/10 text-white/50'
-                                : `bg-gradient-to-br ${selectedLevel.color} text-white`
-                              }`}>
-                              {isCompleted ? <CheckCircle size={28} /> : lesson.id}
+                            <div className={`w-16 h-16 rounded-2xl flex items-center justify-center font-black text-2xl shadow-lg bg-gradient-to-br ${selectedLevel.color} text-white`}>
+                              {moduleNumber}
                             </div>
 
                             <div>
-                              <h3 className="font-black text-lg leading-tight mb-1">{lesson.title}</h3>
+                              <h3 className="font-black text-2xl leading-tight mb-1">Modul {moduleNumber}</h3>
                               <div className="flex items-center gap-3 text-xs text-white/60">
                                 <div className="flex items-center gap-1">
-                                  <Clock size={14} />
-                                  <span>{lesson.duration}</span>
+                                  <BookOpen size={14} />
+                                  <span>{moduleLessons.length} ta dars</span>
                                 </div>
+                                {isCompleted && (
+                                  <div className="flex items-center gap-1 text-green-400">
+                                    <CheckCircle size={14} />
+                                    <span>Tugatilgan</span>
+                                  </div>
+                                )}
                               </div>
                             </div>
                           </div>
 
-                          {isLocked && <Lock size={20} className="text-white/50" />}
-                          {isActive && <ArrowRight size={20} className="text-blue-400 group-hover:translate-x-1 transition-transform" />}
+                          <ArrowRight size={24} className="text-white/60 group-hover:translate-x-1 group-hover:text-white transition-all" />
                         </div>
 
-                        <div className="flex flex-wrap gap-2">
-                          {lesson.topics.map((topic, i) => (
-                            <span
-                              key={i}
-                              className="px-3 py-1.5 bg-white/10 backdrop-blur-xl rounded-lg text-xs font-bold text-white/80 border border-white/10"
-                            >
-                              {topic}
-                            </span>
+                        {/* Progress bar */}
+                        {completedCount > 0 && (
+                          <div className="space-y-2">
+                            <div className="flex justify-between text-xs text-white/60">
+                              <span>Jarayon</span>
+                              <span>{completedCount}/{moduleLessons.length}</span>
+                            </div>
+                            <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+                              <div
+                                className={`h-full bg-gradient-to-r ${selectedLevel.color} rounded-full transition-all`}
+                                style={{ width: `${(completedCount / moduleLessons.length) * 100}%` }}
+                              />
+                            </div>
+                          </div>
+                        )}
+
+                        {/* First 3 lessons preview */}
+                        <div className="space-y-2">
+                          {moduleLessons.slice(0, 3).map((lesson, idx) => (
+                            <div key={lesson.id} className="flex items-center gap-2 text-sm text-white/70">
+                              <div className="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold">
+                                {idx + 1}
+                              </div>
+                              <span className="truncate">{lesson.title}</span>
+                            </div>
                           ))}
+                          {moduleLessons.length > 3 && (
+                            <div className="text-xs text-white/40 font-bold pl-7">
+                              + yana {moduleLessons.length - 3} ta dars
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
