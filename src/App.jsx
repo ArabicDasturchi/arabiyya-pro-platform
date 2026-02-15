@@ -1292,54 +1292,72 @@ const App = () => {
                     <div
                       key={lvl.id}
                       onClick={() => handleLevelClick(lvl)}
-                      className={`group relative overflow-hidden rounded-3xl transition-all duration-500 cursor-pointer hover:scale-105 hover:shadow-2xl ${isLocked ? 'opacity-90 border-2 border-white/20' : ''
-                        }`}
+                      className="group relative overflow-hidden rounded-3xl transition-all duration-500 cursor-pointer hover:scale-105 hover:shadow-2xl border-2 border-white/20"
                     >
-                      {/* Gradient Background */}
-                      <div className={`absolute inset-0 bg-gradient-to-br ${lvl.color} ${isLocked ? 'opacity-20 grayscale' : 'opacity-100'}`}></div>
+                      {/* Vibrant Gradient Background */}
+                      <div className={`absolute inset-0 bg-gradient-to-br ${lvl.color} opacity-100`}></div>
 
-                      {/* Animated overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                      {/* Animated Shimmer Effect */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-white/10 group-hover:from-black/60 transition-all"></div>
+
+                      {/* Glassmorphism Overlay for Locked */}
+                      {isLocked && (
+                        <div className="absolute inset-0 backdrop-blur-sm bg-white/10"></div>
+                      )}
 
                       {/* Content */}
                       <div className="relative p-8 space-y-6">
-                        {/* Header */}
-                        <div className="flex items-center justify-between">
-                          <span className="text-6xl">{lvl.icon}</span>
+                        {/* Header with Icon and Status */}
+                        <div className="flex items-start justify-between">
+                          <div className="w-20 h-20 bg-white/20 backdrop-blur-xl rounded-2xl flex items-center justify-center text-5xl shadow-lg border border-white/30">
+                            {lvl.icon}
+                          </div>
+
                           {isLocked ? (
-                            <div className="p-3 bg-red-500/20 backdrop-blur-xl rounded-full border border-red-500/30 flex items-center gap-2 px-4">
-                              <Lock size={20} className="text-red-400" />
-                              <span className="text-xs font-bold text-red-300 uppercase tracking-widest">Yopiq</span>
+                            <div className="flex flex-col gap-2 items-end">
+                              <div className="px-4 py-2 bg-amber-500/30 backdrop-blur-xl rounded-xl border border-amber-400/40 flex items-center gap-2 shadow-lg">
+                                <Lock size={18} className="text-amber-200" />
+                                <span className="text-xs font-black text-amber-100 uppercase tracking-widest">Yopiq</span>
+                              </div>
                             </div>
                           ) : (
-                            <div className="p-3 bg-green-500/20 backdrop-blur-xl rounded-full border border-green-500/30 flex items-center gap-2 px-4">
-                              <span className="text-xs font-bold text-green-300 uppercase tracking-widest">Ochiq</span>
+                            <div className="px-4 py-2 bg-emerald-500/30 backdrop-blur-xl rounded-xl border border-emerald-400/40 shadow-lg">
+                              <span className="text-xs font-black text-emerald-100 uppercase tracking-widest">Ochiq</span>
                             </div>
                           )}
+
                           {isCompleted && (
-                            <div className="p-3 bg-green-500 rounded-full shadow-lg shadow-green-500/50">
+                            <div className="absolute top-8 right-8 p-3 bg-emerald-500 rounded-full shadow-lg shadow-emerald-500/50 animate-bounce">
                               <CheckCircle2 size={24} className="text-white" />
                             </div>
                           )}
                         </div>
 
                         {/* Title & Description */}
-                        <div>
-                          <h3 className="text-4xl font-black mb-2">{lvl.id}</h3>
-                          <div className="text-2xl font-bold text-white/90 mb-2">{lvl.title}</div>
-                          <p className="text-sm text-white/60 line-clamp-3 leading-relaxed">{lvl.description}</p>
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-3">
+                            <h3 className="text-4xl font-black text-white drop-shadow-lg">{lvl.id}</h3>
+                          </div>
+                          <div className="text-2xl font-bold text-white/95 drop-shadow">{lvl.title}</div>
+                          <p className="text-sm text-white/80 line-clamp-2 leading-relaxed">{lvl.description}</p>
+                        </div>
+
+                        {/* Lesson Count */}
+                        <div className="flex items-center gap-2 text-white/90">
+                          <BookOpen size={18} />
+                          <span className="text-sm font-bold">{lvl.lessons?.length || 0} ta dars</span>
                         </div>
 
                         {/* Progress Bar (Only if unlocked) */}
-                        {!isLocked && (
+                        {!isLocked && lvl.lessons?.length > 0 && (
                           <div className="space-y-2">
-                            <div className="flex justify-between text-xs font-bold text-white/60 uppercase tracking-wider">
-                              <span>Progress</span>
+                            <div className="flex justify-between text-xs font-bold text-white/80 uppercase tracking-wider">
+                              <span>Jarayon</span>
                               <span>{Math.round((completedLessons.filter(l => l.startsWith(lvl.id)).length / lvl.lessons.length) * 100) || 0}%</span>
                             </div>
-                            <div className="h-2 bg-black/40 rounded-full overflow-hidden backdrop-blur-sm">
+                            <div className="h-2.5 bg-black/30 rounded-full overflow-hidden backdrop-blur-sm border border-white/20">
                               <div
-                                className="h-full bg-white rounded-full transition-all duration-1000"
+                                className="h-full bg-gradient-to-r from-white to-emerald-200 rounded-full transition-all duration-1000 shadow-lg"
                                 style={{ width: `${(completedLessons.filter(l => l.startsWith(lvl.id)).length / lvl.lessons.length) * 100}%` }}
                               ></div>
                             </div>
@@ -1347,14 +1365,20 @@ const App = () => {
                         )}
 
                         {/* Action Button */}
-                        <button className={`w-full py-4 rounded-xl font-black text-lg flex items-center justify-center gap-2 transition-all ${isLocked
-                          ? 'bg-white/10 hover:bg-white/20 text-white border border-white/20'
-                          : 'bg-white text-black hover:scale-[1.02] shadow-xl'
+                        <button className={`w-full py-4 rounded-xl font-black text-lg flex items-center justify-center gap-3 transition-all shadow-lg ${isLocked
+                            ? 'bg-gradient-to-r from-amber-500 to-orange-600 text-white hover:from-amber-600 hover:to-orange-700 border-2 border-amber-400/30'
+                            : 'bg-white text-black hover:scale-[1.02] shadow-xl hover:shadow-2xl'
                           }`}>
                           {isLocked ? (
-                            <>Sotib Olish <Lock size={20} /></>
+                            <>
+                              <Lock size={22} />
+                              Sotib Olish
+                            </>
                           ) : (
-                            <>Kirish <ArrowRight size={20} /></>
+                            <>
+                              Kirish
+                              <ArrowRight size={22} className="group-hover:translate-x-1 transition-transform" />
+                            </>
                           )}
                         </button>
                       </div>
