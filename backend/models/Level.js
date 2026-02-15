@@ -5,7 +5,7 @@ const levelSchema = new mongoose.Schema({
         type: String,
         required: true,
         unique: true,
-        enum: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
+        enum: ['ALPHABET', 'A1', 'A2', 'B1', 'B2', 'C1', 'C2']
     },
     title: {
         type: String,
