@@ -1177,75 +1177,19 @@ const App = () => {
                         </div>
                       </div>
 
-                      <form
-                        onSubmit={async (e) => {
-                          e.preventDefault();
-                          const uname = e.target.uname.value;
-
-                          try {
-                            const response = await fetch('https://arabiyya-pro-backend.onrender.com/api/auth/quick-register', {
-                              method: 'POST',
-                              headers: { 'Content-Type': 'application/json' },
-                              body: JSON.stringify({ name: uname })
-                            });
-
-                            const data = await response.json();
-
-                            if (data.success) {
-                              localStorage.setItem('token', data.token);
-                              setUser(data.user);
-                              setView('levels');
-                            } else {
-                              // Fallback if API fails
-                              console.warn('Auth API failed:', data.message);
-                              setUser({ name: uname });
-                              setView('levels');
-                            }
-                          } catch (error) {
-                            console.error('Auth Error:', error);
-                            // Fallback so user can still proceed
-                            setUser({ name: uname });
-                            setView('levels');
-                          }
-                        }}
-                        className="space-y-8"
-                      >
-                        <div className="space-y-4">
-                          <label className="text-sm font-bold text-white/80 flex items-center gap-2">
-                            <User size={18} />
-                            To'liq ismingiz
-                          </label>
-                          <input
-                            name="uname"
-                            required
-                            type="text"
-                            placeholder="Ismingizni kiriting"
-                            className="w-full px-6 py-5 bg-white/10 backdrop-blur-xl rounded-2xl border-2 border-white/20 outline-none focus:border-blue-500 focus:ring-4 ring-blue-500/20 font-medium text-white placeholder-white/40 text-lg transition-all duration-300"
-                          />
+                      {/* Google Sign-In Only */}
+                      <div className="flex flex-col items-center space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                        <div className="w-full relative group">
+                          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-600/20 rounded-2xl blur-xl transition-all duration-300 group-hover:blur-2xl"></div>
+                          <div id="googleDiv" className="relative flex justify-center w-full transform transition-transform duration-300 hover:scale-[1.02]"></div>
                         </div>
-
-                        <button
-                          type="submit"
-                          className="group relative w-full"
-                        >
-                          <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl blur group-hover:blur-xl transition-all duration-300"></div>
-                          <div className="relative w-full py-5 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-2xl font-black text-lg hover:scale-105 transition-all duration-300 shadow-xl flex items-center justify-center gap-3">
-                            Keyingi Qadam
-                            <ArrowRight className="group-hover:translate-x-2 transition-transform" size={24} />
-                          </div>
-                        </button>
-                      </form>
-
-                      <div className="relative flex py-5 items-center">
-                        <div className="flex-grow border-t border-white/20"></div>
-                        <span className="flex-shrink-0 mx-4 text-white/40 font-bold">YOKI</span>
-                        <div className="flex-grow border-t border-white/20"></div>
+                        <p className="text-white/40 text-sm font-medium">
+                          Xavfsiz va tezkor kirish
+                        </p>
                       </div>
 
-                      <div id="googleDiv" className="flex justify-center w-full"></div>
-
-                      <div className="text-center text-sm text-white/50">
-                        Ro'yxatdan o'tish orqali siz <a href="#" className="text-blue-400 hover:underline">Foydalanish shartlari</a> va <a href="#" className="text-blue-400 hover:underline">Maxfiylik siyosati</a>ga rozilik bildirasiz
+                      <div className="text-center text-sm text-white/50 mt-8">
+                        Google orqali kirish bilan siz <a href="#" className="text-blue-400 hover:underline">Foydalanish shartlari</a>ga rozilik bildirasiz
                       </div>
                     </div>
                   ) : !placementResult ? (
