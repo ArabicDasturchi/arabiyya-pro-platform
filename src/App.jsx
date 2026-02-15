@@ -263,8 +263,8 @@ const App = () => {
     // Refresh initially
     refreshUser();
 
-    // If on levels page, refresh frequently (every 10s) to catch grants
-    if (view === 'levels') {
+    // If on levels page OR home page, refresh frequently (every 10s) to catch grants
+    if (view === 'levels' || view === 'home') {
       const interval = setInterval(() => {
         refreshUser();
       }, 10000); // 10 soniyada bir marta tekshirish
