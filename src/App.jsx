@@ -92,6 +92,8 @@ const App = () => {
       const data = await res.json();
 
       if (data.success) {
+        console.log('🔄 User data refreshed:', data.user.name);
+        console.log('💰 Purchased Levels:', data.user.purchasedLevels);
         setUser(data.user);
       }
     } catch (err) {
@@ -114,7 +116,9 @@ const App = () => {
 
   const isLevelUnlocked = (levelId) => {
     // Check if user purchased it
-    return user?.purchasedLevels?.includes(levelId);
+    const unlocked = user?.purchasedLevels?.includes(levelId);
+    console.log(`🔓 Checking ${levelId}: ${unlocked ? 'UNLOCKED ✅' : 'LOCKED 🔒'}`, user?.purchasedLevels);
+    return unlocked;
   };
 
   const handleLevelClick = (level) => {
@@ -253,10 +257,10 @@ const App = () => {
 
   // Refresh user data when viewing levels (to get updated purchasedLevels)
   useEffect(() => {
-    if (view === 'levels' && user) {
+    if (user) {
       refreshUser();
     }
-  }, [view]);
+  }, [view, user?.id]); // Refresh when view changes OR when user first loads
 
   useEffect(() => {
     fetchLevels();
