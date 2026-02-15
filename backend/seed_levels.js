@@ -77,7 +77,7 @@ export const seedDB = async () => {
         console.log('Cleared existing levels and lessons');
 
         const lessonsData = [
-            // ALPHABET: 3 modul × 5 dars = 15 dars
+            // ALPHABET: 3 modul (15 dars) + 1 Exam Modul (Lesson 16)
             {
                 id: 'ALPHABET', lessons: [
                     // Modul 1
@@ -97,10 +97,12 @@ export const seedDB = async () => {
                     { lessonNumber: 12, title: 'Dars 12: Sin harfi', topics: ['Sin shakli', 'Maxraj', 'Mashq'], duration: '30 daqiqa' },
                     { lessonNumber: 13, title: 'Dars 13: Shin harfi', topics: ['Shin shakli', 'Tovush', 'Amaliyot'], duration: '30 daqiqa' },
                     { lessonNumber: 14, title: 'Dars 14: Sod harfi', topics: ['Sod shakli', 'Yozuv', 'Takror'], duration: '30 daqiqa' },
-                    { lessonNumber: 15, title: 'Dars 15: Arab harflari yakuniy test', topics: ['Umumiy takror', 'Final test', 'Sertifikat'], duration: '40 daqiqa' }
+                    { lessonNumber: 15, title: 'Dars 15: Takrorlash va mustahkamlash', topics: ['Umumiy takror', 'Mashqlar', 'Suhbat'], duration: '35 daqiqa' },
+                    // Modul 4 (Exam)
+                    { lessonNumber: 16, title: 'Yakuniy Imtihon: Arab Harflari', topics: ['O\'qish', 'Eshitish', 'Yozish', 'Yakuniy Test'], duration: '60 daqiqa' }
                 ]
             },
-            // A1: 4 modul × 5 dars = 20 dars
+            // A1: 4 modul (20 dars) + 1 Exam Modul (Lesson 21)
             {
                 id: 'A1', lessons: [
                     // Modul 1
@@ -126,10 +128,12 @@ export const seedDB = async () => {
                     { lessonNumber: 17, title: 'Dars 17: Shahar', topics: ['Ko\'chalar', 'Binolar', 'Yo\'nalish'], duration: '45 daqiqa' },
                     { lessonNumber: 18, title: 'Dars 18: O\'qish va yozish', topics: ['Kitob', 'Darslik', 'Yozuv'], duration: '50 daqiqa' },
                     { lessonNumber: 19, title: 'Dars 19: Bozor', topics: ['Xarid', 'Savdo', 'Pul'], duration: '45 daqiqa' },
-                    { lessonNumber: 20, title: 'Dars 20: A1 Yakuniy imtihon', topics: ['Takrorlash', 'Test', 'Baholash'], duration: '60 daqiqa' }
+                    { lessonNumber: 20, title: 'Dars 20: Takrorlash', topics: ['Takrorlash', 'Savol-javob', 'Mustahkamlash'], duration: '45 daqiqa' },
+                    // Modul 5 (Exam)
+                    { lessonNumber: 21, title: 'Yakuniy Imtihon: A1 Boshlang\'ich', topics: ['O\'qish', 'Eshitish', 'Yozish', 'Yakuniy Test'], duration: '90 daqiqa' }
                 ]
             },
-            // A2: 4 modul × 5 dars = 20 dars
+            // A2: 4 modul (20 dars) + 1 Exam Modul (Lesson 21)
             {
                 id: 'A2', lessons: [
                     // Modul 1
@@ -155,10 +159,12 @@ export const seedDB = async () => {
                     { lessonNumber: 17, title: 'Dars 17: Internet', topics: ['Kompyuter', 'Onlayn', 'Dasturlar'], duration: '50 daqiqa' },
                     { lessonNumber: 18, title: 'Dars 18: Kun tartibi', topics: ['Ertalab', 'Kechqurun', 'Ish rejalari'], duration: '45 daqiqa' },
                     { lessonNumber: 119, title: 'Dars 19: Bank', topics: ['Pul', 'Hisob', 'O\'tkazma'], duration: '50 daqiqa' },
-                    { lessonNumber: 20, title: 'Dars 20: A2 Yakuniy imtihon', topics: ['Takror', 'Test', 'Sertifikat'], duration: '60 daqiqa' }
+                    { lessonNumber: 20, title: 'Dars 20: Takrorlash', topics: ['Takror', 'Test', 'Mustahkamlash'], duration: '50 daqiqa' },
+                    // Modul 5 (Exam)
+                    { lessonNumber: 21, title: 'Yakuniy Imtihon: A2 O\'rta-Boshlang\'ich', topics: ['O\'qish', 'Eshitish', 'Yozish', 'Yakuniy Test'], duration: '90 daqiqa' }
                 ]
             },
-            // B1: 5 modul × 5 dars = 25 dars
+            // B1: 5 modul (25 dars) + 1 Exam Modul (Lesson 26)
             {
                 id: 'B1', lessons: [
                     // Modul 1
@@ -190,10 +196,12 @@ export const seedDB = async () => {
                     { lessonNumber: 22, title: 'Dars 22: Adabiyot', topics: ['She\'riyat', 'Nasr', 'Tanqid'], duration: '50 daqiqa' },
                     { lessonNumber: 23, title: 'Dars 23: Siyosat', topics: ['Davlat', 'Huquq', 'Siyosy'], duration: '55 daqiqa' },
                     { lessonNumber: 24, title: 'Dars 24: Tadbirkorlik', topics: ['Startup', 'Loyiha', 'Marketing'], duration: '50 daqiqa' },
-                    { lessonNumber: 25, title: 'Dars 25: B1 Yakuniy imtihon', topics: ['Insho', 'Suhbat', 'Baholash'], duration: '90 daqiqa' }
+                    { lessonNumber: 25, title: 'Dars 25: Takrorlash va Tahlil', topics: ['Umumiy takror', 'Suhbat', 'Tahlil'], duration: '60 daqiqa' },
+                    // Modul 6 (Exam)
+                    { lessonNumber: 26, title: 'Yakuniy Imtihon: B1 O\'rta', topics: ['O\'qish', 'Eshitish', 'Yozish', 'Yakuniy Test'], duration: '120 daqiqa' }
                 ]
             },
-            // B2: 5 modul × 5 dars = 25 dars
+            // B2: 5 modul (25 dars) + 1 Exam Modul (Lesson 26)
             {
                 id: 'B2', lessons: [
                     // Modul 1
@@ -225,10 +233,12 @@ export const seedDB = async () => {
                     { lessonNumber: 22, title: 'Dars 22: Muhandislik', topics: ['Arxitektura', 'Qurilish', 'Loyiha'], duration: '55 daqiqa' },
                     { lessonNumber: 23, title: 'Dars 23: Tabiiy fanlar', topics: ['Fizika', 'Kimyo', 'Biologiya'], duration: '60 daqiqa' },
                     { lessonNumber: 24, title: 'Dars 24: Ijtimoiy fanlar', topics: ['Sotsiologiya', 'Antropologiya', 'Tarix'], duration: '55 daqiqa' },
-                    { lessonNumber: 25, title: 'Dars 25: B2 Yakuniy imtihon', topics: ['Dissertatsiya', 'Himoya', 'Sertifikat'], duration: '90 daqiqa' }
+                    { lessonNumber: 25, title: 'Dars 25: Dissertatsiya Tahlili', topics: ['Dissertatsiya', 'Himoya', 'Sertifikat'], duration: '60 daqiqa' },
+                    // Modul 6 (Exam)
+                    { lessonNumber: 26, title: 'Yakuniy Imtihon: B2 Yuqori-O\'rta', topics: ['O\'qish', 'Eshitish', 'Yozish', 'Yakuniy Test'], duration: '120 daqiqa' }
                 ]
             },
-            // C1: 6 modul × 5 dars = 30 dars
+            // C1: 6 modul (30 dars) + 1 Exam Modul (Lesson 31)
             {
                 id: 'C1', lessons: [
                     // Modul 1
@@ -266,10 +276,12 @@ export const seedDB = async () => {
                     { lessonNumber: 27, title: 'Dars 27: Zamonaviy adabiyot', topics: ['Roman', 'Hikoya', 'Muasir adib'], duration: '70 daqiqa' },
                     { lessonNumber: 28, title: 'Dars 28: Texnologiya va innovatsiya', topics: ['IT', 'AI', 'Kelajak'], duration: '60 daqiqa' },
                     { lessonNumber: 29, title: 'Dars 29: Global muammolar', topics: ['Ekologiya', 'Iqtisod', 'Siyosat'], duration: '65 daqiqa' },
-                    { lessonNumber: 30, title: 'Dars 30: C1 Yakuniy imtihon', topics: ['Magistr darajasi', 'Himoya', 'Sertifikat'], duration: '120 daqiqa' }
+                    { lessonNumber: 30, title: 'Dars 30: C1 Imtihon Oldi Takrorlash', topics: ['Magistr darajasi', 'Himoya', 'Sertifikat'], duration: '80 daqiqa' },
+                    // Modul 7 (Exam)
+                    { lessonNumber: 31, title: 'Yakuniy Imtihon: C1 Ilg\'or', topics: ['O\'qish', 'Eshitish', 'Yozish', 'Yakuniy Test'], duration: '120 daqiqa' }
                 ]
             },
-            // C2: 6 modul × 5 dars = 30 dars
+            // C2: 6 modul (30 dars) + 1 Exam Modul (Lesson 31)
             {
                 id: 'C2', lessons: [
                     // Modul 1
@@ -307,7 +319,9 @@ export const seedDB = async () => {
                     { lessonNumber: 27, title: 'Dars 27: Nashrlar va jurnallar', topics: ['Impact factor', 'Peer review', 'Indeksatsiya'], duration: '75 daqiqa' },
                     { lessonNumber: 28, title: 'Dars 28: Xalqaro konsultant', topics: ['Global loyihalar', 'Korporativ', 'Strategiya'], duration: '80 daqiqa' },
                     { lessonNumber: 29, title: 'Dars 29: Shaxsiy brend', topics: ['LinkedIn', 'Networking', 'Ta\'sir'], duration: '70 daqiqa' },
-                    { lessonNumber: 30, title: 'Dars 30: C2 Doktorlik himoyasi', topics: ['Doktorlik dissertatsiyasi', 'Himoya', 'Sertifikat'], duration: '180 daqiqa' }
+                    { lessonNumber: 30, title: 'Dars 30: C2 Takrorlash va Himoya Tayyorlov', topics: ['Doktorlik dissertatsiyasi', 'Himoya', 'Sertifikat'], duration: '120 daqiqa' },
+                    // Modul 7 (Exam)
+                    { lessonNumber: 31, title: 'Yakuniy Imtihon: Professional', topics: ['O\'qish', 'Eshitish', 'Yozish', 'Yakuniy Test'], duration: '180 daqiqa' }
                 ]
             }
         ];

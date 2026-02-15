@@ -1590,9 +1590,18 @@ const App = () => {
                   <div
                     key={lesson.id}
                     onClick={() => {
-                      setSelectedLesson(lesson);
-                      setLessonTab('video');
-                      setView('lesson-detail');
+                      if (lesson.title.includes('Yakuniy Imtihon') || lesson.title.includes('Yakuniy Test')) {
+                        setSelectedLesson(lesson);
+                        setView('level-exam');
+                        // Reset exam state if needed
+                        setExamStep(0);
+                        setExamScore(0);
+                        setExamAnswers({});
+                      } else {
+                        setSelectedLesson(lesson);
+                        setLessonTab('video');
+                        setView('lesson-detail');
+                      }
                     }}
                     className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border-2 border-white/20 cursor-pointer hover:scale-105 hover:shadow-2xl hover:border-white/40 transition-all duration-300"
                   >
