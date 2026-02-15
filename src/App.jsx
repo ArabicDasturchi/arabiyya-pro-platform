@@ -94,6 +94,11 @@ const App = () => {
   };
 
   const handleLevelClick = (level) => {
+    // VAQTINCHALIK: Test uchun to'g'ridan-to'g'ri ochish
+    setSelectedLevel(level);
+    setView('level-lessons');
+
+    /* TO'LOV TIZIMI (keyinroq qaytariladi):
     if (isLevelUnlocked(level.id)) {
       setSelectedLevel(level);
       setView('level-lessons');
@@ -101,6 +106,7 @@ const App = () => {
       setSelectedLevel(level);
       setShowPurchaseModal(true);
     }
+    */
   };
 
   const handlePurchaseSubmit = async (e) => {
