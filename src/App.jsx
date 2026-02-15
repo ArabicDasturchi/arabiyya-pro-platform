@@ -47,6 +47,7 @@ const App = () => {
   // Module Learning State (for A1-C2 levels)
   const [selectedModule, setSelectedModule] = useState(null);
   const [moduleTab, setModuleTab] = useState('video');
+  const [lessonTab, setLessonTab] = useState('video'); // Dars sahifalari uchun
 
   const apiKey = "AIzaSyBsmkZPeYer67MBM8Ac-hkUFMsrgNaUrc4"; // API key integration point
 
@@ -1366,8 +1367,8 @@ const App = () => {
 
                         {/* Action Button */}
                         <button className={`w-full py-4 rounded-xl font-black text-lg flex items-center justify-center gap-3 transition-all shadow-lg ${isLocked
-                            ? 'bg-gradient-to-r from-amber-500 to-orange-600 text-white hover:from-amber-600 hover:to-orange-700 border-2 border-amber-400/30'
-                            : 'bg-white text-black hover:scale-[1.02] shadow-xl hover:shadow-2xl'
+                          ? 'bg-gradient-to-r from-amber-500 to-orange-600 text-white hover:from-amber-600 hover:to-orange-700 border-2 border-amber-400/30'
+                          : 'bg-white text-black hover:scale-[1.02] shadow-xl hover:shadow-2xl'
                           }`}>
                           {isLocked ? (
                             <>
@@ -1525,7 +1526,7 @@ const App = () => {
         }
 
         {/* ============================================ */}
-        {/* MODULE DETAIL PAGE (6 Tabs) */}
+        {/* MODULE LESSONS PAGE (Modul ichidagi 5 ta dars) */}
         {/* ============================================ */}
         {
           view === 'module-detail' && selectedModule && selectedLevel && (
@@ -1538,129 +1539,167 @@ const App = () => {
                 >
                   <ArrowLeft size={24} />
                 </button>
-                <div>
+                <div className="flex-1">
                   <div className={`inline-block px-4 py-1 rounded-lg bg-gradient-to-r ${selectedLevel.color} text-white font-bold text-xs mb-2`}>
                     {selectedLevel.icon} {selectedLevel.id}
                   </div>
                   <h2 className="text-3xl font-black">{selectedModule.title}</h2>
-                  <p className="text-white/60 text-sm">{selectedModule.duration}</p>
+                  <p className="text-white/60 text-sm">5 ta dars • Har biri 5 sahifadan</p>
                 </div>
               </div>
 
-              {/* Tab Navigation */}
+              {/* 5 ta Dars - Har biri alohida sahifa */}
+              <div className="grid md:grid-cols-2 gap-6">
+                {[1, 2, 3, 4, 5].map((lessonNum) => (
+                  <div
+                    key={lessonNum}
+                    onClick={() => {
+                      setSelectedLesson({ id: lessonNum, title: `Dars ${lessonNum}` });
+                      setLessonTab('video');
+                      setView('lesson-detail');
+                    }}
+                    className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border-2 border-white/20 cursor-pointer hover:scale-105 hover:shadow-2xl hover:border-white/40 transition-all duration-300"
+                  >
+                    <div className="p-6 space-y-4">
+                      {/* Lesson Number */}
+                      <div className="flex items-start justify-between">
+                        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center font-black text-xl shadow-lg bg-gradient-to-br ${selectedLevel.color} text-white`}>
+                          {lessonNum}
+                        </div>
+                        <ArrowRight size={20} className="text-white/60 group-hover:translate-x-1 group-hover:text-white transition-all" />
+                      </div>
+
+                      {/* Lesson Title */}
+                      <div>
+                        <h3 className="font-black text-xl leading-tight mb-2">Dars {lessonNum}</h3>
+                        <p className="text-sm text-white/60">Mavzu mazmuni admin paneldan qo'shiladi</p>
+                      </div>
+
+                      {/* 5 Sahifa Icons */}
+                      <div className="flex gap-2 flex-wrap">
+                        <span className="px-2 py-1 bg-white/10 rounded-lg text-xs">📹 Video</span>
+                        <span className="px-2 py-1 bg-white/10 rounded-lg text-xs">📝 Amaliy</span>
+                        <span className="px-2 py-1 bg-white/10 rounded-lg text-xs">📖 Nazariy</span>
+                        <span className="px-2 py-1 bg-white/10 rounded-lg text-xs">✍️ Uyga</span>
+                        <span className="px-2 py-1 bg-white/10 rounded-lg text-xs">📊 Test</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )
+        }
+
+        {/* ============================================ */}
+        {/* LESSON DETAIL PAGE (5 Sahifa) */}
+        {/* ============================================ */}
+        {
+          view === 'lesson-detail' && selectedLesson && selectedLevel && (
+            <div className="space-y-8 animate-in fade-in duration-500">
+              {/* Header */}
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={() => setView('module-detail')}
+                  className="p-3 bg-white/10 hover:bg-white/20 rounded-xl transition-all"
+                >
+                  <ArrowLeft size={24} />
+                </button>
+                <div className="flex-1">
+                  <div className={`inline-block px-4 py-1 rounded-lg bg-gradient-to-r ${selectedLevel.color} text-white font-bold text-xs mb-2`}>
+                    {selectedLevel.icon} {selectedLevel.id}
+                  </div>
+                  <h2 className="text-3xl font-black">{selectedLesson.title}</h2>
+                  <p className="text-white/60 text-sm">5 sahifa • Professional kontent</p>
+                </div>
+              </div>
+
+              {/* 5 Sahifa Tabs */}
               <div className="bg-white/5 backdrop-blur-xl rounded-3xl p-2 border border-white/10">
                 <div className="flex overflow-x-auto gap-2 scrollbar-hide">
                   {[
-                    { id: 'video', label: 'Video Dars', icon: Video },
-                    { id: 'topic', label: 'Mavzu', icon: FileText },
-                    { id: 'book', label: 'Kitob', icon: Book },
-                    { id: 'exercise', label: 'Mashq', icon: Zap },
-                    { id: 'homework', label: 'Vazifa', icon: Download },
-                    { id: 'test', label: 'Test (AI)', icon: Brain },
+                    { id: 'video', label: '📹 Video Dars' },
+                    { id: 'amaliy', label: '📝 Amaliy (100b)' },
+                    { id: 'nazariy', label: '📖 Nazariy' },
+                    { id: 'uyga', label: '✍️ Uyga (100b)' },
+                    { id: 'test', label: '📊 Test (100b)' },
                   ].map((tab) => (
                     <button
                       key={tab.id}
-                      onClick={() => setModuleTab(tab.id)}
-                      className={`flex items-center gap-2 px-5 py-3 rounded-xl font-bold whitespace-nowrap transition-all ${moduleTab === tab.id
-                        ? 'bg-white text-black shadow-lg scale-105'
-                        : 'bg-white/5 text-white/60 hover:bg-white/10'
+                      onClick={() => setLessonTab(tab.id)}
+                      className={`px-5 py-3 rounded-xl font-bold whitespace-nowrap transition-all ${lessonTab === tab.id
+                          ? 'bg-white text-black shadow-lg scale-105'
+                          : 'bg-white/5 text-white/60 hover:bg-white/10'
                         }`}
                     >
-                      <tab.icon size={18} />
                       {tab.label}
                     </button>
                   ))}
                 </div>
               </div>
 
-              {/* Tab Content */}
+              {/* Content */}
               <div className="bg-white/5 backdrop-blur-xl rounded-3xl p-8 border border-white/10 min-h-[500px]">
                 {/* Video Tab */}
-                {moduleTab === 'video' && (
+                {lessonTab === 'video' && (
                   <div className="space-y-6">
-                    <h3 className="text-2xl font-black">Video Dars</h3>
-                    <div className="aspect-video bg-black/40 rounded-2xl flex items-center justify-center border border-white/10 group cursor-pointer relative overflow-hidden">
+                    <h3 className="text-2xl font-black">📹 Video Dars</h3>
+                    <div className="aspect-video bg-gradient-to-br from-purple-600/20 to-blue-600/20 rounded-2xl flex items-center justify-center cursor-pointer group relative overflow-hidden border border-white/10">
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                       <Play size={64} className="text-white group-hover:scale-110 transition-transform relative z-10" fill="white" />
-                      <p className="absolute bottom-6 left-6 text-white font-bold text-xl z-10">Videoni boshlash</p>
+                      <p className="absolute bottom-6 left-6 text-white font-bold text-xl z-10">Professional video dars</p>
                     </div>
-                    <p className="text-white/70">Bu yerda dars videosu joylashuvi kerak.</p>
+                    <p className="text-white/70">Admin panel orqali professional video dars yuklanadi.</p>
                   </div>
                 )}
 
-                {/* Topic Tab */}
-                {moduleTab === 'topic' && (
+                {/* Amaliy Tab */}
+                {lessonTab === 'amaliy' && (
                   <div className="space-y-6">
-                    <h3 className="text-2xl font-black">Mavzu Matni</h3>
-                    <div className="prose prose-invert max-w-none">
-                      <div className="bg-white/5 p-6 rounded-2xl space-y-4">
-                        <p className="text-white/80 leading-relaxed">
-                          Bu yerda dars mavzusining batafsil matni bo'ladi.
-                        </p>
-                        <div className="grid grid-cols-3 gap-4 mt-6">
-                          {selectedModule.topics.map((topic, i) => (
-                            <div key={i} className="p-4 bg-white/10 rounded-xl text-center">
-                              <h4 className="font-bold text-sm">{topic}</h4>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
+                    <h3 className="text-2xl font-black">📝 Amaliy Vazifalar (100 ball)</h3>
+                    <div className="bg-white/5 p-8 rounded-2xl border border-white/10">
+                      <p className="text-white/80 leading-relaxed">
+                        Amaliy mashqlar va topshiriqlar bu yerda bo'ladi (admin panel orqali qo'shiladi).
+                      </p>
                     </div>
                   </div>
                 )}
 
-                {/* Book Tab */}
-                {moduleTab === 'book' && (
-                  <div className="space-y-6 text-center py-12">
-                    <Book size={64} className="mx-auto text-blue-400" />
-                    <h3 className="text-2xl font-black">Darslik (PDF)</h3>
-                    <p className="text-white/60 max-w-md mx-auto">
-                      Bu yerda darslik PDF fayli yuklanadi yoki ko'rsatiladi.
-                    </p>
-                    <button className="bg-blue-500 text-white px-6 py-3 rounded-xl font-bold hover:scale-105 transition-transform">
-                      Darslikni Yuklab Olish
-                    </button>
-                  </div>
-                )}
-
-                {/* Exercise Tab */}
-                {moduleTab === 'exercise' && (
+                {/* Nazariy Tab */}
+                {lessonTab === 'nazariy' && (
                   <div className="space-y-6">
-                    <h3 className="text-2xl font-black">Amaliy Mashqlar</h3>
-                    <div className="grid gap-4">
-                      {[1, 2, 3, 4, 5].map((num) => (
-                        <div key={num} className="p-6 bg-white/5 rounded-2xl border border-white/10 hover:bg-white/10 transition-all cursor-pointer">
-                          <h4 className="font-bold mb-2">Mashq {num}</h4>
-                          <p className="text-white/60 text-sm">Bu yerda mashq topshiriqlari bo'ladi.</p>
-                        </div>
-                      ))}
+                    <h3 className="text-2xl font-black">📖 Nazariy Qism</h3>
+                    <div className="bg-white/5 p-8 rounded-2xl border border-white/10">
+                      <p className="text-white/80 text-lg leading-relaxed">
+                        Batafsil nazariy ma'lumot, tushuntirishlar va misollar (admin panel orqali).
+                      </p>
                     </div>
                   </div>
                 )}
 
-                {/* Homework Tab */}
-                {moduleTab === 'homework' && (
+                {/* Uyga Vazifa Tab */}
+                {lessonTab === 'uyga' && (
                   <div className="space-y-6 text-center py-12">
-                    <Download size={64} className="mx-auto text-green-400" />
-                    <h3 className="text-2xl font-black">Uyga Vazifa</h3>
+                    <Download size={64} className="mx-auto text-emerald-400" />
+                    <h3 className="text-2xl font-black">✍️ Uyga Vazifa (100 ball)</h3>
                     <p className="text-white/60 max-w-md mx-auto">
-                      Uy vazifasi topshiriqlarini bajarish va yuklash.
+                      Uy vazifasi topshiriqlari va yuklash tizimi.
                     </p>
-                    <button className="bg-green-500 text-white px-6 py-3 rounded-xl font-bold hover:scale-105 transition-transform">
+                    <button className="bg-emerald-500 text-white px-6 py-3 rounded-xl font-bold hover:scale-105 transition-transform">
                       Vazifa Yuklash
                     </button>
                   </div>
                 )}
 
                 {/* Test Tab */}
-                {moduleTab === 'test' && (
+                {lessonTab === 'test' && (
                   <div className="text-center py-12 space-y-6">
                     <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto shadow-2xl animate-pulse">
                       <Brain size={48} className="text-white" />
                     </div>
-                    <h3 className="text-2xl font-bold text-white">AI Test Tizimi</h3>
+                    <h3 className="text-2xl font-bold text-white">📊 Test (100 ball baholash)</h3>
                     <p className="text-white/60 max-w-md mx-auto">
-                      5 ta savoldan iborat testni ishlang. Sun'iy intellekt sizning natijangizni tahlil qilib, xatolaringiz ustida ishlashga yordam beradi.
+                      AI test tizimi: savollar, javoblar va avtomatik baholash.
                     </p>
                     <button className="bg-white text-black px-8 py-3 rounded-xl font-black hover:scale-105 transition-transform">
                       Testni Boshlash
