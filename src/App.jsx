@@ -3007,61 +3007,88 @@ const App = () => {
                             </div>
                           </div>
 
-                          {/* Lessons List */}
-                          <div className="bg-white/5 rounded-2xl border border-white/10 overflow-hidden">
-                            <table className="w-full text-left">
-                              <thead className="bg-white/5 border-b border-white/10">
-                                <tr>
-                                  <th className="p-4 font-bold text-white/60 text-sm w-16 text-center">#</th>
-                                  <th className="p-4 font-bold text-white/60 text-sm">Mavzu</th>
-                                  <th className="p-4 font-bold text-white/60 text-sm">Vaqt</th>
-                                  <th className="p-4 font-bold text-white/60 text-sm text-right">Amallar</th>
-                                </tr>
-                              </thead>
-                              <tbody className="divide-y divide-white/5">
-                                {editingLevel.lessons.map((lesson, index) => (
-                                  <tr key={lesson.id} className="hover:bg-white/5 group">
-                                    <td className="p-4 text-center font-bold text-white/40">{index + 1}</td>
-                                    <td className="p-4 font-medium">{lesson.title}</td>
-                                    <td className="p-4 text-white/60 text-sm font-mono">{lesson.duration}</td>
-                                    <td className="p-4 text-right">
-                                      <button
-                                        className="p-2 text-red-400 hover:bg-red-500/20 rounded-lg transition-all opacity-0 group-hover:opacity-100"
-                                        title="O'chirish"
-                                        onClick={async () => {
-                                          if (!window.confirm('Rostdan ham o\'chirmoqchimisiz?')) return;
-                                          try {
-                                            const token = localStorage.getItem('token');
-                                            const res = await fetch(`https://arabiyya-pro-backend.onrender.com/api/levels/${editingLevel.id}/lessons/${lesson.id}`, {
-                                              method: 'DELETE',
-                                              headers: { 'Authorization': `Bearer ${token}` }
-                                            });
-                                            const data = await res.json();
-                                            if (data.success) {
-                                              fetchLevels();
-                                            } else {
-                                              alert('O\'chirishda xatolik: ' + data.message);
-                                            }
-                                          } catch (err) {
-                                            console.error(err);
-                                            alert('Server xatosi');
-                                          }
-                                        }}
-                                      >
-                                        <Trash2 size={18} />
-                                      </button>
-                                    </td>
-                                  </tr>
-                                ))}
-                                {editingLevel.lessons.length === 0 && (
-                                  <tr>
-                                    <td colSpan="4" className="p-8 text-center text-white/40">
-                                      Ushbu darajada hali darslar yo'q
-                                    </td>
-                                  </tr>
-                                )}
-                              </tbody>
-                            </table>
+                          {/* Lessons List - Grouped by Modules */}
+                          <div className="space-y-4">
+                            {Array.from({ length: Math.ceil(editingLevel.lessons.length / 5) }, (_, moduleIndex) => {
+                              const moduleLessons = editingLevel.lessons.slice(moduleIndex * 5, (moduleIndex + 1) * 5);
+                              const moduleNumber = moduleIndex + 1;
+
+                              return (
+                                <div key={moduleIndex} className="bg-white/5 rounded-2xl border border-white/10 overflow-hidden">
+                                  {/* Module Header */}
+                                  <div className="bg-white/5 p-4 border-b border-white/10 flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                      <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${editingLevel.color} text-white font-black flex items-center justify-center text-lg`}>
+                                        {moduleNumber}
+                                      </div>
+                                      <div>
+                                        <h5 className="font-black text-lg">Modul {moduleNumber}</h5>
+                                        <p className="text-xs text-white/60">{moduleLessons.length} ta dars</p>
+                                      </div>
+                                    </div>
+                                    <div className="text-sm text-white/60 font-bold">
+                                      Darslar: {moduleIndex * 5 + 1} - {moduleIndex * 5 + moduleLessons.length}
+                                    </div>
+                                  </div>
+
+                                  {/* Module Lessons Table */}
+                                  <table className="w-full text-left">
+                                    <thead className="bg-white/5 border-b border-white/10">
+                                      <tr>
+                                        <th className="p-3 font-bold text-white/60 text-xs w-12 text-center">#</th>
+                                        <th className="p-3 font-bold text-white/60 text-xs">Mavzu</th>
+                                        <th className="p-3 font-bold text-white/60 text-xs">Vaqt</th>
+                                        <th className="p-3 font-bold text-white/60 text-xs text-right">Amallar</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-white/5">
+                                      {moduleLessons.map((lesson, lessonIndex) => {
+                                        const globalIndex = moduleIndex * 5 + lessonIndex;
+                                        return (
+                                          <tr key={lesson.id} className="hover:bg-white/5 group">
+                                            <td className="p-3 text-center font-bold text-white/40 text-sm">{globalIndex + 1}</td>
+                                            <td className="p-3 font-medium text-sm">{lesson.title}</td>
+                                            <td className="p-3 text-white/60 text-xs font-mono">{lesson.duration}</td>
+                                            <td className="p-3 text-right">
+                                              <button
+                                                className="p-2 text-red-400 hover:bg-red-500/20 rounded-lg transition-all opacity-0 group-hover:opacity-100"
+                                                title="O'chirish"
+                                                onClick={async () => {
+                                                  if (!window.confirm('Rostdan ham o\'chirmoqchimisiz?')) return;
+                                                  try {
+                                                    const token = localStorage.getItem('token');
+                                                    const res = await fetch(`https://arabiyya-pro-backend.onrender.com/api/levels/${editingLevel.id}/lessons/${lesson.id}`, {
+                                                      method: 'DELETE',
+                                                      headers: { 'Authorization': `Bearer ${token}` }
+                                                    });
+                                                    const data = await res.json();
+                                                    if (data.success) {
+                                                      fetchLevels();
+                                                    } else {
+                                                      alert('O\'chirishda xatolik: ' + data.message);
+                                                    }
+                                                  } catch (err) {
+                                                    console.error(err);
+                                                    alert('Server xatosi');
+                                                  }
+                                                }}
+                                              >
+                                                <Trash2 size={16} />
+                                              </button>
+                                            </td>
+                                          </tr>
+                                        );
+                                      })}
+                                    </tbody>
+                                  </table>
+                                </div>
+                              );
+                            })}
+                            {editingLevel.lessons.length === 0 && (
+                              <div className="bg-white/5 rounded-2xl border border-white/10 p-12 text-center text-white/40">
+                                Ushbu darajada hali darslar yo'q
+                              </div>
+                            )}
                           </div>
                         </div>
                       )}
