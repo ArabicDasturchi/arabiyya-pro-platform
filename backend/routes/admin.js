@@ -211,4 +211,59 @@ router.put('/orders/:id/approve', [authMiddleware, adminMiddleware], async (req,
     }
 });
 
+// @route   POST /api/admin/grant-level
+// @desc    Grant free level access to user
+// @access  Private/Admin
+router.post('/grant-level', [authMiddleware, adminMiddleware], async (req, res) => {
+    try {
+        const { userId, levelId } = req.body;
+
+        if (!userId || !levelId) {
+            return res.status(400).json({
+                success: false,
+                message: 'userId va levelId kerak'
+            });
+        }
+
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'Foydalanuvchi topilmadi'
+            });
+        }
+
+        // Initialize purchasedLevels if undefined
+        if (!user.purchasedLevels) user.purchasedLevels = ['A1'];
+
+        // Add level if not already purchased
+        if (user.purchasedLevels.includes(levelId)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Bu daraja allaqachon ochilgan'
+            });
+        }
+
+        user.purchasedLevels.push(levelId);
+        await user.save();
+
+        res.json({
+            success: true,
+            message: `${levelId} darajasi ${user.name} uchun ochildi`,
+            user: {
+                id: user._id,
+                name: user.name,
+                purchasedLevels: user.purchasedLevels
+            }
+        });
+    } catch (error) {
+        console.error('Admin Grant Level Error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Server xatosi'
+        });
+    }
+});
+
 export default router;

@@ -88,6 +88,11 @@ const App = () => {
   const [purchaseProof, setPurchaseProof] = useState('');
   const [isSubmittingOrder, setIsSubmittingOrder] = useState(false);
 
+  // Grant Level Modal State (Admin)
+  const [showGrantLevelModal, setShowGrantLevelModal] = useState(false);
+  const [grantingLevelTo, setGrantingLevelTo] = useState(null);
+  const [selectedGrantLevel, setSelectedGrantLevel] = useState('');
+
   const isLevelUnlocked = (levelId) => {
     // Check if user purchased it
     return user?.purchasedLevels?.includes(levelId);
@@ -2803,6 +2808,19 @@ const App = () => {
                                     <td className="p-4 text-right">
                                       {u._id !== user.id && (
                                         <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                          {/* Daraja berish tugmasi */}
+                                          <button
+                                            onClick={() => {
+                                              setGrantingLevelTo(u);
+                                              setShowGrantLevelModal(true);
+                                            }}
+                                            className="px-3 py-1.5 rounded-lg text-xs font-bold bg-green-500/20 text-green-300 hover:bg-green-500/30 border border-green-500/20 transition-all flex items-center gap-1"
+                                            title="Bepul daraja berish"
+                                          >
+                                            <Gift size={14} />
+                                            Daraja berish
+                                          </button>
+
                                           <button
                                             onClick={() => handleRoleUpdate(u._id, u.role === 'admin' ? 'user' : 'admin')}
                                             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${u.role === 'admin'
@@ -3597,6 +3615,102 @@ const App = () => {
                   {isSubmittingOrder ? <Loader2 className="animate-spin" /> : <><CheckCircle2 size={20} /> Tasdiqlash uchun yuborish</>}
                 </button>
               </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Grant Level Modal (Admin) */}
+      {showGrantLevelModal && grantingLevelTo && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-300">
+          <div className="bg-gradient-to-br from-slate-900/95 to-slate-800/95 backdrop-blur-2xl rounded-3xl max-w-md w-full border border-white/20 shadow-2xl p-8 animate-in slide-in-from-bottom-4 duration-500 relative">
+            <button
+              onClick={() => {
+                setShowGrantLevelModal(false);
+                setGrantingLevelTo(null);
+                setSelectedGrantLevel('');
+              }}
+              className="absolute top-4 right-4 p-2 hover:bg-white/10 rounded-xl transition-all text-white/60 hover:text-white"
+            >
+              <X size={24} />
+            </button>
+
+            <div className="text-center space-y-6">
+              <div className="w-20 h-20 mx-auto bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg">
+                <Gift size={40} className="text-white" />
+              </div>
+
+              <div>
+                <h3 className="text-2xl font-black">Bepul Daraja Berish</h3>
+                <p className="text-white/60 mt-2">
+                  <span className="font-bold text-white">{grantingLevelTo.name}</span> ga daraja bering
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <div className="space-y-2 text-left">
+                  <label className="text-sm font-bold text-white/80 ml-1">Darajani tanlang</label>
+                  <select
+                    value={selectedGrantLevel}
+                    onChange={(e) => setSelectedGrantLevel(e.target.value)}
+                    className="w-full px-4 py-3 bg-white/5 rounded-xl border border-white/10 outline-none focus:border-green-500 transition-colors text-white font-bold"
+                  >
+                    <option value="" className="bg-slate-900">Darajani tanlash...</option>
+                    {levels.filter(l => !grantingLevelTo.purchasedLevels?.includes(l.id)).map(lvl => (
+                      <option key={lvl.id} value={lvl.id} className="bg-slate-900">
+                        {lvl.icon} {lvl.id} - {lvl.title}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <button
+                  onClick={async () => {
+                    if (!selectedGrantLevel) return alert('Iltimos, daraja tanlang!');
+
+                    try {
+                      const token = localStorage.getItem('token');
+                      const res = await fetch(`https://arabiyya-pro-backend.onrender.com/api/admin/grant-level`, {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json',
+                          'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({
+                          userId: grantingLevelTo._id,
+                          levelId: selectedGrantLevel
+                        })
+                      });
+
+                      const data = await res.json();
+                      if (data.success) {
+                        alert(`✅ ${grantingLevelTo.name} uchun ${selectedGrantLevel} darajasi ochildi!`);
+                        setShowGrantLevelModal(false);
+                        setGrantingLevelTo(null);
+                        setSelectedGrantLevel('');
+                        // Refresh users list
+                        if (view === 'admin' && adminTab === 'users') {
+                          const token2 = localStorage.getItem('token');
+                          const usersRes = await fetch('https://arabiyya-pro-backend.onrender.com/api/admin/users', {
+                            headers: { 'Authorization': `Bearer ${token2}` }
+                          });
+                          const usersData = await usersRes.json();
+                          if (usersData.success) setAdminUsers(usersData.users);
+                        }
+                      } else {
+                        alert('Xatolik: ' + data.message);
+                      }
+                    } catch (err) {
+                      console.error(err);
+                      alert('Server xatosi');
+                    }
+                  }}
+                  className="w-full py-4 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl font-black text-lg hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl flex items-center justify-center gap-2 text-white"
+                >
+                  <Gift size={20} />
+                  Bepul Berish
+                </button>
+              </div>
             </div>
           </div>
         </div>
