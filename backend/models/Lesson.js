@@ -34,10 +34,24 @@ const lessonSchema = new mongoose.Schema({
     summary: String,
     keyPoints: [String]
   },
-  homework: {
-    description: String,
-    tasks: [String]
+  // Yangi qo'shilgan maydonlar
+  theory: {
+    type: String, // Nazariy qism (HTML/Markdown)
+    default: ''
   },
+  practice: {
+    type: String, // Amaliy qism (HTML/Markdown)
+    default: ''
+  },
+  homework: {
+    type: String, // Uyga vazifa (HTML/Markdown) - oldingi objectdan o'zgartirdik, osonroq bo'lishi uchun
+    default: ''
+  },
+  quiz: [{
+    question: String,
+    options: [String], // ["A", "B", "C", "D"]
+    correctAnswer: Number // 0, 1, 2, or 3
+  }],
   isActive: {
     type: Boolean,
     default: true

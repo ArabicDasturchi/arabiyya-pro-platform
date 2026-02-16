@@ -107,7 +107,16 @@ router.post('/:levelId/lessons', [authMiddleware, adminMiddleware], async (req, 
 router.put('/:levelId/lessons/:lessonId', [authMiddleware, adminMiddleware], async (req, res) => {
   try {
     const { lessonId } = req.params;
-    const { title, duration, videoUrl, content, topics } = req.body;
+    const {
+      title,
+      duration,
+      videoUrl,
+      // Yangi fieldlar
+      theory,
+      practice,
+      homework,
+      quiz
+    } = req.body;
 
     const lesson = await Lesson.findById(lessonId);
     if (!lesson) {
@@ -117,8 +126,14 @@ router.put('/:levelId/lessons/:lessonId', [authMiddleware, adminMiddleware], asy
     if (title) lesson.title = title;
     if (duration) lesson.duration = duration;
     if (videoUrl) lesson.videoUrl = videoUrl;
-    if (content) lesson.content = content;
-    if (topics) lesson.topics = topics;
+
+    // Matnli kontentlar
+    if (theory !== undefined) lesson.theory = theory;
+    if (practice !== undefined) lesson.practice = practice;
+    if (homework !== undefined) lesson.homework = homework;
+
+    // Testlar massivi (agar bo'lsa)
+    if (quiz) lesson.quiz = quiz;
 
     await lesson.save();
 

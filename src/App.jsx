@@ -38,8 +38,12 @@ const App = () => {
   const [editingLevel, setEditingLevel] = useState(null); // Track which level is being edited
   const [newLessonData, setNewLessonData] = useState({ title: '', duration: '', videoUrl: '' }); // Form data
   const [editingLessonId, setEditingLessonId] = useState(null);
-  const [editLessonData, setEditLessonData] = useState({ title: '', duration: '', videoUrl: '', content: '' });
+  const [editLessonData, setEditLessonData] = useState({
+    title: '', duration: '', videoUrl: '',
+    theory: '', practice: '', homework: '', quiz: []
+  });
   const [showEditLessonModal, setShowEditLessonModal] = useState(false);
+  const [editLessonTab, setEditLessonTab] = useState('main');
   const [adminTab, setAdminTab] = useState('dashboard');
   const [adminOrders, setAdminOrders] = useState([]);
 
@@ -3152,11 +3156,15 @@ const App = () => {
                                                 title="Tahrirlash"
                                                 onClick={() => {
                                                   setEditingLessonId(lesson.id);
+                                                  setEditLessonTab('main');
                                                   setEditLessonData({
                                                     title: lesson.title,
                                                     duration: lesson.duration,
                                                     videoUrl: lesson.videoUrl || '',
-                                                    content: lesson.content ? (typeof lesson.content === 'string' ? lesson.content : JSON.stringify(lesson.content)) : ''
+                                                    theory: lesson.theory || (lesson.content?.mainContent || ''),
+                                                    practice: lesson.practice || '',
+                                                    homework: typeof lesson.homework === 'string' ? lesson.homework : (lesson.homework?.description || ''),
+                                                    quiz: lesson.quiz || []
                                                   });
                                                   setShowEditLessonModal(true);
                                                 }}
@@ -3817,82 +3825,276 @@ const App = () => {
       )}
 
       {/* ADMIN: Edit Lesson Modal */}
+      {/* ADMIN: Edit Lesson Modal - Enhanced with Tabs */}
       {showEditLessonModal && editingLessonId && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-300">
-          <div className="bg-slate-900 border border-white/20 rounded-3xl p-8 max-w-lg w-full shadow-2xl space-y-6 animate-in slide-in-from-bottom-4 duration-500">
-            <h3 className="text-2xl font-black text-white flex items-center gap-2">
-              <Settings className="text-blue-400" />
-              Darsni Tahrirlash
-            </h3>
+          <div className="bg-slate-900 border border-white/20 rounded-3xl w-full max-w-5xl h-[90vh] flex flex-col shadow-2xl animate-in slide-in-from-bottom-4 duration-500 overflow-hidden">
 
-            <div className="space-y-4">
-              <div>
-                <label className="text-xs font-bold text-white/60 mb-1 block uppercase">Mavzu (Title)</label>
-                <input
-                  type="text"
-                  value={editLessonData.title}
-                  onChange={e => setEditLessonData({ ...editLessonData, title: e.target.value })}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none font-bold"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-xs font-bold text-white/60 mb-1 block uppercase">Davomiyligi</label>
-                  <input
-                    type="text"
-                    value={editLessonData.duration}
-                    onChange={e => setEditLessonData({ ...editLessonData, duration: e.target.value })}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none font-mono text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-bold text-white/60 mb-1 block uppercase">Video Link (Youtube)</label>
-                  <input
-                    type="text"
-                    value={editLessonData.videoUrl}
-                    onChange={e => setEditLessonData({ ...editLessonData, videoUrl: e.target.value })}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none truncate"
-                    placeholder="https://youtube.com/..."
-                  />
-                </div>
+            {/* Header */}
+            <div className="p-6 border-b border-white/10 flex justify-between items-center bg-slate-900/50 backdrop-blur-xl">
+              <h3 className="text-2xl font-black text-white flex items-center gap-3">
+                <Settings className="text-blue-400" />
+                Darsni Tahrirlash: <span className="text-blue-400">{editLessonData.title}</span>
+              </h3>
+              <button onClick={() => setShowEditLessonModal(false)} className="bg-white/5 hover:bg-white/10 p-2 rounded-lg transition-colors">
+                <X size={20} className="text-white/60" />
+              </button>
+            </div>
+
+            {/* Content Area with Sidebar/Tabs */}
+            <div className="flex-1 flex overflow-hidden">
+              {/* Sidebar Tabs */}
+              <div className="w-64 bg-black/20 border-r border-white/10 p-4 space-y-2 overflow-y-auto hidden md:block">
+                {[
+                  { id: 'main', label: 'Asosiy', icon: <Video size={18} /> },
+                  { id: 'theory', label: 'Nazariy', icon: <BookOpen size={18} /> },
+                  { id: 'practice', label: 'Amaliy', icon: <PenTool size={18} /> },
+                  { id: 'homework', label: 'Uyga Vazifa', icon: <Home size={18} /> },
+                  { id: 'quiz', label: 'Test', icon: <CheckCircle2 size={18} /> }
+                ].map(tab => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setEditLessonTab(tab.id)}
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all text-sm ${editLessonTab === tab.id
+                        ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
+                        : 'text-white/60 hover:bg-white/5 hover:text-white'
+                      }`}
+                  >
+                    {tab.icon}
+                    {tab.label}
+                  </button>
+                ))}
               </div>
 
-              <div>
-                <label className="text-xs font-bold text-white/60 mb-1 block uppercase">Matn / Izoh</label>
-                <textarea
-                  value={editLessonData.content}
-                  onChange={e => setEditLessonData({ ...editLessonData, content: e.target.value })}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none h-32 text-sm leading-relaxed"
-                  placeholder="Dars haqida matn..."
-                ></textarea>
+              {/* Main Content Area */}
+              <div className="flex-1 p-8 overflow-y-auto bg-slate-900/30">
+
+                {/* Mobile Tabs (Visible only on small screens) */}
+                <div className="md:hidden flex overflow-x-auto gap-2 mb-6 pb-2">
+                  {[
+                    { id: 'main', label: 'Asosiy' },
+                    { id: 'theory', label: 'Nazariy' },
+                    { id: 'practice', label: 'Amaliy' },
+                    { id: 'homework', label: 'Vazifa' },
+                    { id: 'quiz', label: 'Test' }
+                  ].map(tab => (
+                    <button
+                      key={tab.id}
+                      onClick={() => setEditLessonTab(tab.id)}
+                      className={`px-4 py-2 rounded-lg font-bold text-xs whitespace-nowrap ${editLessonTab === tab.id
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-white/5 text-white/60'
+                        }`}
+                    >
+                      {tab.label}
+                    </button>
+                  ))}
+                </div>
+
+                {/* TAB: Main */}
+                {editLessonTab === 'main' && (
+                  <div className="space-y-6 animate-in fade-in duration-300">
+                    <h4 className="text-xl font-bold mb-4 flex items-center gap-2"><Video size={20} className="text-blue-400" /> Asosiy Ma'lumotlar</h4>
+                    <div className="space-y-4">
+                      <div>
+                        <label className="text-xs font-bold text-white/60 mb-1 block uppercase">Mavzu (Title)</label>
+                        <input
+                          type="text"
+                          value={editLessonData.title}
+                          onChange={e => setEditLessonData({ ...editLessonData, title: e.target.value })}
+                          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none font-bold"
+                        />
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="text-xs font-bold text-white/60 mb-1 block uppercase">Davomiyligi</label>
+                          <input
+                            type="text"
+                            value={editLessonData.duration}
+                            onChange={e => setEditLessonData({ ...editLessonData, duration: e.target.value })}
+                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none font-mono"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs font-bold text-white/60 mb-1 block uppercase">Video Link (Youtube)</label>
+                          <input
+                            type="text"
+                            value={editLessonData.videoUrl}
+                            onChange={e => setEditLessonData({ ...editLessonData, videoUrl: e.target.value })}
+                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none"
+                            placeholder="https://youtube.com/..."
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* TAB: Theory */}
+                {editLessonTab === 'theory' && (
+                  <div className="h-full flex flex-col animate-in fade-in duration-300">
+                    <div className="flex justify-between items-center mb-4">
+                      <h4 className="text-xl font-bold flex items-center gap-2"><BookOpen size={20} className="text-blue-400" /> Nazariy Qism</h4>
+                      <span className="text-xs text-white/40">Markdown va HTML qo'llab-quvvatlanadi</span>
+                    </div>
+                    <textarea
+                      value={editLessonData.theory}
+                      onChange={e => setEditLessonData({ ...editLessonData, theory: e.target.value })}
+                      className="flex-1 w-full bg-white/5 border border-white/10 rounded-xl p-6 text-white focus:border-blue-500 outline-none text-base leading-relaxed font-mono min-h-[400px]"
+                      placeholder="# Darsning nazariy qismi
+Bu yerga dars matnini yozing..."
+                    ></textarea>
+                  </div>
+                )}
+
+                {/* TAB: Practice */}
+                {editLessonTab === 'practice' && (
+                  <div className="h-full flex flex-col animate-in fade-in duration-300">
+                    <h4 className="text-xl font-bold mb-4 flex items-center gap-2"><PenTool size={20} className="text-blue-400" /> Amaliy Mashg'ulotlar</h4>
+                    <textarea
+                      value={editLessonData.practice}
+                      onChange={e => setEditLessonData({ ...editLessonData, practice: e.target.value })}
+                      className="flex-1 w-full bg-white/5 border border-white/10 rounded-xl p-6 text-white focus:border-blue-500 outline-none text-base leading-relaxed font-mono min-h-[400px]"
+                      placeholder="Amaliy mashqlar va ko'rsatmalar..."
+                    ></textarea>
+                  </div>
+                )}
+
+                {/* TAB: Homework */}
+                {editLessonTab === 'homework' && (
+                  <div className="h-full flex flex-col animate-in fade-in duration-300">
+                    <h4 className="text-xl font-bold mb-4 flex items-center gap-2"><Home size={20} className="text-blue-400" /> Uyga Vazifa</h4>
+                    <textarea
+                      value={editLessonData.homework}
+                      onChange={e => setEditLessonData({ ...editLessonData, homework: e.target.value })}
+                      className="flex-1 w-full bg-white/5 border border-white/10 rounded-xl p-6 text-white focus:border-blue-500 outline-none text-base leading-relaxed font-mono min-h-[400px]"
+                      placeholder="Uyga vazifa tavsifi..."
+                    ></textarea>
+                  </div>
+                )}
+
+                {/* TAB: Quiz */}
+                {editLessonTab === 'quiz' && (
+                  <div className="space-y-6 animate-in fade-in duration-300 pb-20">
+                    <div className="flex justify-between items-center mb-4 sticky top-0 bg-slate-900/90 backdrop-blur z-10 py-4 border-b border-white/10">
+                      <h4 className="text-xl font-bold flex items-center gap-2"><CheckCircle2 size={20} className="text-blue-400" /> Test Savollari ({editLessonData.quiz?.length || 0})</h4>
+                      <button
+                        onClick={() => setEditLessonData({
+                          ...editLessonData,
+                          quiz: [...(editLessonData.quiz || []), { question: '', options: ['', '', '', ''], correctAnswer: 0 }]
+                        })}
+                        className="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl font-bold text-sm flex items-center gap-2 shadow-lg shadow-green-500/20"
+                      >
+                        <Plus size={16} /> Savol Qo'shish
+                      </button>
+                    </div>
+
+                    <div className="space-y-6">
+                      {editLessonData.quiz?.map((q, idx) => (
+                        <div key={idx} className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4 relative group hover:border-white/20 transition-colors">
+                          <div className="absolute top-4 right-4 flex gap-2">
+                            <span className="bg-white/10 px-2 py-1 rounded text-xs font-bold text-white/50">#{idx + 1}</span>
+                            <button
+                              onClick={() => {
+                                if (!confirm("Bu savolni o'chirmoqchimisiz?")) return;
+                                const newQuiz = [...editLessonData.quiz];
+                                newQuiz.splice(idx, 1);
+                                setEditLessonData({ ...editLessonData, quiz: newQuiz });
+                              }}
+                              className="text-red-400 hover:bg-red-500/20 p-1.5 rounded-lg transition-colors"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          </div>
+
+                          <div>
+                            <label className="text-xs font-bold text-white/40 mb-1 block">Savol Matni</label>
+                            <input
+                              type="text"
+                              value={q.question}
+                              onChange={e => {
+                                const newQuiz = [...editLessonData.quiz];
+                                newQuiz[idx].question = e.target.value;
+                                setEditLessonData({ ...editLessonData, quiz: newQuiz });
+                              }}
+                              className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/20 focus:border-blue-500 outline-none font-medium"
+                              placeholder="Savol matnini kiriting..."
+                            />
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {q.options.map((opt, optIdx) => (
+                              <div key={optIdx} className={`flex items-center gap-3 p-3 rounded-xl border transition-colors ${q.correctAnswer === optIdx ? 'bg-green-500/10 border-green-500/50' : 'bg-black/20 border-white/5'}`}>
+                                <input
+                                  type="radio"
+                                  name={`correct-${idx}`}
+                                  checked={q.correctAnswer === optIdx}
+                                  onChange={() => {
+                                    const newQuiz = [...editLessonData.quiz];
+                                    newQuiz[idx].correctAnswer = optIdx;
+                                    setEditLessonData({ ...editLessonData, quiz: newQuiz });
+                                  }}
+                                  className="w-4 h-4 text-green-500 accent-green-500 cursor-pointer"
+                                />
+                                <input
+                                  type="text"
+                                  value={opt}
+                                  onChange={e => {
+                                    const newQuiz = [...editLessonData.quiz];
+                                    newQuiz[idx].options[optIdx] = e.target.value;
+                                    setEditLessonData({ ...editLessonData, quiz: newQuiz });
+                                  }}
+                                  className="w-full bg-transparent border-none outline-none text-sm text-white placeholder-white/20"
+                                  placeholder={`Variant ${optIdx + 1}`}
+                                />
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                      {editLessonData.quiz?.length === 0 && (
+                        <div className="text-center py-16 text-white/30 border-2 border-dashed border-white/10 rounded-2xl flex flex-col items-center gap-4">
+                          <CheckCircle2 size={48} className="text-white/10" />
+                          <p>Test savollari yo'q. "Savol Qo'shish" tugmasini bosing.</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
               </div>
             </div>
 
-            <div className="flex gap-3 justify-end pt-4 border-t border-white/10">
+            {/* Footer Actions */}
+            <div className="p-6 border-t border-white/10 bg-slate-900/50 backdrop-blur-xl flex justify-end gap-4">
               <button
                 onClick={() => setShowEditLessonModal(false)}
-                className="px-6 py-3 rounded-xl text-white/60 hover:text-white font-bold transition-colors bg-white/5 hover:bg-white/10"
+                className="px-6 py-3 rounded-xl text-white/60 hover:text-white font-bold transition-colors hover:bg-white/5"
               >
                 Bekor qilish
               </button>
               <button
-                className="px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition-colors shadow-lg shadow-blue-500/20"
+                className="px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition-colors shadow-lg shadow-blue-500/20 flex items-center gap-2"
                 onClick={async () => {
                   try {
                     const token = localStorage.getItem('token');
+                    const formPayload = {
+                      ...editLessonData,
+                      quiz: editLessonData.quiz || []
+                    };
+
                     const res = await fetch(`https://arabiyya-pro-backend.onrender.com/api/levels/${editingLevel.id}/lessons/${editingLessonId}`, {
                       method: 'PUT',
                       headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
                       },
-                      body: JSON.stringify(editLessonData)
+                      body: JSON.stringify(formPayload)
                     });
 
                     const data = await res.json();
                     if (data.success) {
                       setShowEditLessonModal(false);
-
                       // Refresh data
                       const levelsRes = await fetch('https://arabiyya-pro-backend.onrender.com/api/levels');
                       const levelsData = await levelsRes.json();
@@ -3901,7 +4103,7 @@ const App = () => {
                         const updatedLevel = levelsData.levels.find(l => l.id === editingLevel.id);
                         if (updatedLevel) setEditingLevel(updatedLevel);
                       }
-                      alert('✅ Dars saqlandi!');
+                      alert('✅ Dars muvaffaqiyatli saqlandi!');
                     } else {
                       alert('Xatolik: ' + data.message);
                     }
@@ -3911,9 +4113,11 @@ const App = () => {
                   }
                 }}
               >
+                <Save size={20} />
                 Saqlash
               </button>
             </div>
+
           </div>
         </div>
       )}
