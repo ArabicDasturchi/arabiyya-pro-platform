@@ -3,6 +3,7 @@ import axios from 'axios';
 import { body, validationResult } from 'express-validator';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
+import Chat from '../models/Chat.js';
 
 const router = express.Router();
 
@@ -275,9 +276,60 @@ Iltimos, batafsil professional tahlil va keyingi qadamlar haqida maslahat bering
   }
 });
 
+
+// @route   GET /api/ai/chats
+// @desc    Get user chat history list
+// @access  Private (Auth required)
+router.get('/chats', async (req, res) => {
+  try {
+    const user = await getUserFromToken(req);
+    if (!user) return res.status(401).json({ success: false, message: 'Auth required' });
+
+    const chats = await Chat.find({ user: user._id })
+      .select('title createdAt updatedAt')
+      .sort({ updatedAt: -1 });
+
+    res.json({ success: true, chats });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// @route   GET /api/ai/chats/:id
+// @desc    Get single chat messages
+// @access  Private
+router.get('/chats/:id', async (req, res) => {
+  try {
+    const user = await getUserFromToken(req);
+    if (!user) return res.status(401).json({ success: false, message: 'Auth required' });
+
+    const chat = await Chat.findOne({ _id: req.params.id, user: user._id });
+    if (!chat) return res.status(404).json({ success: false, message: 'Chat not found' });
+
+    res.json({ success: true, chat });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// @route   DELETE /api/ai/chats/:id
+// @desc    Delete chat
+// @access  Private
+router.delete('/chats/:id', async (req, res) => {
+  try {
+    const user = await getUserFromToken(req);
+    if (!user) return res.status(401).json({ success: false, message: 'Auth required' });
+
+    await Chat.findOneAndDelete({ _id: req.params.id, user: user._id });
+    res.json({ success: true, message: 'Chat deleted' });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
 // @route   POST /api/ai/chat
-// @desc    AI chat assistant
-// @access  Public
+// @desc    AI chat assistant (creates or updates chat)
+// @access  Public (but saves only if Auth)
 router.post('/chat', [
   body('message').notEmpty().withMessage('Message is required')
 ], async (req, res) => {
@@ -290,10 +342,22 @@ router.post('/chat', [
       });
     }
 
-    const { message } = req.body;
+    const { message, chatId } = req.body;
+    let context = "";
+
+    // If context is needed, we would fetch it here. For now, we use a stateless prompt but save history.
+    const user = await getUserFromToken(req);
+    let chat;
+
+    if (user && chatId) {
+      chat = await Chat.findOne({ _id: chatId, user: user._id });
+      // If chat exists, maybe we could append previous messages to prompt for context
+      // But to keep it simple and cheap on tokens, we'll just send current message
+      // or last 2 messages.
+    }
 
     const prompt = `Sen professional arab tili o'qituvchisissan - Arabiyya Pro platformasining AI yordamchisissan.
-
+    
 Foydalanuvchi savoli: ${message}
 
 Iltimos:
@@ -310,27 +374,33 @@ Javob:`;
       "Kechirasiz, hozir javob bera olmayman. Qaytadan urinib ko'ring.";
 
     // Save chat history if user is logged in
-    const user = await getUserFromToken(req);
     if (user) {
-      if (!user.chatHistory) user.chatHistory = [];
+      if (!chat) {
+        chat = new Chat({
+          user: user._id,
+          title: message.substring(0, 30) + (message.length > 30 ? '...' : ''),
+          messages: []
+        });
+      }
 
-      user.chatHistory.push({
+      chat.messages.push({
         role: 'user',
-        message: message,
+        content: message,
         timestamp: new Date()
       });
-      user.chatHistory.push({
+      chat.messages.push({
         role: 'ai',
-        message: aiResponse,
+        content: aiResponse,
         timestamp: new Date()
       });
 
-      await user.save();
+      await chat.save();
     }
 
     res.json({
       success: true,
       response: aiResponse,
+      chatId: chat ? chat._id : null,
       saved: !!user
     });
   } catch (error) {

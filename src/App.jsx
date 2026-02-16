@@ -8,7 +8,7 @@ import {
   TrendingUp, Zap, Headphones, CheckCircle, XCircle, Volume2,
   GraduationCap, Brain, Rocket, Clock, Users, BarChart,
   Lightbulb, Heart, Flag, Compass, ZoomIn, Search, LayoutDashboard, Settings, Layers, Trash2, ArrowLeft, Plus, Activity, Upload, Gift,
-  Info, PenTool, Home, Save
+  Info, PenTool, Home, Save, List
 } from 'lucide-react';
 
 const App = () => {
@@ -37,6 +37,11 @@ const App = () => {
   const [chatMessages, setChatMessages] = useState([]);
   const [chatInput, setChatInput] = useState('');
   const [isChatLoading, setIsChatLoading] = useState(false);
+
+  // Multi-Chat States
+  const [chats, setChats] = useState([]);
+  const [activeChatId, setActiveChatId] = useState(null);
+  const [chatView, setChatView] = useState('messages'); // 'list' or 'messages'
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [completedLessons, setCompletedLessons] = useState([]);
   const [completedLevels, setCompletedLevels] = useState([]);
@@ -605,12 +610,49 @@ const App = () => {
     }
   };
 
+  /* === NEW CHAT LOGIC === */
+  const fetchChats = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+      const res = await fetch('https://arabiyya-pro-backend.onrender.com/api/ai/chats', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (data.success) setChats(data.chats);
+    } catch (err) { console.error(err); }
+  };
+
+  const loadChat = async (id) => {
+    try {
+      setIsChatLoading(true);
+      const token = localStorage.getItem('token');
+      const res = await fetch(`https://arabiyya-pro-backend.onrender.com/api/ai/chats/${id}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (data.success) {
+        setActiveChatId(id);
+        // Map messages
+        setChatMessages(data.chat.messages.map(m => ({ role: m.role, content: m.content })));
+        setChatView('messages');
+      }
+      setIsChatLoading(false);
+    } catch (err) { console.error(err); setIsChatLoading(false); }
+  };
+
+  const startNewChat = () => {
+    setActiveChatId(null);
+    setChatMessages([]);
+    setChatView('messages');
+  };
+
   // AI Chat function
   const sendChatMessage = async () => {
     if (!chatInput.trim()) return;
 
     const userMessage = chatInput;
-    setChatMessages([...chatMessages, { role: 'user', content: userMessage }]);
+    setChatMessages(prev => [...prev, { role: 'user', content: userMessage }]);
     setChatInput('');
     setIsChatLoading(true);
 
@@ -619,24 +661,33 @@ const App = () => {
       const headers = { 'Content-Type': 'application/json' };
       if (token) headers['Authorization'] = `Bearer ${token}`;
 
+      const body = { message: userMessage };
+      if (activeChatId) body.chatId = activeChatId;
+
       const response = await fetch('https://arabiyya-pro-backend.onrender.com/api/ai/chat', {
         method: 'POST',
         headers,
-        body: JSON.stringify({
-          message: userMessage
-        })
+        body: JSON.stringify(body)
       });
 
       const data = await response.json();
       const aiResponse = data.success ? data.response :
-        "Kechirasiz, texnik xatolik yuz berdi. Iltimos, qaytadan urinib ko'ring.";
+        "Kechirasiz, texnik xatolik yuz berdi.";
 
       setChatMessages(prev => [...prev, { role: 'ai', content: aiResponse }]);
+
+      // Update active chat ID if new chat created
+      if (data.chatId && !activeChatId) {
+        setActiveChatId(data.chatId);
+        // Refresh chat list silently
+        fetchChats();
+      }
+
     } catch (error) {
       console.error('Chat Error:', error);
       setChatMessages(prev => [...prev, {
         role: 'ai',
-        content: "Uzr, hozirda javob bera olmayman. Iltimos, keyinroq urinib ko'ring yoki boshqa savol bering."
+        content: "Uzr, hozirda javob bera olmayman."
       }]);
     }
 
@@ -3892,90 +3943,138 @@ const App = () => {
         {showChat && (
           <div className="mb-6 w-96 max-w-[calc(100vw-4rem)] h-[600px] max-h-[80vh] bg-gradient-to-br from-blue-950/95 via-indigo-950/95 to-purple-950/95 backdrop-blur-2xl rounded-3xl border-2 border-white/20 shadow-2xl flex flex-col overflow-hidden">
             {/* Chat Header */}
-            <div className="bg-gradient-to-r from-blue-500 via-indigo-600 to-purple-600 p-6 flex items-center justify-between border-b border-white/20">
-              <div className="flex items-center gap-4">
-                <div className="relative">
-                  <div className="absolute inset-0 bg-white rounded-full blur-md"></div>
-                  <div className="relative w-12 h-12 bg-white rounded-full flex items-center justify-center">
-                    <Brain size={24} className="text-blue-600" />
-                  </div>
-                  <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-400 rounded-full border-2 border-white"></div>
-                </div>
+            <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-5 rounded-t-3xl flex items-center justify-between shadow-lg z-10 relative">
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => {
+                    if (chatView === 'messages') {
+                      setChatView('list');
+                      fetchChats();
+                    } else {
+                      setChatView('messages');
+                    }
+                  }}
+                  className="p-2 hover:bg-white/20 rounded-lg transition-colors"
+                >
+                  {chatView === 'messages' ? <List size={22} className="text-white" /> : <MessageCircle size={22} className="text-white" />}
+                </button>
+
                 <div>
-                  <h3 className="font-black text-white text-lg">AI Yordamchi</h3>
-                  <p className="text-xs text-white/80 flex items-center gap-2">
-                    <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-                    24/7 Onlayn
-                  </p>
+                  <h3 className="font-black text-white text-lg">
+                    {chatView === 'list' ? 'Suhbatlar Tarixi' : 'AI Yordamchi'}
+                  </h3>
+                  {chatView === 'messages' && (
+                    <p className="text-xs text-white/80 flex items-center gap-2">
+                      <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                      Onlayn
+                    </p>
+                  )}
                 </div>
               </div>
-              <button
-                onClick={() => setShowChat(false)}
-                className="p-2 hover:bg-white/20 rounded-xl transition-all duration-300"
-              >
-                <X size={24} className="text-white" />
-              </button>
+
+              <div className="flex gap-1">
+                <button
+                  onClick={startNewChat}
+                  className="p-2 hover:bg-white/20 rounded-xl transition-all duration-300"
+                  title="Yangi Suhbat"
+                >
+                  <Plus size={24} className="text-white" />
+                </button>
+                <button
+                  onClick={() => setShowChat(false)}
+                  className="p-2 hover:bg-white/20 rounded-xl transition-all duration-300"
+                >
+                  <X size={24} className="text-white" />
+                </button>
+              </div>
             </div>
 
-            {/* Chat Messages */}
-            <div className="flex-1 overflow-y-auto p-6 space-y-5">
-              {chatMessages.length === 0 && (
-                <div className="text-center py-16 space-y-6">
-                  <div className="relative inline-block">
-                    <div className="absolute inset-0 bg-blue-500/50 rounded-full blur-2xl animate-pulse"></div>
-                    <Brain size={64} className="relative text-blue-400" />
+            {/* Chat Content */}
+            {chatView === 'list' ? (
+              <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-[#0f172a] custom-scrollbar">
+                {chats.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center h-full text-white/40 space-y-4">
+                    <MessageCircle size={48} className="opacity-50" />
+                    <p>Suhbatlar tarixi bo'sh</p>
+                    <button onClick={startNewChat} className="text-blue-400 text-sm font-bold hover:underline">Yangi suhbat boshlash</button>
                   </div>
-                  <div className="space-y-2">
-                    <p className="text-xl font-black text-white">Assalomu alaykum! 👋</p>
-                    <p className="text-sm text-white/70">Sizga qanday yordam bera olaman?</p>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    {[
-                      "Grammatika savoli",
-                      "Lug'at yordami",
-                      "Talaffuz qoidalari",
-                      "Mashq yechimi"
-                    ].map((suggestion, i) => (
-                      <button
-                        key={i}
-                        onClick={() => setChatInput(suggestion)}
-                        className="px-4 py-3 bg-white/10 hover:bg-white/20 rounded-xl text-sm font-bold text-white/80 transition-all duration-300 border border-white/10 hover:border-white/30"
-                      >
-                        {suggestion}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {chatMessages.map((msg, i) => (
-                <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-fadeIn`}>
-                  <div className={`max-w-[85%] ${msg.role === 'user'
-                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
-                    : 'bg-white/10 backdrop-blur-xl text-white border border-white/20'
-                    } p-5 rounded-2xl`}>
-                    {msg.role === 'ai' && (
-                      <div className="flex items-center gap-2 mb-3 text-blue-400">
-                        <Brain size={18} />
-                        <span className="text-xs font-bold">AI Yordamchi</span>
+                ) : (
+                  chats.map(chat => (
+                    <div
+                      key={chat._id}
+                      onClick={() => loadChat(chat._id)}
+                      className={`p-4 rounded-xl cursor-pointer border transition-all group ${activeChatId === chat._id ? 'bg-blue-500/20 border-blue-500/50' : 'bg-white/5 border-white/10 hover:bg-white/10'}`}
+                    >
+                      <div className="font-bold text-white truncate text-sm mb-2 group-hover:text-blue-400 transition-colors">{chat.title}</div>
+                      <div className="text-xs text-white/40 flex justify-between items-center">
+                        <span>{new Date(chat.createdAt).toLocaleDateString()}</span>
+                        <ChevronRight size={14} className="opacity-0 group-hover:opacity-100 transition-opacity" />
                       </div>
-                    )}
-                    <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
-                  </div>
-                </div>
-              ))}
-
-              {isChatLoading && (
-                <div className="flex justify-start animate-fadeIn">
-                  <div className="bg-white/10 backdrop-blur-xl border border-white/20 p-5 rounded-2xl">
-                    <div className="flex items-center gap-3">
-                      <Loader2 size={20} className="animate-spin text-blue-400" />
-                      <span className="text-sm text-white/80">Javob tayyorlanmoqda...</span>
+                    </div>
+                  ))
+                )}
+              </div>
+            ) : (
+              /* Chat Messages View */
+              <div className="flex-1 overflow-y-auto p-6 space-y-5 custom-scrollbar">
+                {chatMessages.length === 0 && (
+                  <div className="text-center py-16 space-y-6">
+                    <div className="relative inline-block">
+                      <div className="absolute inset-0 bg-blue-500/50 rounded-full blur-2xl animate-pulse"></div>
+                      <Brain size={64} className="relative text-blue-400" />
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-xl font-black text-white">Assalomu alaykum! 👋</p>
+                      <p className="text-sm text-white/70">Sizga qanday yordam bera olaman?</p>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      {[
+                        "Grammatika savoli",
+                        "Lug'at yordami",
+                        "Talaffuz qoidalari",
+                        "Mashq yechimi"
+                      ].map((suggestion, i) => (
+                        <button
+                          key={i}
+                          onClick={() => setChatInput(suggestion)}
+                          className="px-4 py-3 bg-white/10 hover:bg-white/20 rounded-xl text-sm font-bold text-white/80 transition-all duration-300 border border-white/10 hover:border-white/30"
+                        >
+                          {suggestion}
+                        </button>
+                      ))}
                     </div>
                   </div>
-                </div>
-              )}
-            </div>
+                )}
+
+                {chatMessages.map((msg, i) => (
+                  <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-fadeIn`}>
+                    <div className={`max-w-[85%] ${msg.role === 'user'
+                      ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
+                      : 'bg-white/10 backdrop-blur-xl text-white border border-white/20'
+                      } p-5 rounded-2xl`}>
+                      {msg.role === 'ai' && (
+                        <div className="flex items-center gap-2 mb-3 text-blue-400">
+                          <Brain size={18} />
+                          <span className="text-xs font-bold">AI Yordamchi</span>
+                        </div>
+                      )}
+                      <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
+                    </div>
+                  </div>
+                ))}
+
+                {isChatLoading && (
+                  <div className="flex justify-start animate-fadeIn">
+                    <div className="bg-white/10 backdrop-blur-xl border border-white/20 p-5 rounded-2xl">
+                      <div className="flex items-center gap-3">
+                        <Loader2 size={20} className="animate-spin text-blue-400" />
+                        <span className="text-sm text-white/80">Javob tayyorlanmoqda...</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Chat Input */}
             <div className="p-5 border-t border-white/20 bg-white/5 backdrop-blur-xl">
