@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   BookOpen, Play, Award, Lock, CheckCircle2, ChevronLeft, ChevronRight,
-  User, ArrowRight, HelpCircle, Instagram, Facebook, MessageCircle,
+  User, UserCheck, ArrowRight, HelpCircle, Instagram, Facebook, MessageCircle,
   Youtube, Twitter, Mail, Phone, MapPin, X, Globe, Shield,
   Sparkles, Loader2, ClipboardCheck, Trophy, Star, Video,
   FileText, Send, Menu, LogOut, Download, Book, Target,
