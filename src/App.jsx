@@ -7,7 +7,8 @@ import {
   FileText, Send, Menu, LogOut, Download, Book, Target,
   TrendingUp, Zap, Headphones, CheckCircle, XCircle, Volume2,
   GraduationCap, Brain, Rocket, Clock, Users, BarChart,
-  Lightbulb, Heart, Flag, Compass, ZoomIn, Search, LayoutDashboard, Settings, Layers, Trash2, ArrowLeft, Plus, Activity, Upload, Gift
+  Lightbulb, Heart, Flag, Compass, ZoomIn, Search, LayoutDashboard, Settings, Layers, Trash2, ArrowLeft, Plus, Activity, Upload, Gift,
+  Info, PenTool, Home, Save
 } from 'lucide-react';
 
 const App = () => {
@@ -3856,8 +3857,8 @@ const App = () => {
                     key={tab.id}
                     onClick={() => setEditLessonTab(tab.id)}
                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all text-sm ${editLessonTab === tab.id
-                        ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
-                        : 'text-white/60 hover:bg-white/5 hover:text-white'
+                      ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
+                      : 'text-white/60 hover:bg-white/5 hover:text-white'
                       }`}
                   >
                     {tab.icon}
@@ -3882,8 +3883,8 @@ const App = () => {
                       key={tab.id}
                       onClick={() => setEditLessonTab(tab.id)}
                       className={`px-4 py-2 rounded-lg font-bold text-xs whitespace-nowrap ${editLessonTab === tab.id
-                          ? 'bg-blue-600 text-white'
-                          : 'bg-white/5 text-white/60'
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-white/5 text-white/60'
                         }`}
                     >
                       {tab.label}
