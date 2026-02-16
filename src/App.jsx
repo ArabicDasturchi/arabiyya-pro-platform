@@ -734,7 +734,10 @@ const App = () => {
 
     // Refresh data based on tab
     if (adminTab === 'courses') fetchLevels();
-    if (adminTab === 'submissions') fetchSubmissions();
+    if (adminTab === 'submissions') {
+      fetchSubmissions();
+      if (levels.length === 0) fetchLevels(); // Dars nomlarini bilish uchun
+    }
     if (adminTab === 'orders') fetchAdminOrders();
     if (adminTab === 'dashboard' || adminTab === 'users') fetchAdminStats();
 
@@ -3103,52 +3106,57 @@ const App = () => {
                             {submissions.length === 0 ? (
                               <tr><td colSpan="6" className="p-8 text-center text-white/40">Hozircha topshiriqlar yo'q</td></tr>
                             ) : (
-                              submissions.map((sub) => (
-                                <tr key={sub._id} className="hover:bg-white/5 transition-colors">
-                                  <td className="p-4">
-                                    <div className="font-bold">{sub.user?.name || "Noma'lum"}</div>
-                                    <div className="text-xs text-white/40">{sub.user?.email}</div>
-                                  </td>
-                                  <td className="p-4 text-sm font-mono text-blue-300">
-                                    {sub.levelId} <span className="text-white/40">/</span> {sub.lessonId}
-                                  </td>
-                                  <td className="p-4">
-                                    <span className={`px-2 py-1 rounded text-xs font-bold uppercase ${sub.type === 'quiz' ? 'bg-purple-500/20 text-purple-400' : 'bg-orange-500/20 text-orange-400'}`}>
-                                      {sub.type}
-                                    </span>
-                                  </td>
-                                  <td className="p-4">
-                                    {sub.type === 'quiz' ? (
-                                      <span className="font-bold text-lg">{sub.score} ball</span>
-                                    ) : (
-                                      sub.fileUrl ? (
-                                        <a href={`https://arabiyya-pro-backend.onrender.com${sub.fileUrl}`} target="_blank" rel="noreferrer" className="text-blue-400 hover:underline flex items-center gap-1">
-                                          <Download size={14} /> Fayl
-                                        </a>
-                                      ) : <span className="text-white/40">Fayl yo'q</span>
-                                    )}
-                                  </td>
-                                  <td className="p-4">
-                                    <span className={`px-2 py-1 rounded text-xs font-bold uppercase ${sub.status === 'approved' ? 'bg-green-500/20 text-green-400' :
-                                      sub.status === 'rejected' ? 'bg-red-500/20 text-red-400' :
-                                        'bg-yellow-500/20 text-yellow-400'
-                                      }`}>
-                                      {sub.status}
-                                    </span>
-                                  </td>
-                                  <td className="p-4 text-right">
-                                    <button
-                                      onClick={() => {
-                                        setEditingSubmission(sub);
-                                        setShowGradeModal(true);
-                                      }}
-                                      className="bg-white/10 hover:bg-white/20 text-white px-3 py-1 rounded-lg text-sm font-bold transition-colors"
-                                    >
-                                      Baholash
-                                    </button>
-                                  </td>
-                                </tr>
-                              ))
+                              submissions.map((sub) => {
+                                const level = levels.find(l => l.id === sub.levelId);
+                                const lesson = level?.lessons.find(l => l.id === sub.lessonId);
+                                return (
+                                  <tr key={sub._id} className="hover:bg-white/5 transition-colors">
+                                    <td className="p-4">
+                                      <div className="font-bold">{sub.user?.name || "Noma'lum"}</div>
+                                      <div className="text-xs text-white/40">{sub.user?.email}</div>
+                                    </td>
+                                    <td className="p-4 text-sm">
+                                      <div className="font-bold text-white">{lesson ? lesson.title : sub.lessonId}</div>
+                                      <div className="text-white/40 text-xs font-mono">{level ? level.title : sub.levelId}</div>
+                                    </td>
+                                    <td className="p-4">
+                                      <span className={`px-2 py-1 rounded text-xs font-bold uppercase ${sub.type === 'quiz' ? 'bg-purple-500/20 text-purple-400' : 'bg-orange-500/20 text-orange-400'}`}>
+                                        {sub.type}
+                                      </span>
+                                    </td>
+                                    <td className="p-4">
+                                      {sub.type === 'quiz' ? (
+                                        <span className="font-bold text-lg">{sub.score} ball</span>
+                                      ) : (
+                                        sub.fileUrl ? (
+                                          <a href={`https://arabiyya-pro-backend.onrender.com${sub.fileUrl}`} target="_blank" rel="noreferrer" className="text-blue-400 hover:underline flex items-center gap-1">
+                                            <Download size={14} /> Fayl
+                                          </a>
+                                        ) : <span className="text-white/40">Fayl yo'q</span>
+                                      )}
+                                    </td>
+                                    <td className="p-4">
+                                      <span className={`px-2 py-1 rounded text-xs font-bold uppercase ${sub.status === 'approved' ? 'bg-green-500/20 text-green-400' :
+                                        sub.status === 'rejected' ? 'bg-red-500/20 text-red-400' :
+                                          'bg-yellow-500/20 text-yellow-400'
+                                        }`}>
+                                        {sub.status}
+                                      </span>
+                                    </td>
+                                    <td className="p-4 text-right">
+                                      <button
+                                        onClick={() => {
+                                          setEditingSubmission(sub);
+                                          setShowGradeModal(true);
+                                        }}
+                                        className="bg-white/10 hover:bg-white/20 text-white px-3 py-1 rounded-lg text-sm font-bold transition-colors"
+                                      >
+                                        Baholash
+                                      </button>
+                                    </td>
+                                  </tr>
+                                );
+                              })
                             )}
                           </tbody>
                         </table>
