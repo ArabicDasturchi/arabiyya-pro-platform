@@ -647,12 +647,76 @@ const App = () => {
     setChatView('messages');
   };
 
+  const deleteMessage = async (msgId) => {
+    if (!activeChatId || !msgId) return;
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`https://arabiyya-pro-backend.onrender.com/api/ai/chats/${activeChatId}/messages/${msgId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        setChatMessages(prev => prev.filter(m => m._id !== msgId));
+      }
+    } catch (err) { console.error(err); }
+  };
+
+  const editMessage = async (msgId, newContent) => {
+    if (!activeChatId || !msgId) return;
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`https://arabiyya-pro-backend.onrender.com/api/ai/chats/${activeChatId}/messages/${msgId}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ content: newContent })
+      });
+      if (res.ok) {
+        setChatMessages(prev => prev.map(m => m._id === msgId ? { ...m, content: newContent } : m));
+      }
+    } catch (err) { console.error(err); }
+  };
+
+  const deleteChat = async (chatId, e) => {
+    e.stopPropagation();
+    if (!confirm("Haqiqatan ham bu suhbatni o'chirmoqchimisiz?")) return;
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`https://arabiyya-pro-backend.onrender.com/api/ai/chats/${chatId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        setChats(prev => prev.filter(c => c._id !== chatId));
+        if (activeChatId === chatId) startNewChat();
+      }
+    } catch (err) { console.error(err); }
+  };
+
+  const clearAllChats = async () => {
+    if (!confirm("Barcha suhbatlar tarixini o'chirasizmi? (Qaytarib bo'lmaydi!)")) return;
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch('https://arabiyya-pro-backend.onrender.com/api/ai/chats/clear', {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        setChats([]);
+        startNewChat();
+      }
+    } catch (err) { console.error(err); }
+  };
+
   // AI Chat function
   const sendChatMessage = async () => {
     if (!chatInput.trim()) return;
 
     const userMessage = chatInput;
-    setChatMessages(prev => [...prev, { role: 'user', content: userMessage }]);
+    const tempId = Date.now().toString();
+    setChatMessages(prev => [...prev, { _id: tempId, role: 'user', content: userMessage }]);
     setChatInput('');
     setIsChatLoading(true);
 
@@ -671,15 +735,19 @@ const App = () => {
       });
 
       const data = await response.json();
-      const aiResponse = data.success ? data.response :
-        "Kechirasiz, texnik xatolik yuz berdi.";
+      const aiResponse = data.success ? data.response : "Kechirasiz, texnik xatolik yuz berdi.";
 
-      setChatMessages(prev => [...prev, { role: 'ai', content: aiResponse }]);
+      // Update User Message ID
+      if (data.userMessageId) {
+        setChatMessages(prev => prev.map(m => m._id === tempId ? { ...m, _id: data.userMessageId } : m));
+      }
+
+      // Add AI Message
+      setChatMessages(prev => [...prev, { _id: data.aiMessageId, role: 'ai', content: aiResponse }]);
 
       // Update active chat ID if new chat created
       if (data.chatId && !activeChatId) {
         setActiveChatId(data.chatId);
-        // Refresh chat list silently
         fetchChats();
       }
 
@@ -4002,16 +4070,33 @@ const App = () => {
                   chats.map(chat => (
                     <div
                       key={chat._id}
-                      onClick={() => loadChat(chat._id)}
-                      className={`p-4 rounded-xl cursor-pointer border transition-all group ${activeChatId === chat._id ? 'bg-blue-500/20 border-blue-500/50' : 'bg-white/5 border-white/10 hover:bg-white/10'}`}
+                      className={`group relative p-4 rounded-xl cursor-pointer border transition-all ${activeChatId === chat._id ? 'bg-blue-500/20 border-blue-500/50' : 'bg-white/5 border-white/10 hover:bg-white/10'}`}
                     >
-                      <div className="font-bold text-white truncate text-sm mb-2 group-hover:text-blue-400 transition-colors">{chat.title}</div>
-                      <div className="text-xs text-white/40 flex justify-between items-center">
-                        <span>{new Date(chat.createdAt).toLocaleDateString()}</span>
-                        <ChevronRight size={14} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <div onClick={() => loadChat(chat._id)} className="pr-8">
+                        <div className="font-bold text-white truncate text-sm mb-2 group-hover:text-blue-400 transition-colors">{chat.title}</div>
+                        <div className="text-xs text-white/40 flex justify-between items-center">
+                          <span>{new Date(chat.createdAt).toLocaleDateString()}</span>
+                        </div>
                       </div>
+                      <button
+                        onClick={(e) => deleteChat(chat._id, e)}
+                        className="absolute top-4 right-4 p-1.5 text-white/40 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all opacity-0 group-hover:opacity-100"
+                        title="Suhbatni o'chirish"
+                      >
+                        <Trash2 size={16} />
+                      </button>
                     </div>
                   ))
+                )}
+                {chats.length > 0 && (
+                  <div className="pt-4 mt-4 border-t border-white/10">
+                    <button
+                      onClick={clearAllChats}
+                      className="w-full py-3 px-4 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all hover:scale-[1.02]"
+                    >
+                      <Trash2 size={16} /> Barcha suhbatlarni o'chirish
+                    </button>
+                  </div>
                 )}
               </div>
             ) : (
@@ -4047,15 +4132,52 @@ const App = () => {
                 )}
 
                 {chatMessages.map((msg, i) => (
-                  <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-fadeIn`}>
+                  <div key={i} className={`group flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-fadeIn relative`}>
+
+                    {/* User Controls */}
+                    {msg.role === 'user' && (
+                      <div className="absolute top-2 right-full mr-2 hidden group-hover:flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button
+                          onClick={() => {
+                            const newText = prompt("Xabarni tahrirlash:", msg.content);
+                            if (newText && newText !== msg.content) editMessage(msg._id, newText);
+                          }}
+                          className="p-1.5 bg-blue-500/20 hover:bg-blue-500 text-blue-400 hover:text-white rounded-lg transition-colors"
+                          title="Tahrirlash"
+                        >
+                          <PenTool size={14} />
+                        </button>
+                        <button
+                          onClick={() => deleteMessage(msg._id)}
+                          className="p-1.5 bg-red-500/20 hover:bg-red-500 text-red-400 hover:text-white rounded-lg transition-colors"
+                          title="O'chirish"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    )}
+
                     <div className={`max-w-[85%] ${msg.role === 'user'
                       ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
                       : 'bg-white/10 backdrop-blur-xl text-white border border-white/20'
                       } p-5 rounded-2xl`}>
                       {msg.role === 'ai' && (
-                        <div className="flex items-center gap-2 mb-3 text-blue-400">
-                          <Brain size={18} />
-                          <span className="text-xs font-bold">AI Yordamchi</span>
+                        <div className="flex items-center justify-between mb-3 text-blue-400">
+                          <div className="flex items-center gap-2">
+                            <Brain size={18} />
+                            <span className="text-xs font-bold">AI Yordamchi</span>
+                          </div>
+                          {/* AI Copy Control */}
+                          <button
+                            onClick={() => {
+                              navigator.clipboard.writeText(msg.content);
+                              alert("Nusxalandi!");
+                            }}
+                            className="p-1 hover:text-white transition-colors opacity-0 group-hover:opacity-100"
+                            title="Nusxa olish"
+                          >
+                            <ClipboardCheck size={14} />
+                          </button>
                         </div>
                       )}
                       <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>

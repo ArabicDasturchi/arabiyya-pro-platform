@@ -312,6 +312,21 @@ router.get('/chats/:id', async (req, res) => {
   }
 });
 
+// @route   DELETE /api/ai/chats/clear
+// @desc    Delete all chats
+// @access  Private
+router.delete('/chats/clear', async (req, res) => {
+  try {
+    const user = await getUserFromToken(req);
+    if (!user) return res.status(401).json({ success: false, message: 'Auth required' });
+
+    await Chat.deleteMany({ user: user._id });
+    res.json({ success: true, message: 'All chats deleted' });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
 // @route   DELETE /api/ai/chats/:id
 // @desc    Delete chat
 // @access  Private
@@ -327,7 +342,49 @@ router.delete('/chats/:id', async (req, res) => {
   }
 });
 
-// @route   POST /api/ai/chat
+// @route   PUT /api/ai/chats/:chatId/messages/:msgId
+// @desc    Edit a message
+router.put('/chats/:chatId/messages/:msgId', async (req, res) => {
+  try {
+    const { chatId, msgId } = req.params;
+    const { content } = req.body;
+    const user = await getUserFromToken(req);
+    if (!user) return res.status(401).json({ success: false, message: 'Auth required' });
+
+    const chat = await Chat.findOne({ _id: chatId, user: user._id });
+    if (!chat) return res.status(404).json({ success: false, message: 'Chat not found' });
+
+    const message = chat.messages.id(msgId);
+    if (!message) return res.status(404).json({ success: false, message: 'Message not found' });
+
+    message.content = content;
+    await chat.save();
+
+    res.json({ success: true, chat });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// @route   DELETE /api/ai/chats/:chatId/messages/:msgId
+// @desc    Delete a message
+router.delete('/chats/:chatId/messages/:msgId', async (req, res) => {
+  try {
+    const { chatId, msgId } = req.params;
+    const user = await getUserFromToken(req);
+    if (!user) return res.status(401).json({ success: false, message: 'Auth required' });
+
+    const chat = await Chat.findOne({ _id: chatId, user: user._id });
+    if (!chat) return res.status(404).json({ success: false, message: 'Chat not found' });
+
+    chat.messages.pull({ _id: msgId });
+    await chat.save();
+
+    res.json({ success: true, chat });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
 // @desc    AI chat assistant (creates or updates chat)
 // @access  Public (but saves only if Auth)
 router.post('/chat', [
@@ -397,10 +454,19 @@ Javob:`;
       await chat.save();
     }
 
+    // Get IDs of new messages
+    let userMessageId, aiMessageId;
+    if (chat && chat.messages.length >= 2) {
+      userMessageId = chat.messages[chat.messages.length - 2]._id;
+      aiMessageId = chat.messages[chat.messages.length - 1]._id;
+    }
+
     res.json({
       success: true,
       response: aiResponse,
       chatId: chat ? chat._id : null,
+      userMessageId,
+      aiMessageId,
       saved: !!user
     });
   } catch (error) {
