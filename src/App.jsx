@@ -25,6 +25,11 @@ const App = () => {
   const [lessonTestStarted, setLessonTestStarted] = useState(false);
   const [examAnswers, setExamAnswers] = useState([]);
   const [examStep, setExamStep] = useState(0);
+
+  // Admin Submissions State
+  const [submissions, setSubmissions] = useState([]);
+  const [editingSubmission, setEditingSubmission] = useState(null);
+  const [showGradeModal, setShowGradeModal] = useState(false);
   const [showChat, setShowChat] = useState(false);
   const [chatMessages, setChatMessages] = useState([]);
   const [chatInput, setChatInput] = useState('');
@@ -657,6 +662,53 @@ const App = () => {
       }
     } catch (error) {
       console.error('Fetch Orders Error:', error);
+    }
+  };
+
+
+  const fetchSubmissions = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch('https://arabiyya-pro-backend.onrender.com/api/submissions/all', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (data.success) {
+        setSubmissions(data.submissions);
+      }
+    } catch (err) {
+      console.error("Error fetching submissions:", err);
+    }
+  };
+
+  const handleGrade = async (status) => {
+    if (!editingSubmission) return;
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`https://arabiyya-pro-backend.onrender.com/api/submissions/${editingSubmission._id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          status: status,
+          score: editingSubmission.score,
+          comment: editingSubmission.comment
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert("✅ Topshiriq baholandi!");
+        setShowGradeModal(false);
+        setEditingSubmission(null);
+        fetchSubmissions();
+      } else {
+        alert("Xatolik: " + data.message);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Server error grading submission");
     }
   };
 
@@ -2823,6 +2875,7 @@ const App = () => {
                 {[
                   { id: 'dashboard', label: 'Boshqaruv Paneli', icon: LayoutDashboard },
                   { id: 'orders', label: 'Buyurtmalar', icon: ClipboardCheck },
+                  { id: 'submissions', label: 'Topshiriqlar', icon: CheckCircle2 },
                   { id: 'users', label: 'Foydalanuvchilar', icon: Users },
                   { id: 'courses', label: 'Kurslar', icon: BookOpen },
                   { id: 'settings', label: 'Sozlamalar', icon: Settings },
@@ -2850,19 +2903,22 @@ const App = () => {
                   <h2 className="text-3xl font-black mb-2 flex items-center gap-3">
                     {adminTab === 'dashboard' && <LayoutDashboard className="text-blue-400" size={32} />}
                     {adminTab === 'orders' && <ClipboardCheck className="text-blue-400" size={32} />}
+                    {adminTab === 'submissions' && <CheckCircle2 className="text-blue-400" size={32} />}
                     {adminTab === 'users' && <Users className="text-blue-400" size={32} />}
                     {adminTab === 'courses' && <BookOpen className="text-blue-400" size={32} />}
                     {adminTab === 'settings' && <Settings className="text-blue-400" size={32} />}
                     {adminTab === 'dashboard' ? 'Boshqaruv Paneli' :
                       adminTab === 'orders' ? 'Buyurtmalar' :
-                        adminTab === 'users' ? 'Foydalanuvchilar' :
-                          adminTab === 'courses' ? 'Kurslar' : 'Sozlamalar'}
+                        adminTab === 'submissions' ? 'Topshiriqlar' :
+                          adminTab === 'users' ? 'Foydalanuvchilar' :
+                            adminTab === 'courses' ? 'Kurslar' : 'Sozlamalar'}
                   </h2>
                   <p className="text-white/60">
                     {adminTab === 'dashboard' ? 'Platforma statistikasi va umumiy ko\'rsatkichlar' :
                       adminTab === 'orders' ? 'Yangi kelib tushgan to\'lovlar va buyurtmalar' :
-                        adminTab === 'users' ? 'Foydalanuvchilarni boshqarish va nazorat qilish' :
-                          adminTab === 'courses' ? 'O\'quv dasturlari va darslar ro\'yxati' : 'Tizim sozlamalari'}
+                        adminTab === 'submissions' ? 'O\'quvchilarning uyga vazifalari va test natijalari' :
+                          adminTab === 'users' ? 'Foydalanuvchilarni boshqarish va nazorat qilish' :
+                            adminTab === 'courses' ? 'O\'quv dasturlari va darslar ro\'yxati' : 'Tizim sozlamalari'}
                   </p>
                 </div>
                 <button
@@ -3009,6 +3065,162 @@ const App = () => {
                           </table>
                         </div>
                       </div>
+                    </div>
+                  )}
+
+                  {/* SUBMISSIONS TAB */}
+                  {adminTab === 'submissions' && (
+                    <div className="space-y-6 animate-in fade-in duration-300">
+                      <div className="flex justify-between items-center bg-white/5 p-4 rounded-xl border border-white/10">
+                        <h3 className="text-xl font-bold flex items-center gap-3">
+                          <CheckCircle2 className="text-blue-400" />
+                          Barcha Topshiriqlar
+                        </h3>
+                        <button onClick={fetchSubmissions} className="bg-white/10 p-2 rounded-lg hover:bg-white/20 transition-colors" title="Yangilash">
+                          <TrendingUp size={20} />
+                        </button>
+                      </div>
+
+                      <div className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 overflow-hidden">
+                        <table className="w-full text-left">
+                          <thead className="bg-white/5 border-b border-white/10 text-white/60 text-xs uppercase font-bold">
+                            <tr>
+                              <th className="p-4">O'quvchi</th>
+                              <th className="p-4">Dars</th>
+                              <th className="p-4">Turi</th>
+                              <th className="p-4">Natija</th>
+                              <th className="p-4">Status</th>
+                              <th className="p-4 text-right">Amal</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-white/5">
+                            {submissions.length === 0 ? (
+                              <tr><td colSpan="6" className="p-8 text-center text-white/40">Hozircha topshiriqlar yo'q</td></tr>
+                            ) : (
+                              submissions.map((sub) => (
+                                <tr key={sub._id} className="hover:bg-white/5 transition-colors">
+                                  <td className="p-4">
+                                    <div className="font-bold">{sub.user?.name || "Noma'lum"}</div>
+                                    <div className="text-xs text-white/40">{sub.user?.email}</div>
+                                  </td>
+                                  <td className="p-4 text-sm font-mono text-blue-300">
+                                    {sub.levelId} <span className="text-white/40">/</span> {sub.lessonId}
+                                  </td>
+                                  <td className="p-4">
+                                    <span className={`px-2 py-1 rounded text-xs font-bold uppercase ${sub.type === 'quiz' ? 'bg-purple-500/20 text-purple-400' : 'bg-orange-500/20 text-orange-400'}`}>
+                                      {sub.type}
+                                    </span>
+                                  </td>
+                                  <td className="p-4">
+                                    {sub.type === 'quiz' ? (
+                                      <span className="font-bold text-lg">{sub.score} ball</span>
+                                    ) : (
+                                      sub.fileUrl ? (
+                                        <a href={`https://arabiyya-pro-backend.onrender.com${sub.fileUrl}`} target="_blank" rel="noreferrer" className="text-blue-400 hover:underline flex items-center gap-1">
+                                          <Download size={14} /> Fayl
+                                        </a>
+                                      ) : <span className="text-white/40">Fayl yo'q</span>
+                                    )}
+                                  </td>
+                                  <td className="p-4">
+                                    <span className={`px-2 py-1 rounded text-xs font-bold uppercase ${sub.status === 'approved' ? 'bg-green-500/20 text-green-400' :
+                                      sub.status === 'rejected' ? 'bg-red-500/20 text-red-400' :
+                                        'bg-yellow-500/20 text-yellow-400'
+                                      }`}>
+                                      {sub.status}
+                                    </span>
+                                  </td>
+                                  <td className="p-4 text-right">
+                                    <button
+                                      onClick={() => {
+                                        setEditingSubmission(sub);
+                                        setShowGradeModal(true);
+                                      }}
+                                      className="bg-white/10 hover:bg-white/20 text-white px-3 py-1 rounded-lg text-sm font-bold transition-colors"
+                                    >
+                                      Baholash
+                                    </button>
+                                  </td>
+                                </tr>
+                              ))
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
+
+                      {/* GRADE MODAL */}
+                      {showGradeModal && editingSubmission && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
+                          <div className="bg-[#0f172a] border border-white/20 rounded-3xl p-8 max-w-lg w-full space-y-6 relative shadow-2xl">
+                            <button onClick={() => setShowGradeModal(false)} className="absolute top-4 right-4 text-white/40 hover:text-white"><X size={24} /></button>
+
+                            <h3 className="text-2xl font-black mb-4 border-b border-white/10 pb-4">Topshiriqni Baholash</h3>
+
+                            <div className="space-y-4">
+                              <div className="bg-white/5 p-4 rounded-xl">
+                                <div className="text-xs font-bold text-white/40 uppercase mb-1">O'quvchi</div>
+                                <div className="text-lg font-bold">{editingSubmission.user?.name}</div>
+                                <div className="text-white/60 text-xs">{editingSubmission.user?.email}</div>
+                              </div>
+
+                              <div className="grid grid-cols-2 gap-4">
+                                <div className="bg-white/5 p-4 rounded-xl">
+                                  <div className="text-xs font-bold text-white/40 uppercase mb-1">Turi</div>
+                                  <div className="font-mono text-blue-300">{editingSubmission.type}</div>
+                                </div>
+                                <div className="bg-white/5 p-4 rounded-xl">
+                                  <div className="text-xs font-bold text-white/40 uppercase mb-1">Status</div>
+                                  <div className="font-bold uppercase">{editingSubmission.status}</div>
+                                </div>
+                              </div>
+
+                              {editingSubmission.type === 'homework' && editingSubmission.fileUrl && (
+                                <div>
+                                  <label className="text-xs font-bold text-white/40 uppercase mb-1 block">YUKLANGAN FAYL</label>
+                                  <a href={`https://arabiyya-pro-backend.onrender.com${editingSubmission.fileUrl}`} target="_blank" rel="noreferrer" className="w-full bg-blue-600/20 text-blue-400 px-4 py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-blue-600/30 transition-colors border border-blue-500/20 font-bold">
+                                    <Download size={18} /> Yuklab olish / Ko'rish
+                                  </a>
+                                </div>
+                              )}
+
+                              <div>
+                                <label className="text-xs font-bold text-white/40 uppercase mb-1 block">Baho (Ball)</label>
+                                <input
+                                  type="number"
+                                  value={editingSubmission.score || 0}
+                                  onChange={(e) => setEditingSubmission({ ...editingSubmission, score: parseInt(e.target.value) })}
+                                  className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white font-bold text-xl focus:border-blue-500 transition-colors"
+                                />
+                              </div>
+
+                              <div>
+                                <label className="text-xs font-bold text-white/40 uppercase mb-1 block">Ustoz Izohi</label>
+                                <textarea
+                                  value={editingSubmission.comment || ''}
+                                  onChange={(e) => setEditingSubmission({ ...editingSubmission, comment: e.target.value })}
+                                  placeholder="O'quvchiga izoh qoldiring..."
+                                  className="w-full h-24 bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white resize-none focus:border-blue-500 transition-colors"
+                                ></textarea>
+                              </div>
+
+                              <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/10">
+                                <button
+                                  onClick={() => handleGrade('rejected')}
+                                  className="bg-red-500/10 hover:bg-red-500/20 text-red-400 font-bold py-3 rounded-xl transition-colors border border-red-500/20"
+                                >
+                                  Rad etish ❌
+                                </button>
+                                <button
+                                  onClick={() => handleGrade('approved')}
+                                  className="bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-xl transition-colors shadow-lg shadow-green-500/20"
+                                >
+                                  Tasdiqlash ✅
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
 

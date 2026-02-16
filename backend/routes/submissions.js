@@ -4,7 +4,7 @@ import path from 'path';
 import fs from 'fs';
 import Submission from '../models/Submission.js';
 import User from '../models/User.js';
-import { authMiddleware } from '../middleware/auth.js';
+import { authMiddleware, adminMiddleware } from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -114,6 +114,48 @@ router.get('/my', authMiddleware, async (req, res) => {
         res.json({ success: true, submissions });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
+// @route   GET /api/submissions/all
+// @desc    Get all submissions (Admin only)
+// @access  Private/Admin
+router.get('/all', authMiddleware, adminMiddleware, async (req, res) => {
+    try {
+        const submissions = await Submission.find({})
+            .populate('user', 'name email')
+            .sort({ createdAt: -1 });
+        res.json({ success: true, submissions });
+    } catch (error) {
+        console.error('Get All Submissions Error:', error);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
+
+// @route   PUT /api/submissions/:id
+// @desc    Update submission (Grade/Feedback)
+// @access  Private/Admin
+router.put('/:id', authMiddleware, adminMiddleware, async (req, res) => {
+    try {
+        const { status, score, comment } = req.body;
+
+        let updateData = { status };
+        if (score !== undefined) updateData.score = score;
+        if (comment !== undefined) updateData.comment = comment; // Admin comment (feedback)
+
+        const submission = await Submission.findByIdAndUpdate(
+            req.params.id,
+            updateData,
+            { new: true }
+        ).populate('user', 'name email');
+
+        if (!submission) {
+            return res.status(404).json({ success: false, message: 'Submission not found' });
+        }
+
+        res.json({ success: true, submission });
+    } catch (error) {
+        console.error('Update Submission Error:', error);
+        res.status(500).json({ success: false, message: 'Server error updating submission' });
     }
 });
 
