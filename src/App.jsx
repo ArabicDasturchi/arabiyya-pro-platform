@@ -30,6 +30,9 @@ const App = () => {
   const [submissions, setSubmissions] = useState([]);
   const [editingSubmission, setEditingSubmission] = useState(null);
   const [showGradeModal, setShowGradeModal] = useState(false);
+
+  // Student Submissions State
+  const [mySubmissions, setMySubmissions] = useState([]);
   const [showChat, setShowChat] = useState(false);
   const [chatMessages, setChatMessages] = useState([]);
   const [chatInput, setChatInput] = useState('');
@@ -95,6 +98,22 @@ const App = () => {
   }, []);
 
   // Function to refresh user data (to get updated purchasedLevels)
+  const fetchMySubmissions = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+      const res = await fetch('https://arabiyya-pro-backend.onrender.com/api/submissions/my', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (data.success) {
+        setMySubmissions(data.submissions);
+      }
+    } catch (err) {
+      console.error("Failed to fetch my submissions:", err);
+    }
+  };
+
   const refreshUser = async () => {
     const token = localStorage.getItem('token');
     if (!token) return;
@@ -109,6 +128,7 @@ const App = () => {
         console.log('🔄 User data refreshed:', data.user.name);
         console.log('💰 Purchased Levels:', data.user.purchasedLevels);
         setUser(data.user);
+        fetchMySubmissions(); // Update submissions history too
       }
     } catch (err) {
       console.error('User refresh failed', err);
@@ -1868,48 +1888,145 @@ const App = () => {
                       </div>
                     </div>
 
-                    <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-3xl p-8 text-center space-y-6">
-                      <Download size={48} className="mx-auto text-emerald-400" />
-                      <div>
-                        <h4 className="text-xl font-bold text-emerald-400 mb-2">Vazifani Yuklash</h4>
-                        <p className="text-white/60 text-sm max-w-md mx-auto">Vazifani bajarib bo'lgach, uni rasmga olib yoki audio yozib shu yerga yuklang.</p>
-                      </div>
+                    {(() => {
+                      const submission = mySubmissions.find(s =>
+                        s.levelId === selectedLevel.id &&
+                        s.lessonId === selectedLesson.id &&
+                        s.type === 'homework'
+                      );
 
-                      <div className="flex justify-center">
-                        <label className="bg-gradient-to-r from-emerald-500 to-green-600 text-white px-8 py-4 rounded-xl font-bold hover:scale-105 transition-transform cursor-pointer flex items-center gap-3 shadow-lg shadow-emerald-500/20">
-                          <Upload size={24} />
-                          Fayl Tanlash (Rasm/Audio)
-                          <input type="file" className="hidden" onChange={async (e) => {
-                            const file = e.target.files[0];
-                            if (!file) return;
+                      if (submission) {
+                        return (
+                          <div className="bg-white/5 p-8 rounded-3xl border border-white/10 space-y-6 text-center animate-in zoom-in duration-300">
+                            <div className="flex flex-col items-center gap-4">
+                              <div className={`w-20 h-20 rounded-full flex items-center justify-center text-4xl shadow-xl ${submission.status === 'approved' ? 'bg-green-500 text-white shadow-green-500/50' :
+                                submission.status === 'rejected' ? 'bg-red-500 text-white shadow-red-500/50' :
+                                  'bg-yellow-500 text-white shadow-yellow-500/50 animate-pulse'
+                                }`}>
+                                {submission.status === 'approved' ? <CheckCircle size={40} /> :
+                                  submission.status === 'rejected' ? <XCircle size={40} /> :
+                                    <Clock size={40} />}
+                              </div>
 
-                            if (file.size > 10 * 1024 * 1024) return alert("Fayl hajmi 10MB dan oshmasligi kerak!");
+                              <div>
+                                <h3 className="text-2xl font-black mb-1">
+                                  {submission.status === 'approved' ? '✅ Qabul Qilindi!' :
+                                    submission.status === 'rejected' ? '❌ Rad Etildi' :
+                                      '⏳ Tekshirilmoqda...'}
+                                </h3>
+                                <p className="text-white/60">
+                                  {submission.status === 'approved' ? 'Tabriklaymiz! Vazifangiz mukammal bajarildi.' :
+                                    submission.status === 'rejected' ? 'Qayta urinib ko\'ring.' :
+                                      'Ustoz tez orada tekshirib, baho qo\'yadi.'}
+                                </p>
+                              </div>
+                            </div>
 
-                            const formData = new FormData();
-                            formData.append('file', file);
-                            formData.append('levelId', selectedLevel.id);
-                            formData.append('lessonId', selectedLesson.id);
+                            {submission.status === 'approved' && (
+                              <div className="bg-green-500/10 p-6 rounded-2xl border border-green-500/20 max-w-sm mx-auto">
+                                <div className="text-sm font-bold text-green-400 uppercase tracking-widest mb-1">SIZNING BAHOINGIZ</div>
+                                <div className="text-5xl font-black text-white mb-2">{submission.score || 0}</div>
+                                <div className="text-white/60 text-xs">100 balldan</div>
+                              </div>
+                            )}
 
-                            // Optimistic UI updates could be added here (e.g. loading spinner)
-                            try {
-                              const token = localStorage.getItem('token');
-                              const res = await fetch('https://arabiyya-pro-backend.onrender.com/api/submissions/upload', {
-                                method: 'POST',
-                                headers: { 'Authorization': `Bearer ${token}` },
-                                body: formData
-                              });
-                              const data = await res.json();
-                              if (data.success) alert("✅ Vazifa muvaffaqiyatli yuklandi!");
-                              else alert("Xatolik: " + data.message);
-                            } catch (err) {
-                              console.error(err);
-                              alert("Server xatosi: Fayl yuklanmadi");
-                            }
-                          }} />
-                        </label>
-                      </div>
-                      <p className="text-white/40 text-xs mt-4">Fayl hajmi 10MB dan oshmasligi kerak (JPG, PNG, MP3)</p>
-                    </div>
+                            {submission.comment && (
+                              <div className="bg-white/5 p-6 rounded-2xl border border-white/10 text-left max-w-2xl mx-auto relative">
+                                <MessageCircle className="absolute top-4 right-4 text-white/20" size={24} />
+                                <div className="text-xs font-bold text-white/40 uppercase mb-2">USTOZ IZOHI</div>
+                                <p className="italic text-lg text-white/90 leading-relaxed">"{submission.comment}"</p>
+                              </div>
+                            )}
+
+                            {/* Rejected bo'lsa qayta yuklash */}
+                            {submission.status === 'rejected' && (
+                              <div className="bg-red-500/10 border border-red-500/20 rounded-3xl p-8 text-center space-y-6 mt-6">
+                                <h4 className="text-xl font-bold text-red-400">Qayta Yuklash</h4>
+                                <label className="bg-red-500 hover:bg-red-600 text-white px-8 py-4 rounded-xl font-bold cursor-pointer inline-flex items-center gap-3 shadow-lg shadow-red-500/20 transition-all">
+                                  <Upload size={24} />
+                                  Yangi Fayl Yuklash
+                                  <input type="file" className="hidden" onChange={async (e) => {
+                                    const file = e.target.files[0];
+                                    if (!file) return;
+                                    if (file.size > 10 * 1024 * 1024) return alert("Fayl 10MB dan katta bo'lmasin");
+
+                                    const formData = new FormData();
+                                    formData.append('file', file);
+                                    formData.append('levelId', selectedLevel.id);
+                                    formData.append('lessonId', selectedLesson.id);
+
+                                    try {
+                                      const token = localStorage.getItem('token');
+                                      const res = await fetch('https://arabiyya-pro-backend.onrender.com/api/submissions/upload', {
+                                        method: 'POST',
+                                        headers: { 'Authorization': `Bearer ${token}` },
+                                        body: formData
+                                      });
+                                      const data = await res.json();
+                                      if (data.success) {
+                                        alert("✅ Qayta yuklandi!");
+                                        fetchMySubmissions(); // Update status
+                                      } else alert("Xatolik: " + data.message);
+                                    } catch (err) {
+                                      console.error(err);
+                                      alert("Server xatosi");
+                                    }
+                                  }} />
+                                </label>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      }
+
+                      // Agar submission bo'lmasa -> Upload Form
+                      return (
+                        <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-3xl p-8 text-center space-y-6">
+                          <Download size={48} className="mx-auto text-emerald-400" />
+                          <div>
+                            <h4 className="text-xl font-bold text-emerald-400 mb-2">Vazifani Yuklash</h4>
+                            <p className="text-white/60 text-sm max-w-md mx-auto">Vazifani bajarib bo'lgach, uni rasmga olib yoki audio yozib shu yerga yuklang.</p>
+                          </div>
+
+                          <div className="flex justify-center">
+                            <label className="bg-gradient-to-r from-emerald-500 to-green-600 text-white px-8 py-4 rounded-xl font-bold hover:scale-105 transition-transform cursor-pointer flex items-center gap-3 shadow-lg shadow-emerald-500/20">
+                              <Upload size={24} />
+                              Fayl Tanlash (Rasm/Audio)
+                              <input type="file" className="hidden" onChange={async (e) => {
+                                const file = e.target.files[0];
+                                if (!file) return;
+
+                                if (file.size > 10 * 1024 * 1024) return alert("Fayl hajmi 10MB dan oshmasligi kerak!");
+
+                                const formData = new FormData();
+                                formData.append('file', file);
+                                formData.append('levelId', selectedLevel.id);
+                                formData.append('lessonId', selectedLesson.id);
+
+                                try {
+                                  const token = localStorage.getItem('token');
+                                  const res = await fetch('https://arabiyya-pro-backend.onrender.com/api/submissions/upload', {
+                                    method: 'POST',
+                                    headers: { 'Authorization': `Bearer ${token}` },
+                                    body: formData
+                                  });
+                                  const data = await res.json();
+                                  if (data.success) {
+                                    alert("✅ Vazifa muvaffaqiyatli yuklandi!");
+                                    fetchMySubmissions(); // Update UI instantly
+                                  }
+                                  else alert("Xatolik: " + data.message);
+                                } catch (err) {
+                                  console.error(err);
+                                  alert("Server xatosi: Fayl yuklanmadi");
+                                }
+                              }} />
+                            </label>
+                          </div>
+                          <p className="text-white/40 text-xs mt-4">Fayl hajmi 10MB dan oshmasligi kerak (JPG, PNG, MP3)</p>
+                        </div>
+                      );
+                    })()}
                   </div>
                 )}
 
