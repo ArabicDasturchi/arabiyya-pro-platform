@@ -1937,7 +1937,7 @@ const App = () => {
               <div className="bg-white/5 backdrop-blur-xl rounded-3xl p-2 border border-white/10">
                 <div className="flex overflow-x-auto gap-2 scrollbar-hide">
                   {[
-                    { id: 'kitob', label: '📚 Kitob & Ustoz' },
+                    { id: 'kitob', label: '📚 Kitob' },
                     { id: 'amaliy', label: '📝 Amaliy (100b)' },
                     { id: 'nazariy', label: '📖 Nazariy' },
                     { id: 'uyga', label: '✍️ Uyga (100b)' },
@@ -1990,29 +1990,6 @@ const App = () => {
                       </div>
                     </div>
 
-                    {/* USTOZ SECTION */}
-                    <div className="bg-white/5 p-8 rounded-3xl border border-white/10">
-                      <h3 className="text-2xl font-black mb-6 flex items-center gap-3 border-b border-white/10 pb-4">
-                        <UserCheck className="text-green-400" /> Dars Ustozi
-                      </h3>
-                      <div className="flex items-center gap-6">
-                        <div className="relative">
-                          <div className="absolute inset-0 bg-green-500 rounded-full blur-xl opacity-50"></div>
-                          <img
-                            src={selectedLesson.teacher?.image || "https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=400&h=400&fit=crop"}
-                            alt="Ustoz"
-                            className="relative w-24 h-24 rounded-full object-cover border-4 border-white/10 shadow-xl"
-                          />
-                        </div>
-                        <div>
-                          <h4 className="text-2xl font-bold text-white mb-1">{selectedLesson.teacher?.name || "Ustoz Arabiy"}</h4>
-                          <p className="text-green-400 font-medium">{selectedLesson.teacher?.position || "Arab tili ustozi"}</p>
-                          <p className="text-white/60 text-sm mt-2 max-w-lg">
-                            Arab tili bo'yicha ko'p yillik tajribaga ega professional mutaxassis. Dars davomida sizga eng kerakli bilimlarni beradi.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
 
                   </div>
                 )}
