@@ -199,6 +199,7 @@ router.get('/me', authMiddleware, async (req, res) => {
         purchasedLevels: user.purchasedLevels, // MUHIM: Sotib olingan darajalar
         completedLessons: user.completedLessons,
         completedLevels: user.completedLevels,
+        certificates: user.certificates || [],
         chatHistory: user.chatHistory
       }
     });
@@ -243,6 +244,45 @@ router.put('/update-password', [
     res.json({ success: true, message: 'Parol muvaffaqiyatli yangilandi' });
   } catch (error) {
     console.error('Update password error:', error);
+    res.status(500).json({ success: false, message: 'Server xatosi' });
+  }
+});
+
+// @route   POST /api/auth/certificates
+// @desc    Issue a certificate to the user
+// @access  Private
+router.post('/certificates', [authMiddleware], async (req, res) => {
+  try {
+    const { level, score, certificateNumber, issueDate } = req.body;
+    const userId = req.userId;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'Foydalanuvchi topilmadi' });
+    }
+
+    // Check if certificate already exists for this level
+    // certificates array might not be initialized
+    if (!user.certificates) user.certificates = [];
+
+    const existingCert = user.certificates.find(c => c.level === level);
+    if (existingCert) {
+      return res.json({ success: true, message: 'Sertifikat allaqachon mavjud', certificate: existingCert });
+    }
+
+    const newCert = {
+      certificateId: certificateNumber,
+      level,
+      issueDate: issueDate || new Date(),
+      score: parseInt(score) || 0
+    };
+
+    user.certificates.push(newCert);
+    await user.save();
+
+    res.json({ success: true, certificate: newCert });
+  } catch (error) {
+    console.error('Certificate issue error:', error);
     res.status(500).json({ success: false, message: 'Server xatosi' });
   }
 });

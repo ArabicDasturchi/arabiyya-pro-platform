@@ -106,6 +106,13 @@ const App = () => {
     checkAuth();
   }, []);
 
+  // Sync certificates from user profile
+  useEffect(() => {
+    if (user && user.certificates) {
+      setCertificates(user.certificates);
+    }
+  }, [user]);
+
   // Function to refresh user data (to get updated purchasedLevels)
   const fetchMySubmissions = async () => {
     try {
@@ -574,16 +581,45 @@ const App = () => {
           alert(`🎉 Imtihondan muvaffaqiyatli o'tdingiz! ${correctCount}/15 to'g'ri\n\n💡 AI Professional Tahlil:\n${aiFeedback}\n\n🚀 Keyingi darajaga o'tishingiz mumkin!`);
           setCompletedLevels([...completedLevels, selectedLevel.id]);
 
-          // Certificate for C2 completion
+          // Certificate for C2 completion (Backend Integration)
           if (selectedLevel.id === 'C2') {
-            setCertificates([...certificates, {
+            const newCert = {
+              level: 'Certified Arabic Language Specialist', // Display Name
+              score: `${Math.round((correctCount / 15) * 100)}%`,
+              certificateNumber: `AP-${Date.now().toString().slice(-8)}`,
+              issueDate: new Date()
+            };
+
+            // Optimistic Update
+            setCertificates(prev => [...prev, {
+              ...newCert,
               id: Date.now(),
               name: user.name,
-              level: 'C2 - Professional Mastery',
-              date: new Date().toLocaleDateString('uz-UZ', { year: 'numeric', month: 'long', day: 'numeric' }),
-              score: `${Math.round((correctCount / 15) * 100)}%`,
-              certificateNumber: `ARABPRO-${Date.now().toString().slice(-8)}`
+              date: newCert.issueDate.toLocaleDateString('en-US')
             }]);
+
+            // Save to Backend
+            try {
+              const token = localStorage.getItem('token');
+              fetch('https://arabiyya-pro-backend.onrender.com/api/auth/certificates', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                  level: newCert.level,
+                  score: correctCount, // Store raw score or percentage as needed by backend schema
+                  certificateNumber: newCert.certificateNumber
+                })
+              }).then(res => res.json())
+                .then(d => {
+                  if (d.success) console.log("Certificate saved!", d);
+                  else console.error("Certificate save failed", d);
+                });
+            } catch (e) {
+              console.error("Certificate request error", e);
+            }
           }
 
           setView('levels');
@@ -2397,19 +2433,7 @@ const App = () => {
                   >
                     Kursga Qaytish
                   </button>
-                  {/* TEST BUTTON - REMOVE IN PRODUCTION */}
-                  <button
-                    onClick={() => setCertificates([...certificates, {
-                      id: Date.now(),
-                      name: user.name,
-                      level: 'Certified Arabic Language Specialist',
-                      date: new Date().toLocaleDateString('en-US'),
-                      certificateNumber: `AP-${Math.floor(Math.random() * 90000000)}`
-                    }])}
-                    className="block mx-auto mt-4 text-xs text-white/20 hover:text-white"
-                  >
-                    [Test: Add Certificate]
-                  </button>
+
                 </div>
               ) : (
                 <div className="space-y-12">
