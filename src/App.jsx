@@ -1937,7 +1937,7 @@ const App = () => {
               <div className="bg-white/5 backdrop-blur-xl rounded-3xl p-2 border border-white/10">
                 <div className="flex overflow-x-auto gap-2 scrollbar-hide">
                   {[
-                    { id: 'video', label: '📹 Video Dars' },
+                    { id: 'kitob', label: '📚 Kitob & Ustoz' },
                     { id: 'amaliy', label: '📝 Amaliy (100b)' },
                     { id: 'nazariy', label: '📖 Nazariy' },
                     { id: 'uyga', label: '✍️ Uyga (100b)' },
@@ -1959,16 +1959,61 @@ const App = () => {
 
               {/* Content */}
               <div className="bg-white/5 backdrop-blur-xl rounded-3xl p-8 border border-white/10 min-h-[500px]">
-                {/* Video Tab */}
-                {lessonTab === 'video' && (
-                  <div className="space-y-6 animate-in fade-in duration-300">
-                    <h3 className="text-2xl font-black">📹 Video Dars</h3>
-                    <div className="aspect-video bg-gradient-to-br from-purple-600/20 to-blue-600/20 rounded-2xl flex items-center justify-center cursor-pointer group relative overflow-hidden border border-white/10">
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                      <Play size={64} className="text-white group-hover:scale-110 transition-transform relative z-10" fill="white" />
-                      <p className="absolute bottom-6 left-6 text-white font-bold text-xl z-10">Professional video dars</p>
+                {/* Kitob & Ustoz Tab */}
+                {lessonTab === 'kitob' && (
+                  <div className="space-y-8 animate-in fade-in duration-300">
+
+                    {/* KITOB SECTION */}
+                    <div className="bg-gradient-to-br from-indigo-500/20 to-blue-600/20 p-8 rounded-3xl border border-white/10 flex flex-col md:flex-row items-center gap-8">
+                      <div className="w-40 h-56 bg-white/10 rounded-xl shadow-2xl flex items-center justify-center border-4 border-white/5 relative overflow-hidden group">
+                        {/* Book Cover Placeholder */}
+                        <BookOpen size={64} className="text-white/40 group-hover:scale-110 transition-transform" />
+                        <div className="absolute bottom-0 w-full bg-black/50 text-center text-xs py-2 text-white/80 font-bold">PDF</div>
+                      </div>
+                      <div className="flex-1 text-center md:text-left space-y-4">
+                        <div>
+                          <h3 className="text-3xl font-black mb-2 flex items-center justify-center md:justify-start gap-3">
+                            <Download className="text-blue-400" /> Darslik (PDF)
+                          </h3>
+                          <p className="text-white/60 text-lg">Ushbu dars uchun maxsus tayyorlangan elektron kitobni yuklab oling.</p>
+                        </div>
+
+                        {selectedLesson.ebookUrl ? (
+                          <a href={selectedLesson.ebookUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3 px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-lg transition-all hover:scale-105 shadow-xl shadow-blue-600/30">
+                            <Download size={24} /> Yuklab Olish (PDF)
+                          </a>
+                        ) : (
+                          <button disabled className="inline-flex items-center gap-3 px-8 py-4 bg-white/5 text-white/40 rounded-xl font-bold text-lg cursor-not-allowed border border-white/10">
+                            <Lock size={24} /> Hozircha mavjud emas
+                          </button>
+                        )}
+                      </div>
                     </div>
-                    <p className="text-white/70">Admin panel orqali professional video dars yuklanadi.</p>
+
+                    {/* USTOZ SECTION */}
+                    <div className="bg-white/5 p-8 rounded-3xl border border-white/10">
+                      <h3 className="text-2xl font-black mb-6 flex items-center gap-3 border-b border-white/10 pb-4">
+                        <UserCheck className="text-green-400" /> Dars Ustozi
+                      </h3>
+                      <div className="flex items-center gap-6">
+                        <div className="relative">
+                          <div className="absolute inset-0 bg-green-500 rounded-full blur-xl opacity-50"></div>
+                          <img
+                            src={selectedLesson.teacher?.image || "https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=400&h=400&fit=crop"}
+                            alt="Ustoz"
+                            className="relative w-24 h-24 rounded-full object-cover border-4 border-white/10 shadow-xl"
+                          />
+                        </div>
+                        <div>
+                          <h4 className="text-2xl font-bold text-white mb-1">{selectedLesson.teacher?.name || "Ustoz Arabiy"}</h4>
+                          <p className="text-green-400 font-medium">{selectedLesson.teacher?.position || "Arab tili ustozi"}</p>
+                          <p className="text-white/60 text-sm mt-2 max-w-lg">
+                            Arab tili bo'yicha ko'p yillik tajribaga ega professional mutaxassis. Dars davomida sizga eng kerakli bilimlarni beradi.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
                   </div>
                 )}
 
@@ -3819,7 +3864,7 @@ const App = () => {
                                                   setEditLessonData({
                                                     title: lesson.title,
                                                     duration: lesson.duration,
-                                                    videoUrl: lesson.videoUrl || '',
+                                                    ebookUrl: lesson.ebookUrl || '',
                                                     theory: lesson.theory || (lesson.content?.mainContent || ''),
                                                     practice: lesson.practice || '',
                                                     homework: typeof lesson.homework === 'string' ? lesson.homework : (lesson.homework?.description || ''),
@@ -4586,13 +4631,13 @@ const App = () => {
                           />
                         </div>
                         <div>
-                          <label className="text-xs font-bold text-white/60 mb-1 block uppercase">Video Link (Youtube)</label>
+                          <label className="text-xs font-bold text-white/60 mb-1 block uppercase">Kitob Link (PDF)</label>
                           <input
                             type="text"
-                            value={editLessonData.videoUrl}
-                            onChange={e => setEditLessonData({ ...editLessonData, videoUrl: e.target.value })}
+                            value={editLessonData.ebookUrl}
+                            onChange={e => setEditLessonData({ ...editLessonData, ebookUrl: e.target.value })}
                             className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none"
-                            placeholder="https://youtube.com/..."
+                            placeholder="https://example.com/book.pdf"
                           />
                         </div>
                       </div>

@@ -22,11 +22,13 @@ const lessonSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  videoUrl: {
-    type: String
-  },
   ebookUrl: {
-    type: String
+    type: String // PDF yuklash uchun
+  },
+  teacher: {
+    name: { type: String, default: "Ustoz Arabiy" },
+    image: { type: String, default: "https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=400&h=400&fit=crop" },
+    position: { type: String, default: "Arab tili ustozi" }
   },
   content: {
     introduction: String,
