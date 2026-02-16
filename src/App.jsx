@@ -4015,241 +4015,150 @@ const App = () => {
       {/* ============================================ */}
       {/* 24/7 AI CHAT ASSISTANT */}
       {/* ============================================ */}
-      <div className="fixed bottom-8 right-8 z-50">
-        {showChat && (
-          <div className="mb-6 w-96 max-w-[calc(100vw-4rem)] h-[600px] max-h-[80vh] bg-gradient-to-br from-blue-950/95 via-indigo-950/95 to-purple-950/95 backdrop-blur-2xl rounded-3xl border-2 border-white/20 shadow-2xl flex flex-col overflow-hidden">
-            {/* Chat Header */}
-            <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-5 rounded-t-3xl flex items-center justify-between shadow-lg z-10 relative">
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => {
-                    if (chatView === 'messages') {
-                      setChatView('list');
-                      fetchChats();
-                    } else {
-                      setChatView('messages');
-                    }
-                  }}
-                  className="p-2 hover:bg-white/20 rounded-lg transition-colors"
-                >
-                  {chatView === 'messages' ? <List size={22} className="text-white" /> : <MessageCircle size={22} className="text-white" />}
-                </button>
-
-                <div>
-                  <h3 className="font-black text-white text-lg">
-                    {chatView === 'list' ? 'Suhbatlar Tarixi' : 'AI Yordamchi'}
-                  </h3>
-                  {chatView === 'messages' && (
-                    <p className="text-xs text-white/80 flex items-center gap-2">
-                      <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-                      Onlayn
-                    </p>
-                  )}
+      <div className="z-50">
+        {/* Toggle Button (Only visible if chat is hidden) */}
+        {!showChat && (
+          <div className="fixed bottom-8 right-8 z-50">
+            <button
+              onClick={() => setShowChat(true)}
+              className="relative group"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full blur-xl group-hover:blur-2xl transition-all duration-300"></div>
+              <div className="relative w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full shadow-2xl hover:scale-110 transition-all duration-300 flex items-center justify-center">
+                <div className="relative">
+                  <MessageCircle size={32} className="text-white" strokeWidth={2.5} />
+                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white animate-pulse"></div>
                 </div>
               </div>
+            </button>
+          </div>
+        )}
 
-              <div className="flex gap-1">
-                <button
-                  onClick={startNewChat}
-                  className="p-2 hover:bg-white/20 rounded-xl transition-all duration-300"
-                  title="Yangi Suhbat"
-                >
-                  <Plus size={24} className="text-white" />
-                </button>
-                <button
-                  onClick={() => setShowChat(false)}
-                  className="p-2 hover:bg-white/20 rounded-xl transition-all duration-300"
-                >
-                  <X size={24} className="text-white" />
-                </button>
-              </div>
-            </div>
+        {/* FULL SCREEN MODAL CHAT */}
+        {showChat && (
+          <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-300">
+            <div className="w-full h-full max-w-7xl bg-[#0f172a] rounded-3xl border border-white/10 shadow-2xl flex overflow-hidden relative">
 
-            {/* Chat Content */}
-            {chatView === 'list' ? (
-              <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-[#0f172a] custom-scrollbar">
-                {chats.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center h-full text-white/40 space-y-4">
-                    <MessageCircle size={48} className="opacity-50" />
-                    <p>Suhbatlar tarixi bo'sh</p>
-                    <button onClick={startNewChat} className="text-blue-400 text-sm font-bold hover:underline">Yangi suhbat boshlash</button>
-                  </div>
-                ) : (
-                  chats.map(chat => (
-                    <div
-                      key={chat._id}
-                      className={`group relative p-4 rounded-xl cursor-pointer border transition-all ${activeChatId === chat._id ? 'bg-blue-500/20 border-blue-500/50' : 'bg-white/5 border-white/10 hover:bg-white/10'}`}
-                    >
-                      <div onClick={() => loadChat(chat._id)} className="pr-8">
-                        <div className="font-bold text-white truncate text-sm mb-2 group-hover:text-blue-400 transition-colors">{chat.title}</div>
-                        <div className="text-xs text-white/40 flex justify-between items-center">
-                          <span>{new Date(chat.createdAt).toLocaleDateString()}</span>
-                        </div>
-                      </div>
-                      <button
-                        onClick={(e) => deleteChat(chat._id, e)}
-                        className="absolute top-4 right-4 p-1.5 text-white/40 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all opacity-0 group-hover:opacity-100"
-                        title="Suhbatni o'chirish"
+              {/* SIDEBAR (Desktop: Visible, Mobile: Hidden unless in list view) */}
+              <div className={`${chatView === 'list' ? 'flex' : 'hidden'} md:flex flex-col w-full md:w-80 border-r border-white/10 bg-black/20`}>
+                <div className="p-5 border-b border-white/10 flex justify-between items-center bg-white/5">
+                  <h3 className="font-black text-white text-lg flex items-center gap-2">
+                    <Brain className="text-blue-500" /> Arabiyya AI
+                  </h3>
+                  <button onClick={startNewChat} className="bg-blue-600 p-2 rounded-lg hover:bg-blue-500 text-white transition-colors" title="Yangi Chat">
+                    <Plus size={20} />
+                  </button>
+                </div>
+
+                <div className="flex-1 overflow-y-auto p-3 space-y-2 custom-scrollbar">
+                  {chats.length === 0 ? (
+                    <div className="text-center text-white/40 py-10 text-sm">Suhbatlar tarixi bo'sh</div>
+                  ) : (
+                    chats.map(chat => (
+                      <div
+                        key={chat._id}
+                        onClick={() => { loadChat(chat._id); if (window.innerWidth < 768) setChatView('messages'); }}
+                        className={`group flex justify-between items-center p-3 rounded-xl cursor-pointer border transition-all ${activeChatId === chat._id ? 'bg-blue-500/20 border-blue-500/50' : 'bg-white/5 border-white/10 hover:bg-white/10'}`}
                       >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  ))
-                )}
+                        <div className="truncate pr-2 overflow-hidden flex-1">
+                          <div className="font-bold text-white truncate text-sm mb-1 group-hover:text-blue-400">{chat.title}</div>
+                          <span className="text-xs text-white/40">{new Date(chat.createdAt).toLocaleDateString()}</span>
+                        </div>
+                        <button onClick={(e) => deleteChat(chat._id, e)} className="p-1.5 text-white/40 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all opacity-0 group-hover:opacity-100">
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    ))
+                  )}
+                </div>
+
                 {chats.length > 0 && (
-                  <div className="pt-4 mt-4 border-t border-white/10">
-                    <button
-                      onClick={clearAllChats}
-                      className="w-full py-3 px-4 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all hover:scale-[1.02]"
-                    >
+                  <div className="p-4 border-t border-white/10">
+                    <button onClick={clearAllChats} className="w-full py-3 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all">
                       <Trash2 size={16} /> Barcha suhbatlarni o'chirish
                     </button>
                   </div>
                 )}
               </div>
-            ) : (
-              /* Chat Messages View */
-              <div className="flex-1 overflow-y-auto p-6 space-y-5 custom-scrollbar">
-                {chatMessages.length === 0 && (
-                  <div className="text-center py-16 space-y-6">
-                    <div className="relative inline-block">
-                      <div className="absolute inset-0 bg-blue-500/50 rounded-full blur-2xl animate-pulse"></div>
-                      <Brain size={64} className="relative text-blue-400" />
-                    </div>
-                    <div className="space-y-2">
-                      <p className="text-xl font-black text-white">Assalomu alaykum! 👋</p>
-                      <p className="text-sm text-white/70">Sizga qanday yordam bera olaman?</p>
-                    </div>
-                    <div className="grid grid-cols-2 gap-3">
-                      {[
-                        "Grammatika savoli",
-                        "Lug'at yordami",
-                        "Talaffuz qoidalari",
-                        "Mashq yechimi"
-                      ].map((suggestion, i) => (
-                        <button
-                          key={i}
-                          onClick={() => setChatInput(suggestion)}
-                          className="px-4 py-3 bg-white/10 hover:bg-white/20 rounded-xl text-sm font-bold text-white/80 transition-all duration-300 border border-white/10 hover:border-white/30"
-                        >
-                          {suggestion}
-                        </button>
-                      ))}
+
+              {/* MAIN CHAT AREA */}
+              <div className={`${chatView === 'messages' ? 'flex' : 'hidden'} md:flex flex-1 flex-col bg-slate-900/50 relative`}>
+                {/* Header */}
+                <div className="p-4 border-b border-white/10 flex justify-between items-center bg-white/5 backdrop-blur-md">
+                  <div className="flex items-center gap-3">
+                    <button className="md:hidden p-2 hover:bg-white/10 rounded-lg text-white" onClick={() => setChatView('list')}>
+                      <ChevronLeft size={24} />
+                    </button>
+                    <div>
+                      <h3 className="font-bold text-white text-lg">AI Yordamchi</h3>
+                      <p className="text-xs text-green-400 flex items-center gap-1"><span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span> Onlayn</p>
                     </div>
                   </div>
-                )}
+                  <button onClick={() => setShowChat(false)} className="p-2 hover:bg-red-500/20 hover:text-red-400 rounded-xl transition-all text-white/60">
+                    <X size={24} />
+                  </button>
+                </div>
 
-                {chatMessages.map((msg, i) => (
-                  <div key={i} className={`group flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-fadeIn relative`}>
-
-                    {/* User Controls */}
-                    {msg.role === 'user' && (
-                      <div className="absolute -top-3 -right-2 hidden group-hover:flex items-center gap-1 bg-gray-900 border border-white/20 p-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity z-10 shadow-lg">
-                        <button
-                          onClick={() => {
-                            const newText = prompt("Xabarni tahrirlash:", msg.content);
-                            if (newText && newText !== msg.content) editMessage(msg._id, newText);
-                          }}
-                          className="p-1.5 bg-blue-500/20 hover:bg-blue-500 text-blue-400 hover:text-white rounded-lg transition-colors"
-                          title="Tahrirlash"
-                        >
-                          <PenTool size={14} />
-                        </button>
-                        <button
-                          onClick={() => deleteMessage(msg._id)}
-                          className="p-1.5 bg-red-500/20 hover:bg-red-500 text-red-400 hover:text-white rounded-lg transition-colors"
-                          title="O'chirish"
-                        >
-                          <Trash2 size={14} />
-                        </button>
+                {/* Messages */}
+                <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
+                  {chatMessages.length === 0 && (
+                    <div className="text-center py-20 space-y-6">
+                      <Brain size={64} className="mx-auto text-blue-500/50 animate-pulse" />
+                      <h3 className="text-2xl font-bold text-white">Assalomu alaykum!</h3>
+                      <p className="text-white/60">Sizga qanday yordam bera olaman?</p>
+                      <div className="grid grid-cols-2 gap-4 max-w-lg mx-auto">
+                        {["Grammatika", "So'zlashuv", "Tarjima", "Mashqlar"].map(t => (
+                          <button key={t} onClick={() => setChatInput(t)} className="p-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-sm font-bold text-white transition-all">{t}</button>
+                        ))}
                       </div>
-                    )}
+                    </div>
+                  )}
 
-                    <div className={`max-w-[85%] ${msg.role === 'user'
-                      ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
-                      : 'bg-white/10 backdrop-blur-xl text-white border border-white/20'
-                      } p-5 rounded-2xl`}>
-                      {msg.role === 'ai' && (
-                        <div className="flex items-center justify-between mb-3 text-blue-400">
-                          <div className="flex items-center gap-2">
-                            <Brain size={18} />
-                            <span className="text-xs font-bold">AI Yordamchi</span>
-                          </div>
-                          {/* AI Copy Control */}
-                          <button
-                            onClick={() => {
-                              navigator.clipboard.writeText(msg.content);
-                              alert("Nusxalandi!");
-                            }}
-                            className="p-1 hover:text-white transition-colors opacity-0 group-hover:opacity-100"
-                            title="Nusxa olish"
-                          >
-                            <ClipboardCheck size={14} />
-                          </button>
+                  {chatMessages.map((msg, i) => (
+                    <div key={i} className={`group flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-fadeIn relative`}>
+                      {msg.role === 'user' && (
+                        <div className="absolute -top-3 -right-2 hidden group-hover:flex items-center gap-1 bg-gray-900 border border-white/20 p-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity z-10 shadow-lg">
+                          <button onClick={() => { const t = prompt("Tahrirlash:", msg.content); if (t && t !== msg.content) editMessage(msg._id, t); }} className="p-1.5 hover:text-blue-400 text-white/60"><PenTool size={14} /></button>
+                          <button onClick={() => deleteMessage(msg._id)} className="p-1.5 hover:text-red-400 text-white/60"><Trash2 size={14} /></button>
                         </div>
                       )}
-                      <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
-                    </div>
-                  </div>
-                ))}
-
-                {isChatLoading && (
-                  <div className="flex justify-start animate-fadeIn">
-                    <div className="bg-white/10 backdrop-blur-xl border border-white/20 p-5 rounded-2xl">
-                      <div className="flex items-center gap-3">
-                        <Loader2 size={20} className="animate-spin text-blue-400" />
-                        <span className="text-sm text-white/80">Javob tayyorlanmoqda...</span>
+                      <div className={`max-w-[85%] md:max-w-[70%] p-5 rounded-2xl ${msg.role === 'user' ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg' : 'bg-white/10 border border-white/10 text-white'}`}>
+                        {msg.role === 'ai' && (
+                          <div className="flex justify-between items-center mb-2 text-blue-400 text-xs font-bold uppercase tracking-wider">
+                            <span className="flex items-center gap-2"><Brain size={14} /> AI</span>
+                            <button onClick={() => navigator.clipboard.writeText(msg.content)} className="hover:text-white opacity-0 group-hover:opacity-100 transition-opacity"><ClipboardCheck size={14} /></button>
+                          </div>
+                        )}
+                        <p className="leading-relaxed whitespace-pre-wrap">{msg.content}</p>
                       </div>
                     </div>
-                  </div>
-                )}
-              </div>
-            )}
+                  ))}
+                  {isChatLoading && <div className="flex items-center gap-2 text-white/50 bg-white/5 p-4 rounded-xl w-fit"><Loader2 className="animate-spin" size={18} /> Javob yozilmoqda...</div>}
+                </div>
 
-            {/* Chat Input */}
-            <div className="p-5 border-t border-white/20 bg-white/5 backdrop-blur-xl">
-              <div className="flex gap-3">
-                <input
-                  type="text"
-                  value={chatInput}
-                  onChange={(e) => setChatInput(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && !isChatLoading && sendChatMessage()}
-                  placeholder="Savolingizni yozing..."
-                  disabled={isChatLoading}
-                  className="flex-1 px-5 py-4 bg-white/10 backdrop-blur-xl rounded-xl border-2 border-white/20 outline-none focus:border-blue-500 focus:ring-4 ring-blue-500/20 text-white placeholder-white/40 font-medium transition-all duration-300 disabled:opacity-50"
-                />
-                <button
-                  onClick={sendChatMessage}
-                  disabled={!chatInput.trim() || isChatLoading}
-                  className="relative group disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl blur group-hover:blur-lg transition-all duration-300"></div>
-                  <div className="relative p-4 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl hover:scale-110 transition-all duration-300 shadow-lg">
-                    <Send size={24} className="text-white" />
+                {/* Input Area */}
+                <div className="p-5 border-t border-white/10 bg-black/20 backdrop-blur-md">
+                  <div className="flex gap-3 max-w-4xl mx-auto w-full">
+                    <input
+                      type="text"
+                      value={chatInput}
+                      onChange={e => setChatInput(e.target.value)}
+                      onKeyPress={e => e.key === 'Enter' && !isChatLoading && sendChatMessage()}
+                      placeholder="Xabar yozing..."
+                      disabled={isChatLoading}
+                      className="flex-1 bg-white/5 border border-white/10 rounded-xl px-5 py-4 text-white focus:outline-none focus:border-blue-500 transition-all placeholder:text-white/20"
+                    />
+                    <button onClick={sendChatMessage} disabled={!chatInput.trim() || isChatLoading} className="bg-gradient-to-r from-blue-600 to-purple-600 p-4 rounded-xl text-white hover:scale-105 transition-all shadow-lg disabled:opacity-50 disabled:hover:scale-100">
+                      <Send size={24} />
+                    </button>
                   </div>
-                </button>
+                </div>
+
               </div>
+
             </div>
           </div>
         )}
-
-        {/* Chat Toggle Button */}
-        <button
-          onClick={() => setShowChat(!showChat)}
-          className="relative group"
-        >
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full blur-xl group-hover:blur-2xl transition-all duration-300"></div>
-          <div className="relative w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full shadow-2xl hover:scale-110 transition-all duration-300 flex items-center justify-center">
-            {showChat ? (
-              <X size={32} className="text-white" strokeWidth={2.5} />
-            ) : (
-              <div className="relative">
-                <MessageCircle size={32} className="text-white" strokeWidth={2.5} />
-                <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white animate-pulse"></div>
-              </div>
-            )}
-          </div>
-        </button>
       </div>
 
       {/* FOOTER */}
