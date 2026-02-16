@@ -1279,7 +1279,13 @@ const App = () => {
                 </div>
 
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {levels.filter(l => l.id !== 'INTRO' && !l.title.includes('Arab Harflari')).map((level, i) => {
+                  {levels.filter(l => l.id !== 'INTRO').map((level, i) => {
+                    // Quick Fix Override for ALPHABET display if backend script hasn't run
+                    if (level.id === 'ALPHABET' || level.title.includes('Arab Harflari')) {
+                      level.title = "Arab Alifbosi";
+                      level.description = "Harflar, talaffuz va yozish qoidalarini mukammal o'rganing.";
+                      level.icon = "ا";
+                    }
                     const isUnlocked = user && (user.role === 'admin' || user.purchasedLevels?.includes(level.id));
                     const isLocked = !isUnlocked;
 
@@ -1850,8 +1856,8 @@ const App = () => {
                           <p className="text-white/60 text-lg">Ushbu dars uchun maxsus tayyorlangan elektron kitobni yuklab oling.</p>
                         </div>
 
-                        {true ? (
-                          <a href={selectedLesson.ebookUrl || "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3 px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-lg transition-all hover:scale-105 shadow-xl shadow-blue-600/30">
+                        {selectedLesson.ebookUrl ? (
+                          <a href={selectedLesson.ebookUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3 px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-lg transition-all hover:scale-105 shadow-xl shadow-blue-600/30">
                             <Download size={24} /> Yuklab Olish (PDF)
                           </a>
                         ) : (
