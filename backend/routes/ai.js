@@ -408,14 +408,16 @@ router.post('/chat', [
 
     if (user && chatId) {
       chat = await Chat.findOne({ _id: chatId, user: user._id });
-      // If chat exists, maybe we could append previous messages to prompt for context
-      // But to keep it simple and cheap on tokens, we'll just send current message
-      // or last 2 messages.
+      if (chat && chat.messages.length > 0) {
+        // Get last 3 messages for context
+        const history = chat.messages.slice(-3).map(m => `${m.role === 'user' ? 'Foydalanuvchi' : 'AI'}: ${m.content}`).join('\n');
+        context = `Oldingi suhbat (context):\n${history}\n\nbu contextni inobatga olib javob ber.\n\n`;
+      }
     }
 
     const prompt = `Sen professional arab tili o'qituvchisissan - Arabiyya Pro platformasining AI yordamchisissan.
     
-Foydalanuvchi savoli: ${message}
+${context || ''}Foydalanuvchi savoli: ${message}
 
 Iltimos:
 - O'zbek tilida javob ber
