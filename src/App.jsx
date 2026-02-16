@@ -1818,8 +1818,32 @@ const App = () => {
                         <label className="bg-gradient-to-r from-emerald-500 to-green-600 text-white px-8 py-4 rounded-xl font-bold hover:scale-105 transition-transform cursor-pointer flex items-center gap-3 shadow-lg shadow-emerald-500/20">
                           <Upload size={24} />
                           Fayl Tanlash (Rasm/Audio)
-                          <input type="file" className="hidden" onChange={(e) => {
-                            alert("✅ Vazifa qabul qilindi! (Hozircha demo rejimida)");
+                          <input type="file" className="hidden" onChange={async (e) => {
+                            const file = e.target.files[0];
+                            if (!file) return;
+
+                            if (file.size > 10 * 1024 * 1024) return alert("Fayl hajmi 10MB dan oshmasligi kerak!");
+
+                            const formData = new FormData();
+                            formData.append('file', file);
+                            formData.append('levelId', selectedLevel.id);
+                            formData.append('lessonId', selectedLesson.id);
+
+                            // Optimistic UI updates could be added here (e.g. loading spinner)
+                            try {
+                              const token = localStorage.getItem('token');
+                              const res = await fetch('https://arabiyya-pro-backend.onrender.com/api/submissions/upload', {
+                                method: 'POST',
+                                headers: { 'Authorization': `Bearer ${token}` },
+                                body: formData
+                              });
+                              const data = await res.json();
+                              if (data.success) alert("✅ Vazifa muvaffaqiyatli yuklandi!");
+                              else alert("Xatolik: " + data.message);
+                            } catch (err) {
+                              console.error(err);
+                              alert("Server xatosi: Fayl yuklanmadi");
+                            }
                           }} />
                         </label>
                       </div>
@@ -1892,8 +1916,30 @@ const App = () => {
                                     if (lessonTestStep + 1 < selectedLesson.quiz.length) {
                                       setTimeout(() => setLessonTestStep(prev => prev + 1), 200);
                                     } else {
-                                      // Test tugadi, natijani ko'rsatish uchun stepni oshiramiz
-                                      setTimeout(() => setLessonTestStep(prev => prev + 1), 200);
+                                      // Test tugadi, process results
+                                      setTimeout(async () => {
+                                        setLessonTestStep(prev => prev + 1);
+                                        // Save results to backend
+                                        try {
+                                          const score = newAnswers.filter((ans, i) => ans === selectedLesson.quiz[i].correctAnswer).length;
+                                          const token = localStorage.getItem('token');
+                                          await fetch('https://arabiyya-pro-backend.onrender.com/api/submissions/quiz', {
+                                            method: 'POST',
+                                            headers: {
+                                              'Content-Type': 'application/json',
+                                              'Authorization': `Bearer ${token}`
+                                            },
+                                            body: JSON.stringify({
+                                              levelId: selectedLevel.id,
+                                              lessonId: selectedLesson.id,
+                                              score,
+                                              totalQuestions: selectedLesson.quiz.length
+                                            })
+                                          });
+                                        } catch (err) {
+                                          console.error("Failed to save quiz result", err);
+                                        }
+                                      }, 200);
                                     }
                                   }}
                                   className="w-full text-left p-5 rounded-xl bg-white/5 hover:bg-blue-500 hover:text-white border border-white/10 hover:border-blue-500 transition-all font-medium text-lg flex items-center gap-4 group"

@@ -20,6 +20,7 @@ import testRoutes from './routes/tests.js';
 import certificateRoutes from './routes/certificates.js';
 import aiRoutes from './routes/ai.js';
 import adminRoutes from './routes/admin.js';
+import submissionRoutes from './routes/submissions.js';
 
 // Import seed function
 
@@ -41,6 +42,7 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use('/uploads', express.static('uploads')); // Serve uploaded files statically
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGODB_URI)
@@ -130,6 +132,7 @@ app.use('/api/tests', testRoutes);
 app.use('/api/certificates', certificateRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/submissions', submissionRoutes);
 
 
 
