@@ -4421,16 +4421,8 @@ const App = () => {
                             className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none font-bold"
                           />
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div>
-                            <label className="text-xs font-bold text-white/60 mb-1 block uppercase">Davomiyligi</label>
-                            <input
-                              type="text"
-                              value={editLessonData.duration}
-                              onChange={e => setEditLessonData({ ...editLessonData, duration: e.target.value })}
-                              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none font-mono"
-                            />
-                          </div>
+                        <div className="space-y-4">
+
                           <div>
                             <div className="flex justify-between items-center mb-1">
                               <label className="text-xs font-bold text-white/60 uppercase">Kitob (PDF)</label>

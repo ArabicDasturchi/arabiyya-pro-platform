@@ -115,7 +115,8 @@ router.put('/:levelId/lessons/:lessonId', [authMiddleware, adminMiddleware], asy
       theory,
       practice,
       homework,
-      quiz
+      quiz,
+      ebookUrl
     } = req.body;
 
     const lesson = await Lesson.findById(lessonId);
@@ -126,6 +127,7 @@ router.put('/:levelId/lessons/:lessonId', [authMiddleware, adminMiddleware], asy
     if (title) lesson.title = title;
     if (duration) lesson.duration = duration;
     if (videoUrl) lesson.videoUrl = videoUrl;
+    if (ebookUrl !== undefined) lesson.ebookUrl = ebookUrl;
 
     // Matnli kontentlar
     if (theory !== undefined) lesson.theory = theory;
