@@ -22,7 +22,7 @@ import aiRoutes from './routes/ai.js';
 import adminRoutes from './routes/admin.js';
 
 // Import seed function
-import { seedDB } from './seed_levels.js';
+
 
 // Load environment variables
 dotenv.config();
@@ -131,16 +131,7 @@ app.use('/api/certificates', certificateRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/admin', adminRoutes);
 
-// Database Seeding Endpoint
-app.get('/api/seed-levels', async (req, res) => {
-  try {
-    await seedDB();
-    res.json({ success: true, message: 'Database seeded successfully!' });
-  } catch (error) {
-    console.error('Seeding error:', error);
-    res.status(500).json({ success: false, message: 'Seeding failed', error: error.message });
-  }
-});
+
 
 // Duplicate route removed
 
