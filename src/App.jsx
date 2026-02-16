@@ -41,7 +41,7 @@ const App = () => {
   // Multi-Chat States
   const [chats, setChats] = useState([]);
   const [activeChatId, setActiveChatId] = useState(null);
-  const [chatView, setChatView] = useState('messages'); // 'list' or 'messages'
+  const [chatView, setChatView] = useState('list'); // Default to list view to show history first
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [completedLessons, setCompletedLessons] = useState([]);
   const [completedLevels, setCompletedLevels] = useState([]);
@@ -709,6 +709,14 @@ const App = () => {
       }
     } catch (err) { console.error(err); }
   };
+
+  // Auto-load chats when opened
+  useEffect(() => {
+    if (showChat) {
+      fetchChats();
+      if (!activeChatId) setChatView('list');
+    }
+  }, [showChat]);
 
   // AI Chat function
   const sendChatMessage = async () => {
@@ -4136,7 +4144,7 @@ const App = () => {
 
                     {/* User Controls */}
                     {msg.role === 'user' && (
-                      <div className="absolute top-2 right-full mr-2 hidden group-hover:flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="absolute -top-3 -right-2 hidden group-hover:flex items-center gap-1 bg-gray-900 border border-white/20 p-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity z-10 shadow-lg">
                         <button
                           onClick={() => {
                             const newText = prompt("Xabarni tahrirlash:", msg.content);
