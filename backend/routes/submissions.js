@@ -45,7 +45,7 @@ router.post('/upload', authMiddleware, upload.single('file'), async (req, res) =
         const fileUrl = `/uploads/${file.filename}`;
 
         const newSubmission = new Submission({
-            user: req.user.id,
+            user: req.userId,
             levelId,
             lessonId,
             type: 'homework',
@@ -79,7 +79,7 @@ router.post('/quiz', authMiddleware, async (req, res) => {
         // For now, allow retake but just log it
 
         const newSubmission = new Submission({
-            user: req.user.id,
+            user: req.userId,
             levelId,
             lessonId,
             type: 'quiz',
@@ -110,7 +110,7 @@ router.post('/quiz', authMiddleware, async (req, res) => {
 // @access  Private
 router.get('/my', authMiddleware, async (req, res) => {
     try {
-        const submissions = await Submission.find({ user: req.user.id }).sort({ createdAt: -1 });
+        const submissions = await Submission.find({ user: req.userId }).sort({ createdAt: -1 });
         res.json({ success: true, submissions });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Server error' });
