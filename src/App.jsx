@@ -313,12 +313,6 @@ const App = () => {
     }
   };
 
-  // Re-fetch levels when switching to Admin Courses tab
-  useEffect(() => {
-    if (view === 'admin' && adminTab === 'courses') {
-      fetchLevels();
-    }
-  }, [view, adminTab]);
 
   // Refresh user data (background polling) to catch updates instantly
   useEffect(() => {
@@ -733,6 +727,18 @@ const App = () => {
       alert('Tizim xatosi');
     }
   };
+
+  // Admin Data Fetching based on Active Tab
+  useEffect(() => {
+    if (view !== 'admin') return;
+
+    // Refresh data based on tab
+    if (adminTab === 'courses') fetchLevels();
+    if (adminTab === 'submissions') fetchSubmissions();
+    if (adminTab === 'orders') fetchAdminOrders();
+    if (adminTab === 'dashboard' || adminTab === 'users') fetchAdminStats();
+
+  }, [view, adminTab]);
 
   // Handle user role update
   const handleRoleUpdate = async (userId, newRole) => {
