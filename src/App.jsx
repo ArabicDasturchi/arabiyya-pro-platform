@@ -11,6 +11,10 @@ import {
   Info, PenTool, Home, Save, List
 } from 'lucide-react';
 
+import ArabiyyaCertificateFinal from './components/ArabiyyaCertificateFinal';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
+
 const App = () => {
   const [view, setView] = useState('home');
   const [user, setUser] = useState(null);
@@ -2366,6 +2370,92 @@ const App = () => {
         {/* ============================================ */}
         {/* LESSON TEST PAGE */}
         {/* ============================================ */}
+
+        {/* ============================================ */}
+        {/* CERTIFICATES PAGE */}
+        {/* ============================================ */}
+        {
+          view === 'certificates' && user && (
+            <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500">
+              <div className="text-center space-y-4">
+                <h2 className="text-4xl md:text-5xl font-black">Mening Sertifikatlarim</h2>
+                <p className="text-xl text-white/60">Sizning yutuqlaringiz va muvaffaqiyatlaringiz</p>
+              </div>
+
+              {certificates.length === 0 ? (
+                <div className="bg-white/5 backdrop-blur-xl rounded-3xl p-16 text-center border border-white/10 space-y-6">
+                  <div className="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <Award size={48} className="text-white/40" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-white">Hali sertifikat yo'q</h3>
+                  <p className="text-white/60 max-w-lg mx-auto">
+                    Barcha darajalarni muvaffaqiyatli tugatib professional sertifikat oling
+                  </p>
+                  <button
+                    onClick={() => setView('levels')}
+                    className="px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition-all"
+                  >
+                    Kursga Qaytish
+                  </button>
+                  {/* TEST BUTTON - REMOVE IN PRODUCTION */}
+                  <button
+                    onClick={() => setCertificates([...certificates, {
+                      id: Date.now(),
+                      name: user.name,
+                      level: 'Certified Arabic Language Specialist',
+                      date: new Date().toLocaleDateString('en-US'),
+                      certificateNumber: `AP-${Math.floor(Math.random() * 90000000)}`
+                    }])}
+                    className="block mx-auto mt-4 text-xs text-white/20 hover:text-white"
+                  >
+                    [Test: Add Certificate]
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-12">
+                  {certificates.map((cert) => (
+                    <div key={cert.id} className="space-y-6">
+                      <div id={`cert-${cert.id}`} className="overflow-hidden rounded-3xl shadow-2xl">
+                        <ArabiyyaCertificateFinal
+                          studentName={cert.name}
+                          completionDate={cert.date}
+                          verificationId={cert.certificateNumber}
+                          certificateType={cert.level}
+                        />
+                      </div>
+                      <div className="flex justify-center gap-4">
+                        <button
+                          onClick={async () => {
+                            const element = document.getElementById(`cert-${cert.id}`);
+                            if (element) {
+                              try {
+                                const canvas = await html2canvas(element.querySelector('.certificate-node') || element);
+                                const imgData = canvas.toDataURL('image/png');
+                                const pdf = new jsPDF('l', 'mm', 'a4');
+                                const pdfWidth = pdf.internal.pageSize.getWidth();
+                                const pdfHeight = pdf.internal.pageSize.getHeight();
+                                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+                                pdf.save(`ArabiyyaPro_Certificate_${cert.id}.pdf`);
+                              } catch (err) {
+                                console.error("PDF generation failed", err);
+                                alert("PDF yuklashda xatolik bo'ldi. Iltimos qayta urinib ko'ring.");
+                              }
+                            }
+                          }}
+                          className="flex items-center gap-2 px-8 py-4 bg-green-600 hover:bg-green-500 text-white rounded-xl font-bold shadow-lg shadow-green-500/20 transition-all hover:scale-105"
+                        >
+                          <Download size={24} />
+                          PDF Yuklab Olish
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )
+        }
+
         {
           view === 'lesson-test' && selectedLesson && (
             <div className="max-w-4xl mx-auto">
