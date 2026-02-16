@@ -36,10 +36,7 @@ const PORT = process.env.PORT || 5000;
 app.use(helmet()); // Security headers
 app.use(compression()); // Compress responses
 app.use(morgan('dev')); // Logging
-app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:5173', 'http://localhost:5174', 'https://arabiyya-pro-platform.vercel.app', '*'],
-  credentials: true
-}));
+app.use(cors()); // Allow all origins for simplicity and to fix CORS errors
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static('uploads')); // Serve uploaded files statically
