@@ -135,13 +135,7 @@ const App = () => {
         setUser(data.user);
         fetchMySubmissions(); // Update submissions history too
 
-        // Restore chat history
-        if (data.user.chatHistory && data.user.chatHistory.length > 0) {
-          setChatMessages(data.user.chatHistory.map(msg => ({
-            role: msg.role,
-            content: msg.message
-          })));
-        }
+        // Legacy chat history restore removed to support multi-chat system
       }
     } catch (err) {
       console.error('User refresh failed', err);
@@ -633,8 +627,8 @@ const App = () => {
       const data = await res.json();
       if (data.success) {
         setActiveChatId(id);
-        // Map messages
-        setChatMessages(data.chat.messages.map(m => ({ role: m.role, content: m.content })));
+        // Map messages with ID
+        setChatMessages(data.chat.messages.map(m => ({ _id: m._id, role: m.role, content: m.content })));
         setChatView('messages');
       }
       setIsChatLoading(false);
@@ -644,7 +638,8 @@ const App = () => {
   const startNewChat = () => {
     setActiveChatId(null);
     setChatMessages([]);
-    setChatView('messages');
+    setChatView('messages'); // Force view to messages for mobile/desktop split
+    setChatInput('');
   };
 
   const deleteMessage = async (msgId) => {
@@ -4064,8 +4059,8 @@ const App = () => {
                           <div className="font-bold text-white truncate text-sm mb-1 group-hover:text-blue-400">{chat.title}</div>
                           <span className="text-xs text-white/40">{new Date(chat.createdAt).toLocaleDateString()}</span>
                         </div>
-                        <button onClick={(e) => deleteChat(chat._id, e)} className="p-1.5 text-white/40 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all opacity-0 group-hover:opacity-100">
-                          <Trash2 size={16} />
+                        <button onClick={(e) => deleteChat(chat._id, e)} className="p-2 text-white/60 hover:text-red-400 hover:bg-red-500/20 rounded-lg transition-all" title="O'chirish">
+                          <Trash2 size={18} />
                         </button>
                       </div>
                     ))
