@@ -4592,24 +4592,36 @@ Bu yerga dars matnini yozing..."
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                               {q.options.map((opt, optIdx) => (
-                                <div key={optIdx} className={`flex items-center gap-3 p-3 rounded-xl border transition-colors ${q.correctAnswer === optIdx ? 'bg-green-500/10 border-green-500/50' : 'bg-black/20 border-white/5'}`}>
+                                <div
+                                  key={optIdx}
+                                  onClick={() => {
+                                    const newQuiz = editLessonData.quiz.map((q, i) =>
+                                      i === idx ? { ...q, correctAnswer: optIdx } : q
+                                    );
+                                    setEditLessonData({ ...editLessonData, quiz: newQuiz });
+                                  }}
+                                  className={`flex items-center gap-3 p-3 rounded-xl border transition-colors cursor-pointer ${q.correctAnswer === optIdx ? 'bg-green-500/10 border-green-500/50' : 'bg-black/20 border-white/5 hover:bg-white/5'}`}
+                                >
                                   <input
                                     type="radio"
                                     name={`correct-${idx}`}
                                     checked={q.correctAnswer === optIdx}
-                                    onChange={() => {
-                                      const newQuiz = [...editLessonData.quiz];
-                                      newQuiz[idx].correctAnswer = optIdx;
-                                      setEditLessonData({ ...editLessonData, quiz: newQuiz });
-                                    }}
+                                    readOnly // Controlled by parent div click
                                     className="w-4 h-4 text-green-500 accent-green-500 cursor-pointer"
                                   />
                                   <input
                                     type="text"
                                     value={opt}
+                                    onClick={(e) => e.stopPropagation()}
                                     onChange={e => {
-                                      const newQuiz = [...editLessonData.quiz];
-                                      newQuiz[idx].options[optIdx] = e.target.value;
+                                      const newQuiz = editLessonData.quiz.map((item, i) => {
+                                        if (i === idx) {
+                                          const newOptions = [...item.options];
+                                          newOptions[optIdx] = e.target.value;
+                                          return { ...item, options: newOptions };
+                                        }
+                                        return item;
+                                      });
                                       setEditLessonData({ ...editLessonData, quiz: newQuiz });
                                     }}
                                     className="w-full bg-transparent border-none outline-none text-sm text-white placeholder-white/20"
