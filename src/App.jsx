@@ -37,6 +37,9 @@ const App = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [editingLevel, setEditingLevel] = useState(null); // Track which level is being edited
   const [newLessonData, setNewLessonData] = useState({ title: '', duration: '', videoUrl: '' }); // Form data
+  const [editingLessonId, setEditingLessonId] = useState(null);
+  const [editLessonData, setEditLessonData] = useState({ title: '', duration: '', videoUrl: '', content: '' });
+  const [showEditLessonModal, setShowEditLessonModal] = useState(false);
   const [adminTab, setAdminTab] = useState('dashboard');
   const [adminOrders, setAdminOrders] = useState([]);
 
@@ -3145,6 +3148,22 @@ const App = () => {
                                             <td className="p-3 text-white/60 text-xs font-mono">{lesson.duration}</td>
                                             <td className="p-3 text-right">
                                               <button
+                                                className="p-2 text-blue-400 hover:bg-blue-500/20 rounded-lg transition-all opacity-0 group-hover:opacity-100 mr-2"
+                                                title="Tahrirlash"
+                                                onClick={() => {
+                                                  setEditingLessonId(lesson.id);
+                                                  setEditLessonData({
+                                                    title: lesson.title,
+                                                    duration: lesson.duration,
+                                                    videoUrl: lesson.videoUrl || '',
+                                                    content: lesson.content ? (typeof lesson.content === 'string' ? lesson.content : JSON.stringify(lesson.content)) : ''
+                                                  });
+                                                  setShowEditLessonModal(true);
+                                                }}
+                                              >
+                                                <Settings size={16} />
+                                              </button>
+                                              <button
                                                 className="p-2 text-red-400 hover:bg-red-500/20 rounded-lg transition-all opacity-0 group-hover:opacity-100"
                                                 title="O'chirish"
                                                 onClick={async () => {
@@ -3792,6 +3811,108 @@ const App = () => {
                   Bepul Berish
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ADMIN: Edit Lesson Modal */}
+      {showEditLessonModal && editingLessonId && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-300">
+          <div className="bg-slate-900 border border-white/20 rounded-3xl p-8 max-w-lg w-full shadow-2xl space-y-6 animate-in slide-in-from-bottom-4 duration-500">
+            <h3 className="text-2xl font-black text-white flex items-center gap-2">
+              <Settings className="text-blue-400" />
+              Darsni Tahrirlash
+            </h3>
+
+            <div className="space-y-4">
+              <div>
+                <label className="text-xs font-bold text-white/60 mb-1 block uppercase">Mavzu (Title)</label>
+                <input
+                  type="text"
+                  value={editLessonData.title}
+                  onChange={e => setEditLessonData({ ...editLessonData, title: e.target.value })}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none font-bold"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-xs font-bold text-white/60 mb-1 block uppercase">Davomiyligi</label>
+                  <input
+                    type="text"
+                    value={editLessonData.duration}
+                    onChange={e => setEditLessonData({ ...editLessonData, duration: e.target.value })}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none font-mono text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-white/60 mb-1 block uppercase">Video Link (Youtube)</label>
+                  <input
+                    type="text"
+                    value={editLessonData.videoUrl}
+                    onChange={e => setEditLessonData({ ...editLessonData, videoUrl: e.target.value })}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none truncate"
+                    placeholder="https://youtube.com/..."
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-xs font-bold text-white/60 mb-1 block uppercase">Matn / Izoh</label>
+                <textarea
+                  value={editLessonData.content}
+                  onChange={e => setEditLessonData({ ...editLessonData, content: e.target.value })}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none h-32 text-sm leading-relaxed"
+                  placeholder="Dars haqida matn..."
+                ></textarea>
+              </div>
+            </div>
+
+            <div className="flex gap-3 justify-end pt-4 border-t border-white/10">
+              <button
+                onClick={() => setShowEditLessonModal(false)}
+                className="px-6 py-3 rounded-xl text-white/60 hover:text-white font-bold transition-colors bg-white/5 hover:bg-white/10"
+              >
+                Bekor qilish
+              </button>
+              <button
+                className="px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition-colors shadow-lg shadow-blue-500/20"
+                onClick={async () => {
+                  try {
+                    const token = localStorage.getItem('token');
+                    const res = await fetch(`https://arabiyya-pro-backend.onrender.com/api/levels/${editingLevel.id}/lessons/${editingLessonId}`, {
+                      method: 'PUT',
+                      headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                      },
+                      body: JSON.stringify(editLessonData)
+                    });
+
+                    const data = await res.json();
+                    if (data.success) {
+                      setShowEditLessonModal(false);
+
+                      // Refresh data
+                      const levelsRes = await fetch('https://arabiyya-pro-backend.onrender.com/api/levels');
+                      const levelsData = await levelsRes.json();
+                      if (levelsData.success) {
+                        setLevels(levelsData.levels);
+                        const updatedLevel = levelsData.levels.find(l => l.id === editingLevel.id);
+                        if (updatedLevel) setEditingLevel(updatedLevel);
+                      }
+                      alert('✅ Dars saqlandi!');
+                    } else {
+                      alert('Xatolik: ' + data.message);
+                    }
+                  } catch (err) {
+                    console.error(err);
+                    alert('Server xatosi');
+                  }
+                }}
+              >
+                Saqlash
+              </button>
             </div>
           </div>
         </div>

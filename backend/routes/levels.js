@@ -101,6 +101,35 @@ router.post('/:levelId/lessons', [authMiddleware, adminMiddleware], async (req, 
   }
 });
 
+// @route   PUT /api/levels/:levelId/lessons/:lessonId
+// @desc    Update a lesson
+// @access  Private/Admin
+router.put('/:levelId/lessons/:lessonId', [authMiddleware, adminMiddleware], async (req, res) => {
+  try {
+    const { lessonId } = req.params;
+    const { title, duration, videoUrl, content, topics } = req.body;
+
+    const lesson = await Lesson.findById(lessonId);
+    if (!lesson) {
+      return res.status(404).json({ success: false, message: 'Lesson not found' });
+    }
+
+    if (title) lesson.title = title;
+    if (duration) lesson.duration = duration;
+    if (videoUrl) lesson.videoUrl = videoUrl;
+    if (content) lesson.content = content;
+    if (topics) lesson.topics = topics;
+
+    await lesson.save();
+
+    res.json({ success: true, lesson });
+
+  } catch (error) {
+    console.error('Update lesson error:', error);
+    res.status(500).json({ success: false, message: 'Server error updating lesson' });
+  }
+});
+
 // @route   DELETE /api/levels/:levelId/lessons/:lessonId
 // @desc    Delete a lesson
 // @access  Private/Admin
