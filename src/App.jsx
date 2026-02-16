@@ -129,6 +129,14 @@ const App = () => {
         console.log('💰 Purchased Levels:', data.user.purchasedLevels);
         setUser(data.user);
         fetchMySubmissions(); // Update submissions history too
+
+        // Restore chat history
+        if (data.user.chatHistory && data.user.chatHistory.length > 0) {
+          setChatMessages(data.user.chatHistory.map(msg => ({
+            role: msg.role,
+            content: msg.message
+          })));
+        }
       }
     } catch (err) {
       console.error('User refresh failed', err);
@@ -2948,7 +2956,7 @@ const App = () => {
                     </div>
                     <h3 className="text-xl font-black">AI Suhbatlar</h3>
                   </div>
-                  <div className="text-3xl font-black">{chatMessages.length + (user.chatHistory?.length || 0)}</div>
+                  <div className="text-3xl font-black">{chatMessages.length}</div>
                   <p className="text-white/60 text-sm font-bold">Xabarlar almashinuvi</p>
                 </div>
               </div>
