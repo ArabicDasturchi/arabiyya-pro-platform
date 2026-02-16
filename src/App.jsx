@@ -2946,18 +2946,18 @@ const App = () => {
                               <div className="flex items-start justify-between mb-4">
                                 <div className="text-4xl text-amber-400 font-serif">ا ب ت</div>
                                 <span className="px-3 py-1 bg-amber-500/10 rounded-lg text-xs font-bold border border-amber-500/20 text-amber-200">
-                                  5 ta Modul
+                                  1 ta Modul
                                 </span>
                               </div>
                               <div className="mb-4">
-                                <h3 className="text-2xl font-black mb-1 text-white">Arab Harflari</h3>
-                                <div className="text-sm font-bold text-white/50">Boshlang'ich (Bepul)</div>
+                                <h3 className="text-2xl font-black mb-1 text-white">Kirish (Bepul)</h3>
+                                <div className="text-sm font-bold text-white/50">Arab tili sinov darslari</div>
                                 <p className="text-sm text-white/60 mt-2 line-clamp-2">
-                                  Arab alifbosi va harflarini o'rganish uchun maxsus bo'lim.
+                                  Arab tili sizga mos kelishini sinab ko'rish uchun maxsus 3 ta bepul dars.
                                 </p>
                               </div>
                               <div className="bg-white/5 rounded-xl p-3 flex items-center justify-between text-xs font-bold text-white/60 mb-4 border border-white/5">
-                                <span>Jami: 30 ta dars</span>
+                                <span>Jami: 3 ta dars</span>
                                 <span>Cheksiz o'quvchi</span>
                               </div>
                               <button
