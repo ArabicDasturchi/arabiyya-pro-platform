@@ -21,6 +21,7 @@ import certificateRoutes from './routes/certificates.js';
 import aiRoutes from './routes/ai.js';
 import adminRoutes from './routes/admin.js';
 import submissionRoutes from './routes/submissions.js';
+import uploadRoutes from './routes/upload.js';
 
 // Import seed function
 
@@ -130,6 +131,7 @@ app.use('/api/certificates', certificateRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/submissions', submissionRoutes);
+app.use('/api/upload', uploadRoutes);
 
 
 

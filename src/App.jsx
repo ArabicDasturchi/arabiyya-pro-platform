@@ -4450,14 +4450,74 @@ const App = () => {
                             />
                           </div>
                           <div>
-                            <label className="text-xs font-bold text-white/60 mb-1 block uppercase">Kitob Link (PDF)</label>
-                            <input
-                              type="text"
-                              value={editLessonData.ebookUrl}
-                              onChange={e => setEditLessonData({ ...editLessonData, ebookUrl: e.target.value })}
-                              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none"
-                              placeholder="https://example.com/book.pdf"
-                            />
+                            <div className="flex justify-between items-center mb-1">
+                              <label className="text-xs font-bold text-white/60 uppercase">Kitob (PDF)</label>
+                              {editLessonData.ebookUrl && (
+                                <button
+                                  onClick={() => setEditLessonData({ ...editLessonData, ebookUrl: '' })}
+                                  className="text-red-400 text-xs hover:text-red-300"
+                                >
+                                  O'chirish
+                                </button>
+                              )}
+                            </div>
+
+                            {editLessonData.ebookUrl ? (
+                              <div className="bg-green-500/10 border border-green-500/20 rounded-xl px-4 py-3 flex items-center justify-between">
+                                <span className="text-green-400 text-sm truncate max-w-[200px]">{editLessonData.ebookUrl}</span>
+                                <CheckCircle2 size={16} className="text-green-500" />
+                              </div>
+                            ) : (
+                              <div className="flex gap-2">
+                                <label className="flex-1 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-xl px-4 py-3 text-white cursor-pointer transition-all flex items-center justify-center gap-2">
+                                  <Upload size={18} className="text-blue-400" />
+                                  <span className="text-sm">PDF Yuklash</span>
+                                  <input
+                                    type="file"
+                                    accept=".pdf"
+                                    className="hidden"
+                                    onChange={async (e) => {
+                                      const file = e.target.files[0];
+                                      if (!file) return;
+
+                                      // Upload logic
+                                      const formData = new FormData();
+                                      formData.append('file', file);
+
+                                      try {
+                                        const token = localStorage.getItem('token');
+                                        // Show loading if needed
+                                        e.target.parentElement.innerHTML = '<span class="text-xs">Yuklanmoqda...</span>';
+
+                                        const res = await fetch('https://arabiyya-pro-backend.onrender.com/api/upload', {
+                                          method: 'POST',
+                                          body: formData
+                                          // No Content-Type header needed for FormData, functionality handled by browser
+                                        });
+                                        const data = await res.json();
+
+                                        if (data.success) {
+                                          setEditLessonData({ ...editLessonData, ebookUrl: data.fileUrl });
+                                        } else {
+                                          alert('Xatolik: ' + data.message);
+                                        }
+                                      } catch (err) {
+                                        console.error(err);
+                                        alert('Server xatosi');
+                                      }
+                                    }}
+                                  />
+                                </label>
+                                {/* Fallback text input */}
+                                <input
+                                  type="text"
+                                  className="w-1/3 bg-white/5 border border-white/10 rounded-xl px-3 text-xs text-white/60 focus:text-white outline-none"
+                                  placeholder="Yoki URL"
+                                  value={editLessonData.ebookUrl}
+                                  onChange={e => setEditLessonData({ ...editLessonData, ebookUrl: e.target.value })}
+                                />
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>
