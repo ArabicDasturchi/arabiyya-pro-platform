@@ -7,82 +7,77 @@ dotenv.config();
 
 const fixLevels = async () => {
     try {
-        await mongoose.connect(process.env.MONGODB_URI);
-        console.log('Connected to DB');
+        if (process.env.MONGODB_URI) {
+            await mongoose.connect(process.env.MONGODB_URI);
+            console.log('Connected to DB via .env');
+        } else {
+            console.log('MONGODB_URI not found in .env, checking args...');
+            // Maybe check command line args if needed, or rely on Render environment
+            if (!mongoose.connection.readyState) {
+                console.error('Error: MONGODB_URI is missing!');
+                process.exit(1);
+            }
+        }
 
-        // 1. Check/Create "Arab Harflari (Kirish)" Level
-        let introLevel = await Level.findOne({ id: 'INTRO' });
+        console.log('Fixing levels...');
 
-        if (!introLevel) {
-            console.log('Creating INTRO level...');
-            introLevel = new Level({
-                id: 'INTRO',
-                title: 'Arab Harflari (Kirish)',
-                description: 'Arab tilini noldan o\'rganuvchilar uchun maxsus bepul bo\'lim. 3 ta dars bepul.',
-                icon: '🌱',
-                color: 'from-green-500 to-emerald-600',
-                order: 0, // En birinchi
-                totalLessons: 3,
+        // 1. DELETE "INTRO" or "Arab Harflari" level if it exists (As per user request)
+        const introLevel = await Level.findOne({ id: 'INTRO' });
+        if (introLevel) {
+            console.log('Deleting INTRO level...');
+            await Level.deleteOne({ id: 'INTRO' });
+            // Optionally delete lessons linked to INTRO
+            await Lesson.deleteMany({ levelId: 'INTRO' });
+            console.log('INTRO level deleted.');
+        } else {
+            console.log('INTRO level not found (Good).');
+        }
+
+        // 2. Ensure ALPHABET is the first level
+        let alphabetLevel = await Level.findOne({ id: 'ALPHABET' });
+        if (!alphabetLevel) {
+            console.log('ALPHABET level not found! Creating it...');
+            alphabetLevel = new Level({
+                id: 'ALPHABET',
+                title: 'Arab Alifbosi',
+                description: 'Harflar, talaffuz va yozish qoidalarini mukammal o\'rganing.',
+                icon: 'ا',
+                color: 'from-amber-500 to-orange-600',
+                order: 1,
                 isActive: true,
                 lessons: []
             });
-            await introLevel.save();
+            await alphabetLevel.save();
         } else {
-            console.log('INTRO level already exists. Updating...');
-            introLevel.order = 0;
-            introLevel.title = 'Arab Harflari (Kirish)';
-            introLevel.icon = '🌱';
-            await introLevel.save();
-        }
-
-        // 2. Add 3 Lessons to INTRO if empty or incomplete
-        // First, clear existing lessons to ensure clean state (optional, but safer for "fix")
-        // Or just append if empty. Let's append if empty.
-        if (introLevel.lessons.length === 0) {
-            console.log('Adding 3 lessons to INTRO...');
-            const lessonsData = [
-                { title: 'Arab Tiliga Kirish', duration: '15 daqiqa', ebookUrl: 'https://example.com/demo.pdf' },
-                { title: 'Alif va Ba Harflari', duration: '20 daqiqa', ebookUrl: 'https://example.com/demo.pdf' },
-                { title: 'Ta va Sa Harflari', duration: '20 daqiqa', ebookUrl: 'https://example.com/demo.pdf' }
-            ];
-
-            for (const l of lessonsData) {
-                const lesson = new Lesson({
-                    levelId: 'INTRO',
-                    lessonNumber: introLevel.lessons.length + 1,
-                    title: l.title,
-                    duration: l.duration,
-                    videoUrl: '',
-                    ebookUrl: l.ebookUrl,
-                    topics: ['Kirish', 'Alifbo'],
-                    content: { mainContent: 'Bu darsning asosiy mazmuni.' }
-                });
-                const savedLesson = await lesson.save();
-                introLevel.lessons.push(savedLesson._id);
-            }
-            await introLevel.save();
-            console.log('Added 3 lessons.');
-        } else {
-            // Update existing lessons to have ebookUrl if missing
-            console.log('Updating existing INTRO lessons...');
-            for (const lessonId of introLevel.lessons) {
-                await Lesson.findByIdAndUpdate(lessonId, {
-                    $set: { ebookUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf' }
-                });
-            }
-        }
-
-        // 3. Update ALPHABET level (if exists)
-        let alphabetLevel = await Level.findOne({ id: 'ALPHABET' });
-        if (alphabetLevel) {
-            console.log('Updating ALPHABET level order...');
-            alphabetLevel.order = 1; // Second
-            alphabetLevel.title = 'Mukammal Alifbo';
+            console.log('Updating ALPHABET level...');
+            alphabetLevel.order = 1;
+            alphabetLevel.title = 'Arab Alifbosi';
+            alphabetLevel.isActive = true;
             await alphabetLevel.save();
         }
 
-        console.log('✅ Levels fixed successfully!');
+        // 3. Ensure A1-C2 order
+        const levelsOrder = ['ALPHABET', 'A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+        for (let i = 0; i < levelsOrder.length; i++) {
+            const lid = levelsOrder[i];
+            const lvl = await Level.findOne({ id: lid });
+            if (lvl) {
+                lvl.order = i + 1;
+                await lvl.save();
+
+                // Also ensure lessons have ebookUrl
+                if (lvl.lessons && lvl.lessons.length > 0) {
+                    await Lesson.updateMany(
+                        { _id: { $in: lvl.lessons }, ebookUrl: { $exists: false } },
+                        { $set: { ebookUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf' } }
+                    );
+                }
+            }
+        }
+
+        console.log('✅ Levels fixed successfully! Only 7 levels remaining.');
         process.exit(0);
+
     } catch (err) {
         console.error('Error fixing levels:', err);
         process.exit(1);

@@ -1189,12 +1189,12 @@ const App = () => {
                 </div>
 
                 {/* Stats */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-16 max-w-5xl mx-auto">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-6 pt-16 max-w-5xl mx-auto">
                   {[
-                    { icon: Users, num: '5,000+', label: 'Faol O\'quvchi' },
-                    { icon: GraduationCap, num: '150+', label: 'Video Darslik' },
+                    // { icon: Users, num: '5,000+', label: 'Faol O\'quvchi' }, -> Removed
+                    { icon: GraduationCap, num: `${levels.reduce((acc, lvl) => acc + (lvl.lessons?.length || 0), 0)}+`, label: 'Jami Darslar' },
                     { icon: Brain, num: '24/7', label: 'AI Yordamchi' },
-                    { icon: Award, num: '98%', label: 'Muvaffaqiyat' }
+                    { icon: Award, num: '100%', label: 'Muvaffaqiyat harakatga bog\'liq' }
                   ].map((stat, i) => (
                     <div key={i} className="group bg-white/5 backdrop-blur-xl p-6 rounded-2xl border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300 hover:scale-105">
                       <stat.icon className="w-10 h-10 mx-auto mb-3 text-blue-400 group-hover:text-purple-400 transition-colors" />
@@ -1216,12 +1216,12 @@ const App = () => {
 
                 <div className="grid md:grid-cols-3 gap-8">
                   {[
-                    {
-                      icon: Target,
-                      title: 'AI Darajani Aniqlash',
-                      desc: '12 savollik professional test orqali aniq darajangizni aniqlang va to\'g\'ri boshlang',
-                      color: 'from-blue-500 to-cyan-500'
-                    },
+                    // {
+                    //   icon: Target,
+                    //   title: 'AI Darajani Aniqlash',
+                    //   desc: '12 savollik professional test orqali aniq darajangizni aniqlang va to\'g\'ri boshlang',
+                    //   color: 'from-blue-500 to-cyan-500'
+                    // }, -> Removed
                     {
                       icon: Brain,
                       title: '24/7 AI Shaxsiy Yordamchi',
@@ -1230,16 +1230,16 @@ const App = () => {
                     },
                     {
                       icon: Award,
-                      title: 'Rasmiy Sertifikat',
-                      desc: 'Har bir darajani tugatgandan so\'ng professional sertifikat bilan tasdiqlanadi',
+                      title: 'Sertifikat',
+                      desc: 'Har bir darajani tugatgandan so\'ng sertifikat bilan tasdiqlanadi',
                       color: 'from-orange-500 to-red-500'
                     },
-                    {
-                      icon: Video,
-                      title: 'HD Video Darslar',
-                      desc: 'Professional o\'qituvchilar tomonidan tayyorlangan yuqori sifatli video darslar',
-                      color: 'from-green-500 to-teal-500'
-                    },
+                    // {
+                    //   icon: Video,
+                    //   title: 'HD Video Darslar',
+                    //   desc: 'Professional o\'qituvchilar tomonidan tayyorlangan yuqori sifatli video darslar',
+                    //   color: 'from-green-500 to-teal-500'
+                    // }, -> Removed
                     {
                       icon: Book,
                       title: 'Elektron Kitoblar',
