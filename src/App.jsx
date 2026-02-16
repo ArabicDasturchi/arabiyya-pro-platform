@@ -1692,136 +1692,8 @@ const App = () => {
         {/* ============================================ */}
         {/* ALPHABET LEARNING PAGE */}
         {/* ============================================ */}
-        {
-          view === 'alphabet-learning' && (
-            <div className="space-y-8 animate-in fade-in duration-500">
-              {/* Header & Navigation */}
-              <div className="flex flex-col lg:flex-row gap-8">
-                {/* Sidebar Navigation */}
-                <div className="lg:w-1/4 space-y-6">
-                  <button
-                    onClick={() => setView('levels')}
-                    className="flex items-center gap-2 text-white/60 hover:text-white transition-colors mb-4 font-bold"
-                  >
-                    <ArrowLeft size={20} /> Orqaga qaytish
-                  </button>
 
-                  <div className="bg-gradient-to-br from-amber-600/90 to-orange-700/90 backdrop-blur-3xl rounded-3xl p-6 border border-white/20 shadow-2xl">
-                    <h3 className="text-xl font-black mb-6 text-white flex items-center gap-3">
-                      <BookOpen className="text-emerald-400" />
-                      Modullar
-                    </h3>
-                    <div className="space-y-3">
-                      {[1, 2, 3, 4, 5].map((mod) => (
-                        <button
-                          key={mod}
-                          onClick={() => { setAlphabetModule(mod); setAlphabetTab('video'); }}
-                          className={`w-full text-left p-4 rounded-xl flex items-center justify-between transition-all ${alphabetModule === mod
-                            ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg scale-[1.02]'
-                            : 'bg-white/5 text-white/60 hover:bg-white/10 hover:text-white'
-                            }`}
-                        >
-                          <span className="font-bold">Modul {mod}</span>
-                          {alphabetModule === mod && <CheckCircle2 size={18} />}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
 
-                {/* Main Content Area */}
-                <div className="lg:w-3/4 space-y-6">
-                  <div className="bg-gradient-to-br from-emerald-600/90 to-green-800/90 backdrop-blur-3xl rounded-3xl p-8 border border-white/20 min-h-[600px] shadow-2xl relative overflow-hidden">
-                    {/* Tab Navigation */}
-                    <div className="flex overflow-x-auto pb-4 gap-2 mb-6 border-b border-white/10 scrollbar-hide">
-                      {[
-                        { id: 'video', label: 'Video Dars', icon: Video },
-                        { id: 'topic', label: 'Mavzu', icon: FileText },
-                        { id: 'book', label: 'Kitob', icon: Book },
-                        { id: 'exercise', label: 'Mashq', icon: Zap },
-                        { id: 'homework', label: 'Vazifa', icon: Download },
-                        { id: 'test', label: 'Test (AI)', icon: Brain },
-                      ].map((tab) => (
-                        <button
-                          key={tab.id}
-                          onClick={() => setAlphabetTab(tab.id)}
-                          className={`flex items-center gap-2 px-5 py-3 rounded-xl font-bold whitespace-nowrap transition-all ${alphabetTab === tab.id
-                            ? 'bg-white text-black shadow-lg scale-105'
-                            : 'bg-white/5 text-white/60 hover:bg-white/10'
-                            }`}
-                        >
-                          <tab.icon size={18} />
-                          {tab.label}
-                        </button>
-                      ))}
-                    </div>
-
-                    {/* Content Render */}
-                    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
-                      <h2 className="text-3xl font-black text-white mb-2">Modul {alphabetModule}: {alphabetTab === 'video' ? 'Video Dars' : alphabetTab === 'topic' ? 'Mavzu Matni' : alphabetTab === 'book' ? 'Darslik (PDF)' : alphabetTab === 'exercise' ? 'Amaliy Mashqlar' : alphabetTab === 'homework' ? 'Uyga Vazifa' : 'AI Test Tahlili'}</h2>
-                      <p className="text-white/60 text-lg mb-8">Bu yerda {alphabetModule}-modulning {alphabetTab} qismi bo'ladi.</p>
-
-                      {/* Placeholder Content Areas */}
-                      {alphabetTab === 'video' && (
-                        <div className="aspect-video bg-white/20 backdrop-blur-xl rounded-2xl flex items-center justify-center border-2 border-white/30 group cursor-pointer relative overflow-hidden shadow-inner">
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                          <Play size={64} className="text-white group-hover:scale-110 transition-transform relative z-10" fill="white" />
-                          <p className="absolute bottom-6 left-6 text-white font-bold text-xl z-10">Dars videosini ko'rish</p>
-                        </div>
-                      )}
-
-                      {alphabetTab === 'topic' && (
-                        <div className="prose prose-invert max-w-none">
-                          <div className="bg-white/5 p-8 rounded-2xl border border-white/10">
-                            <h3 className="text-2xl font-bold text-white mb-4">Arab Alifbosi: Kirish</h3>
-                            <p className="text-white/80 leading-relaxed">
-                              Arab tili o'ngdan chapga qarab yoziladi. Alifboda 28 ta harf mavjud. Harflar so'z ichida kelgan o'rniga qarab (boshida, o'rtasida, oxirida) shaklini o'zgartiradi.
-                            </p>
-                            <div className="my-6 grid grid-cols-4 gap-4 text-center">
-                              <div className="p-4 bg-white/10 rounded-xl">
-                                <span className="text-4xl font-serif block mb-2">ا</span>
-                                <span className="text-sm opacity-60">Alif</span>
-                              </div>
-                              <div className="p-4 bg-white/10 rounded-xl">
-                                <span className="text-4xl font-serif block mb-2">ب</span>
-                                <span className="text-sm opacity-60">Ba</span>
-                              </div>
-                              <div className="p-4 bg-white/10 rounded-xl">
-                                <span className="text-4xl font-serif block mb-2">ت</span>
-                                <span className="text-sm opacity-60">Ta</span>
-                              </div>
-                              <div className="p-4 bg-white/10 rounded-xl">
-                                <span className="text-4xl font-serif block mb-2">ث</span>
-                                <span className="text-sm opacity-60">Sa</span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
-                      {alphabetTab === 'test' && (
-                        <div className="text-center py-12 space-y-6">
-                          <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto shadow-2xl animate-pulse">
-                            <Brain size={48} className="text-white" />
-                          </div>
-                          <h3 className="text-2xl font-bold text-white">AI Test Tizimi</h3>
-                          <p className="text-white/60 max-w-md mx-auto">
-                            5 ta savoldan iborat testni ishlang. Sun'iy intellekt sizning natijangizni tahlil qilib, xatolaringiz ustida ishlashga yordam beradi.
-                          </p>
-                          <button className="bg-white text-black px-8 py-3 rounded-xl font-black hover:scale-105 transition-transform">
-                            Testni Boshlash
-                          </button>
-                        </div>
-                      )}
-
-                      {/* Add placeholders for other tabs similar to above... */}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )
-        }
 
         {/* ============================================ */}
         {/* MODULE LESSONS PAGE (Modul ichidagi 5 ta dars) */}
@@ -3141,854 +3013,856 @@ const App = () => {
         {/* ============================================ */}
         {/* ADMIN PANEL */}
         {/* ============================================ */}
-        {view === 'admin' && user && user.role === 'admin' && (
-          <div className="max-w-7xl mx-auto min-h-[600px] flex gap-8">
+        {
+          view === 'admin' && user && user.role === 'admin' && (
+            <div className="max-w-7xl mx-auto min-h-[600px] flex gap-8">
 
-            {/* Sidebar Navigation */}
-            <div className="w-64 flex-shrink-0 hidden md:block">
-              <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-4 sticky top-32 space-y-2">
-                <div className="px-4 py-3 mb-2">
-                  <h3 className="text-white/40 text-xs font-bold uppercase tracking-wider">Menu</h3>
+              {/* Sidebar Navigation */}
+              <div className="w-64 flex-shrink-0 hidden md:block">
+                <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-4 sticky top-32 space-y-2">
+                  <div className="px-4 py-3 mb-2">
+                    <h3 className="text-white/40 text-xs font-bold uppercase tracking-wider">Menu</h3>
+                  </div>
+                  {[
+                    { id: 'dashboard', label: 'Boshqaruv Paneli', icon: LayoutDashboard },
+                    { id: 'orders', label: 'Buyurtmalar', icon: ClipboardCheck },
+                    { id: 'submissions', label: 'Topshiriqlar', icon: CheckCircle2 },
+                    { id: 'users', label: 'Foydalanuvchilar', icon: Users },
+                    { id: 'courses', label: 'Kurslar', icon: BookOpen },
+                    { id: 'settings', label: 'Sozlamalar', icon: Settings },
+                  ].map((item) => (
+                    <button
+                      key={item.id}
+                      onClick={() => setAdminTab(item.id)}
+                      className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${adminTab === item.id
+                        ? 'bg-blue-500/20 text-blue-400 border border-blue-500/20'
+                        : 'text-white/60 hover:text-white hover:bg-white/10'
+                        }`}
+                    >
+                      <item.icon size={18} />
+                      {item.label}
+                    </button>
+                  ))}
                 </div>
-                {[
-                  { id: 'dashboard', label: 'Boshqaruv Paneli', icon: LayoutDashboard },
-                  { id: 'orders', label: 'Buyurtmalar', icon: ClipboardCheck },
-                  { id: 'submissions', label: 'Topshiriqlar', icon: CheckCircle2 },
-                  { id: 'users', label: 'Foydalanuvchilar', icon: Users },
-                  { id: 'courses', label: 'Kurslar', icon: BookOpen },
-                  { id: 'settings', label: 'Sozlamalar', icon: Settings },
-                ].map((item) => (
+              </div>
+
+              {/* Main Content Area */}
+              <div className="flex-1 space-y-8">
+
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-3xl font-black mb-2 flex items-center gap-3">
+                      {adminTab === 'dashboard' && <LayoutDashboard className="text-blue-400" size={32} />}
+                      {adminTab === 'orders' && <ClipboardCheck className="text-blue-400" size={32} />}
+                      {adminTab === 'submissions' && <CheckCircle2 className="text-blue-400" size={32} />}
+                      {adminTab === 'users' && <Users className="text-blue-400" size={32} />}
+                      {adminTab === 'courses' && <BookOpen className="text-blue-400" size={32} />}
+                      {adminTab === 'settings' && <Settings className="text-blue-400" size={32} />}
+                      {adminTab === 'dashboard' ? 'Boshqaruv Paneli' :
+                        adminTab === 'orders' ? 'Buyurtmalar' :
+                          adminTab === 'submissions' ? 'Topshiriqlar' :
+                            adminTab === 'users' ? 'Foydalanuvchilar' :
+                              adminTab === 'courses' ? 'Kurslar' : 'Sozlamalar'}
+                    </h2>
+                    <p className="text-white/60">
+                      {adminTab === 'dashboard' ? 'Platforma statistikasi va umumiy ko\'rsatkichlar' :
+                        adminTab === 'orders' ? 'Yangi kelib tushgan to\'lovlar va buyurtmalar' :
+                          adminTab === 'submissions' ? 'O\'quvchilarning uyga vazifalari va test natijalari' :
+                            adminTab === 'users' ? 'Foydalanuvchilarni boshqarish va nazorat qilish' :
+                              adminTab === 'courses' ? 'O\'quv dasturlari va darslar ro\'yxati' : 'Tizim sozlamalari'}
+                    </p>
+                  </div>
                   <button
-                    key={item.id}
-                    onClick={() => setAdminTab(item.id)}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${adminTab === item.id
-                      ? 'bg-blue-500/20 text-blue-400 border border-blue-500/20'
-                      : 'text-white/60 hover:text-white hover:bg-white/10'
-                      }`}
+                    onClick={fetchAdminStats}
+                    className="p-3 bg-white/10 rounded-xl hover:bg-white/20 transition-all"
+                    title="Yangilash"
                   >
-                    <item.icon size={18} />
-                    {item.label}
+                    <TrendingUp size={20} />
                   </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Main Content Area */}
-            <div className="flex-1 space-y-8">
-
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-3xl font-black mb-2 flex items-center gap-3">
-                    {adminTab === 'dashboard' && <LayoutDashboard className="text-blue-400" size={32} />}
-                    {adminTab === 'orders' && <ClipboardCheck className="text-blue-400" size={32} />}
-                    {adminTab === 'submissions' && <CheckCircle2 className="text-blue-400" size={32} />}
-                    {adminTab === 'users' && <Users className="text-blue-400" size={32} />}
-                    {adminTab === 'courses' && <BookOpen className="text-blue-400" size={32} />}
-                    {adminTab === 'settings' && <Settings className="text-blue-400" size={32} />}
-                    {adminTab === 'dashboard' ? 'Boshqaruv Paneli' :
-                      adminTab === 'orders' ? 'Buyurtmalar' :
-                        adminTab === 'submissions' ? 'Topshiriqlar' :
-                          adminTab === 'users' ? 'Foydalanuvchilar' :
-                            adminTab === 'courses' ? 'Kurslar' : 'Sozlamalar'}
-                  </h2>
-                  <p className="text-white/60">
-                    {adminTab === 'dashboard' ? 'Platforma statistikasi va umumiy ko\'rsatkichlar' :
-                      adminTab === 'orders' ? 'Yangi kelib tushgan to\'lovlar va buyurtmalar' :
-                        adminTab === 'submissions' ? 'O\'quvchilarning uyga vazifalari va test natijalari' :
-                          adminTab === 'users' ? 'Foydalanuvchilarni boshqarish va nazorat qilish' :
-                            adminTab === 'courses' ? 'O\'quv dasturlari va darslar ro\'yxati' : 'Tizim sozlamalari'}
-                  </p>
                 </div>
-                <button
-                  onClick={fetchAdminStats}
-                  className="p-3 bg-white/10 rounded-xl hover:bg-white/20 transition-all"
-                  title="Yangilash"
-                >
-                  <TrendingUp size={20} />
-                </button>
-              </div>
 
-              {adminStats ? (
-                <>
-                  {/* DASHBOARD TAB */}
-                  {adminTab === 'dashboard' && (
-                    <div className="space-y-8">
-                      <div className="grid md:grid-cols-4 gap-6">
-                        {[
-                          { label: "Jami Foydalanuvchilar", val: adminStats.totalUsers, icon: Users, color: "blue" },
-                          { label: "Faol Foydalanuvchilar", val: adminStats.activeUsers, icon: Zap, color: "green" },
-                          { label: "Tugatilgan Darslar", val: adminStats.totalCompletedLessons, icon: BookOpen, color: "purple" },
-                          { label: "Sertifikatlar", val: adminStats.totalCertificates, icon: Award, color: "orange" }
-                        ].map((stat, i) => (
-                          <div key={i} className="bg-white/5 backdrop-blur-xl p-6 rounded-3xl border border-white/10 relative overflow-hidden group hover:scale-105 transition-all">
-                            <div className={`absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity bg-${stat.color}-500 rounded-bl-3xl`}>
-                              <stat.icon size={64} />
+                {adminStats ? (
+                  <>
+                    {/* DASHBOARD TAB */}
+                    {adminTab === 'dashboard' && (
+                      <div className="space-y-8">
+                        <div className="grid md:grid-cols-4 gap-6">
+                          {[
+                            { label: "Jami Foydalanuvchilar", val: adminStats.totalUsers, icon: Users, color: "blue" },
+                            { label: "Faol Foydalanuvchilar", val: adminStats.activeUsers, icon: Zap, color: "green" },
+                            { label: "Tugatilgan Darslar", val: adminStats.totalCompletedLessons, icon: BookOpen, color: "purple" },
+                            { label: "Sertifikatlar", val: adminStats.totalCertificates, icon: Award, color: "orange" }
+                          ].map((stat, i) => (
+                            <div key={i} className="bg-white/5 backdrop-blur-xl p-6 rounded-3xl border border-white/10 relative overflow-hidden group hover:scale-105 transition-all">
+                              <div className={`absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity bg-${stat.color}-500 rounded-bl-3xl`}>
+                                <stat.icon size={64} />
+                              </div>
+                              <div className={`w-12 h-12 bg-${stat.color}-500/20 rounded-2xl flex items-center justify-center text-${stat.color}-400 mb-4`}>
+                                <stat.icon size={24} />
+                              </div>
+                              <div className="text-3xl font-black mb-1">{stat.val}</div>
+                              <div className="text-white/60 font-bold text-sm">{stat.label}</div>
                             </div>
-                            <div className={`w-12 h-12 bg-${stat.color}-500/20 rounded-2xl flex items-center justify-center text-${stat.color}-400 mb-4`}>
-                              <stat.icon size={24} />
-                            </div>
-                            <div className="text-3xl font-black mb-1">{stat.val}</div>
-                            <div className="text-white/60 font-bold text-sm">{stat.label}</div>
-                          </div>
-                        ))}
-                      </div>
+                          ))}
+                        </div>
 
-                      <div className="grid md:grid-cols-2 gap-6">
-                        <div className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 p-8">
-                          <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
-                            <TrendingUp size={20} className="text-green-400" />
-                            So'ngi Faollik
-                          </h3>
-                          <div className="space-y-4">
-                            {adminStats.recentUsers && adminStats.recentUsers.map((u, i) => (
-                              <div key={i} className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5">
-                                <div className="flex items-center gap-3">
-                                  <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center font-bold text-xs">
-                                    {u.name.charAt(0)}
+                        <div className="grid md:grid-cols-2 gap-6">
+                          <div className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 p-8">
+                            <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
+                              <TrendingUp size={20} className="text-green-400" />
+                              So'ngi Faollik
+                            </h3>
+                            <div className="space-y-4">
+                              {adminStats.recentUsers && adminStats.recentUsers.map((u, i) => (
+                                <div key={i} className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5">
+                                  <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center font-bold text-xs">
+                                      {u.name.charAt(0)}
+                                    </div>
+                                    <div>
+                                      <div className="font-bold text-sm">{u.name}</div>
+                                      <div className="text-xs text-white/40">Yangi a'zo</div>
+                                    </div>
                                   </div>
-                                  <div>
-                                    <div className="font-bold text-sm">{u.name}</div>
-                                    <div className="text-xs text-white/40">Yangi a'zo</div>
+                                  <div className="text-xs text-white/40 font-mono">
+                                    {new Date(u.createdAt).toLocaleDateString()}
                                   </div>
                                 </div>
-                                <div className="text-xs text-white/40 font-mono">
-                                  {new Date(u.createdAt).toLocaleDateString()}
+                              ))}
+                            </div>
+                          </div>
+
+                          <div className="bg-gradient-to-br from-blue-600 to-purple-700 rounded-3xl p-8 relative overflow-hidden flex flex-col justify-between">
+                            <div className="relative z-10">
+                              <h3 className="text-2xl font-black mb-2">Arabiyya Pro</h3>
+                              <p className="text-white/80 text-sm mb-6">Tizim holati barqaror. Barcha xizmatlar ishlamoqda.</p>
+                              <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/20 rounded-lg text-xs font-bold backdrop-blur-md">
+                                <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                                Online v1.2.0
+                              </div>
+                            </div>
+                            <Sparkles className="absolute bottom-4 right-4 text-white/20 w-32 h-32" />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* ORDERS TAB */}
+                    {adminTab === 'orders' && (
+                      <div className="space-y-6">
+                        <div className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 p-6">
+                          <h3 className="text-xl font-bold mb-6 flex items-center gap-3">
+                            <ClipboardCheck className="text-blue-400" />
+                            Barcha Buyurtmalar
+                          </h3>
+                          <div className="overflow-x-auto">
+                            <table className="w-full text-left">
+                              <thead className="bg-white/5 border-b border-white/10">
+                                <tr>
+                                  <th className="p-4 font-bold text-white/60 text-sm uppercase">Foydalanuvchi</th>
+                                  <th className="p-4 font-bold text-white/60 text-sm uppercase">Daraja</th>
+                                  <th className="p-4 font-bold text-white/60 text-sm uppercase">Summa</th>
+                                  <th className="p-4 font-bold text-white/60 text-sm uppercase">Holat</th>
+                                  <th className="p-4 font-bold text-white/60 text-sm uppercase">Isbot</th>
+                                  <th className="p-4 font-bold text-white/60 text-sm uppercase text-right">Amallar</th>
+                                </tr>
+                              </thead>
+                              <tbody className="divide-y divide-white/5">
+                                {adminOrders.length === 0 ? (
+                                  <tr>
+                                    <td colSpan="6" className="p-8 text-center text-white/40 font-bold">
+                                      Hozircha buyurtmalar yo'q
+                                    </td>
+                                  </tr>
+                                ) : (
+                                  adminOrders.map((order, i) => (
+                                    <tr key={i} className="hover:bg-white/5 transition-colors">
+                                      <td className="p-4">
+                                        <div className="font-bold">{order.user?.name || 'Noma\'lum'}</div>
+                                        <div className="text-xs text-white/40">{order.user?.email}</div>
+                                      </td>
+                                      <td className="p-4 font-black text-xl text-blue-400">{order.levelId}</td>
+                                      <td className="p-4 font-mono">{order.amount?.toLocaleString()} so'm</td>
+                                      <td className="p-4">
+                                        <span className={`px-2 py-1 rounded text-xs font-bold uppercase ${order.status === 'approved' ? 'bg-green-500/20 text-green-400' :
+                                          order.status === 'rejected' ? 'bg-red-500/20 text-red-400' :
+                                            'bg-yellow-500/20 text-yellow-400'
+                                          }`}>
+                                          {order.status}
+                                        </span>
+                                      </td>
+                                      <td className="p-4 text-sm text-white/60 truncate max-w-[200px]" title={order.transactionProof}>
+                                        {order.transactionProof || 'N/A'}
+                                      </td>
+                                      <td className="p-4 text-right">
+                                        {order.status === 'pending' && (
+                                          <button
+                                            onClick={() => handleApproveOrder(order._id)}
+                                            className="px-4 py-2 bg-green-500 text-white rounded-lg font-bold hover:bg-green-600 transition-colors shadow-lg shadow-green-500/20"
+                                          >
+                                            Tasdiqlash
+                                          </button>
+                                        )}
+                                        {order.status === 'approved' && (
+                                          <span className="text-green-500 flex items-center justify-end gap-1 font-bold text-sm">
+                                            <CheckCircle size={16} /> Tasdiqlangan
+                                          </span>
+                                        )}
+                                      </td>
+                                    </tr>
+                                  ))
+                                )}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* SUBMISSIONS TAB */}
+                    {adminTab === 'submissions' && (
+                      <div className="space-y-6 animate-in fade-in duration-300">
+                        <div className="flex justify-between items-center bg-white/5 p-4 rounded-xl border border-white/10">
+                          <h3 className="text-xl font-bold flex items-center gap-3">
+                            <CheckCircle2 className="text-blue-400" />
+                            Barcha Topshiriqlar
+                          </h3>
+                          <button onClick={fetchSubmissions} className="bg-white/10 p-2 rounded-lg hover:bg-white/20 transition-colors" title="Yangilash">
+                            <TrendingUp size={20} />
+                          </button>
+                        </div>
+
+                        <div className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 overflow-hidden">
+                          <table className="w-full text-left">
+                            <thead className="bg-white/5 border-b border-white/10 text-white/60 text-xs uppercase font-bold">
+                              <tr>
+                                <th className="p-4">O'quvchi</th>
+                                <th className="p-4">Dars</th>
+                                <th className="p-4">Turi</th>
+                                <th className="p-4">Natija</th>
+                                <th className="p-4">Status</th>
+                                <th className="p-4 text-right">Amal</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-white/5">
+                              {submissions.length === 0 ? (
+                                <tr><td colSpan="6" className="p-8 text-center text-white/40">Hozircha topshiriqlar yo'q</td></tr>
+                              ) : (
+                                submissions.map((sub) => {
+                                  const level = levels.find(l => l.id === sub.levelId);
+                                  const lesson = level?.lessons.find(l => l.id === sub.lessonId);
+                                  return (
+                                    <tr key={sub._id} className="hover:bg-white/5 transition-colors">
+                                      <td className="p-4">
+                                        <div className="font-bold">{sub.user?.name || "Noma'lum"}</div>
+                                        <div className="text-xs text-white/40">{sub.user?.email}</div>
+                                      </td>
+                                      <td className="p-4 text-sm">
+                                        <div className="font-bold text-white">{lesson ? lesson.title : sub.lessonId}</div>
+                                        <div className="text-white/40 text-xs font-mono">{level ? level.title : sub.levelId}</div>
+                                      </td>
+                                      <td className="p-4">
+                                        <span className={`px-2 py-1 rounded text-xs font-bold uppercase ${sub.type === 'quiz' ? 'bg-purple-500/20 text-purple-400' : 'bg-orange-500/20 text-orange-400'}`}>
+                                          {sub.type}
+                                        </span>
+                                      </td>
+                                      <td className="p-4">
+                                        {sub.type === 'quiz' ? (
+                                          <span className="font-bold text-lg">{sub.score} ball</span>
+                                        ) : (
+                                          sub.fileUrl ? (
+                                            <a href={`https://arabiyya-pro-backend.onrender.com${sub.fileUrl}`} target="_blank" rel="noreferrer" className="text-blue-400 hover:underline flex items-center gap-1">
+                                              <Download size={14} /> Fayl
+                                            </a>
+                                          ) : <span className="text-white/40">Fayl yo'q</span>
+                                        )}
+                                      </td>
+                                      <td className="p-4">
+                                        <span className={`px-2 py-1 rounded text-xs font-bold uppercase ${sub.status === 'approved' ? 'bg-green-500/20 text-green-400' :
+                                          sub.status === 'rejected' ? 'bg-red-500/20 text-red-400' :
+                                            'bg-yellow-500/20 text-yellow-400'
+                                          }`}>
+                                          {sub.status}
+                                        </span>
+                                      </td>
+                                      <td className="p-4 text-right">
+                                        <button
+                                          onClick={() => {
+                                            setEditingSubmission(sub);
+                                            setShowGradeModal(true);
+                                          }}
+                                          className="bg-white/10 hover:bg-white/20 text-white px-3 py-1 rounded-lg text-sm font-bold transition-colors"
+                                        >
+                                          Baholash
+                                        </button>
+                                      </td>
+                                    </tr>
+                                  );
+                                })
+                              )}
+                            </tbody>
+                          </table>
+                        </div>
+
+                        {/* GRADE MODAL */}
+                        {showGradeModal && editingSubmission && (
+                          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
+                            <div className="bg-[#0f172a] border border-white/20 rounded-3xl p-8 max-w-lg w-full space-y-6 relative shadow-2xl">
+                              <button onClick={() => setShowGradeModal(false)} className="absolute top-4 right-4 text-white/40 hover:text-white"><X size={24} /></button>
+
+                              <h3 className="text-2xl font-black mb-4 border-b border-white/10 pb-4">Topshiriqni Baholash</h3>
+
+                              <div className="space-y-4">
+                                <div className="bg-white/5 p-4 rounded-xl">
+                                  <div className="text-xs font-bold text-white/40 uppercase mb-1">O'quvchi</div>
+                                  <div className="text-lg font-bold">{editingSubmission.user?.name}</div>
+                                  <div className="text-white/60 text-xs">{editingSubmission.user?.email}</div>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                  <div className="bg-white/5 p-4 rounded-xl">
+                                    <div className="text-xs font-bold text-white/40 uppercase mb-1">Turi</div>
+                                    <div className="font-mono text-blue-300">{editingSubmission.type}</div>
+                                  </div>
+                                  <div className="bg-white/5 p-4 rounded-xl">
+                                    <div className="text-xs font-bold text-white/40 uppercase mb-1">Status</div>
+                                    <div className="font-bold uppercase">{editingSubmission.status}</div>
+                                  </div>
+                                </div>
+
+                                {editingSubmission.type === 'homework' && editingSubmission.fileUrl && (
+                                  <div>
+                                    <label className="text-xs font-bold text-white/40 uppercase mb-1 block">YUKLANGAN FAYL</label>
+                                    <a href={`https://arabiyya-pro-backend.onrender.com${editingSubmission.fileUrl}`} target="_blank" rel="noreferrer" className="w-full bg-blue-600/20 text-blue-400 px-4 py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-blue-600/30 transition-colors border border-blue-500/20 font-bold">
+                                      <Download size={18} /> Yuklab olish / Ko'rish
+                                    </a>
+                                  </div>
+                                )}
+
+                                <div>
+                                  <label className="text-xs font-bold text-white/40 uppercase mb-1 block">Baho (Ball)</label>
+                                  <input
+                                    type="number"
+                                    value={editingSubmission.score || 0}
+                                    onChange={(e) => setEditingSubmission({ ...editingSubmission, score: parseInt(e.target.value) })}
+                                    className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white font-bold text-xl focus:border-blue-500 transition-colors"
+                                  />
+                                </div>
+
+                                <div>
+                                  <label className="text-xs font-bold text-white/40 uppercase mb-1 block">Ustoz Izohi</label>
+                                  <textarea
+                                    value={editingSubmission.comment || ''}
+                                    onChange={(e) => setEditingSubmission({ ...editingSubmission, comment: e.target.value })}
+                                    placeholder="O'quvchiga izoh qoldiring..."
+                                    className="w-full h-24 bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white resize-none focus:border-blue-500 transition-colors"
+                                  ></textarea>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/10">
+                                  <button
+                                    onClick={() => handleGrade('rejected')}
+                                    className="bg-red-500/10 hover:bg-red-500/20 text-red-400 font-bold py-3 rounded-xl transition-colors border border-red-500/20"
+                                  >
+                                    Rad etish ❌
+                                  </button>
+                                  <button
+                                    onClick={() => handleGrade('approved')}
+                                    className="bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-xl transition-colors shadow-lg shadow-green-500/20"
+                                  >
+                                    Tasdiqlash ✅
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* USERS TAB */}
+                    {adminTab === 'users' && (
+                      <div className="space-y-6">
+                        <div className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 p-6">
+                          <div className="flex flex-col md:flex-row gap-4 justify-between items-center mb-6">
+                            <div className="relative w-full md:w-96">
+                              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <Search size={18} className="text-white/40" />
+                              </div>
+                              <input
+                                type="text"
+                                placeholder="Ism yoki email bo'yicha qidirish..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="block w-full pl-10 pr-3 py-3 border border-white/10 rounded-xl leading-5 bg-black/20 text-white placeholder-white/40 focus:outline-none focus:bg-black/40 focus:ring-1 focus:ring-blue-500 transition-all font-medium"
+                              />
+                            </div>
+                            <div className="text-sm text-white/40 font-bold">
+                              Jami: {adminUsers.length} ta
+                            </div>
+                          </div>
+
+                          <div className="overflow-x-auto">
+                            <table className="w-full text-left">
+                              <thead className="bg-white/5 border-b border-white/10">
+                                <tr>
+                                  <th className="p-4 font-bold text-white/60 text-sm uppercase tracking-wider">Foydalanuvchi</th>
+                                  <th className="p-4 font-bold text-white/60 text-sm uppercase tracking-wider">Email</th>
+                                  <th className="p-4 font-bold text-white/60 text-sm uppercase tracking-wider">Daraja</th>
+                                  <th className="p-4 font-bold text-white/60 text-sm uppercase tracking-wider">Rol</th>
+                                  <th className="p-4 font-bold text-white/60 text-sm uppercase tracking-wider text-right">Amallar</th>
+                                </tr>
+                              </thead>
+                              <tbody className="divide-y divide-white/5">
+                                {adminUsers
+                                  .filter(u =>
+                                    (u.name && u.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                                    (u.email && u.email.toLowerCase().includes(searchTerm.toLowerCase()))
+                                  )
+                                  .map((u, i) => (
+                                    <tr key={i} className="hover:bg-white/5 transition-colors group">
+                                      <td className="p-4">
+                                        <div className="flex items-center gap-3">
+                                          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center font-black text-sm shadow-lg group-hover:scale-110 transition-transform">
+                                            {u.name.charAt(0)}
+                                          </div>
+                                          <div>
+                                            <div className="font-bold text-white">{u.name}</div>
+                                            <div className="text-[10px] text-white/40 font-mono">ID: {u._id.slice(-6).toUpperCase()}</div>
+                                          </div>
+                                        </div>
+                                      </td>
+                                      <td className="p-4 text-white/70 text-sm font-medium">{u.email}</td>
+                                      <td className="p-4">
+                                        <span className={`px-2.5 py-1 rounded-lg text-xs font-bold border ${u.currentLevel ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-white/10 text-white/40 border-white/10'
+                                          }`}>
+                                          {u.currentLevel || 'N/A'}
+                                        </span>
+                                      </td>
+                                      <td className="p-4">
+                                        <span className={`px-2.5 py-1 rounded-lg text-xs font-bold border uppercase tracking-wider ${u.role === 'admin'
+                                          ? 'bg-red-500/10 text-red-400 border-red-500/20'
+                                          : 'bg-blue-500/10 text-blue-400 border-blue-500/20'
+                                          }`}>
+                                          {u.role}
+                                        </span>
+                                      </td>
+                                      <td className="p-4 text-right">
+                                        {u._id !== user.id && (
+                                          <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            {/* Daraja berish tugmasi */}
+                                            <button
+                                              onClick={() => {
+                                                setGrantingLevelTo(u);
+                                                setShowGrantLevelModal(true);
+                                              }}
+                                              className="px-3 py-1.5 rounded-lg text-xs font-bold bg-green-500/20 text-green-300 hover:bg-green-500/30 border border-green-500/20 transition-all flex items-center gap-1"
+                                              title="Bepul daraja berish"
+                                            >
+                                              <Gift size={14} />
+                                              Daraja berish
+                                            </button>
+
+                                            <button
+                                              onClick={() => handleRoleUpdate(u._id, u.role === 'admin' ? 'user' : 'admin')}
+                                              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${u.role === 'admin'
+                                                ? 'bg-white/10 text-white hover:bg-white/20'
+                                                : 'bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30 border border-indigo-500/20'
+                                                }`}
+                                            >
+                                              {u.role === 'admin' ? 'User qilish' : 'Admin qilish'}
+                                            </button>
+                                            <button
+                                              onClick={() => handleDeleteUser(u._id, u.name)}
+                                              className="p-1.5 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20 transition-all"
+                                              title="O'chirish"
+                                            >
+                                              <Trash2 size={16} />
+                                            </button>
+                                          </div>
+                                        )}
+                                      </td>
+                                    </tr>
+                                  ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* COURSES TAB */}
+                    {adminTab === 'courses' && (
+                      <div className="space-y-6">
+                        {!editingLevel ? (
+                          // VIEW MODE: List of Levels
+                          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {levels.map((level) => (
+                              <div key={level.id} className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 overflow-hidden group hover:border-white/20 transition-all">
+                                <div className={`h-2 bg-gradient-to-r ${level.color}`}></div>
+                                <div className="p-6">
+                                  <div className="flex items-start justify-between mb-4">
+                                    <div className="text-4xl">{level.icon}</div>
+                                    <span className="px-3 py-1 bg-white/5 rounded-lg text-xs font-bold border border-white/10">
+                                      {Math.ceil(level.lessons.length / 5)} ta modul • {level.lessons.length} dars
+                                    </span>
+                                  </div>
+                                  <h3 className="text-xl font-black mb-2">{level.title}</h3>
+                                  <p className="text-sm text-white/60 mb-6 line-clamp-2">{level.description}</p>
+
+                                  <div className="space-y-2">
+                                    {level.lessons.slice(0, 3).map((lesson, idx) => (
+                                      <div key={lesson.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition-colors text-xs text-white/70">
+                                        <div className="w-5 h-5 bg-white/10 rounded-full flex items-center justify-center text-[10px] font-bold">
+                                          {idx + 1}
+                                        </div>
+                                        <span className="truncate">{lesson.title}</span>
+                                      </div>
+                                    ))}
+                                    {level.lessons.length > 3 && (
+                                      <div className="text-center text-xs text-white/40 py-1 font-bold">
+                                        + yana {level.lessons.length - 3} ta dars
+                                      </div>
+                                    )}
+                                  </div>
+
+                                  <button
+                                    onClick={() => setEditingLevel(level)}
+                                    className="w-full mt-6 py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 font-bold text-sm transition-all flex items-center justify-center gap-2"
+                                  >
+                                    <Settings size={16} />
+                                    Boshqarish
+                                  </button>
                                 </div>
                               </div>
                             ))}
                           </div>
-                        </div>
-
-                        <div className="bg-gradient-to-br from-blue-600 to-purple-700 rounded-3xl p-8 relative overflow-hidden flex flex-col justify-between">
-                          <div className="relative z-10">
-                            <h3 className="text-2xl font-black mb-2">Arabiyya Pro</h3>
-                            <p className="text-white/80 text-sm mb-6">Tizim holati barqaror. Barcha xizmatlar ishlamoqda.</p>
-                            <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/20 rounded-lg text-xs font-bold backdrop-blur-md">
-                              <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-                              Online v1.2.0
-                            </div>
-                          </div>
-                          <Sparkles className="absolute bottom-4 right-4 text-white/20 w-32 h-32" />
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* ORDERS TAB */}
-                  {adminTab === 'orders' && (
-                    <div className="space-y-6">
-                      <div className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 p-6">
-                        <h3 className="text-xl font-bold mb-6 flex items-center gap-3">
-                          <ClipboardCheck className="text-blue-400" />
-                          Barcha Buyurtmalar
-                        </h3>
-                        <div className="overflow-x-auto">
-                          <table className="w-full text-left">
-                            <thead className="bg-white/5 border-b border-white/10">
-                              <tr>
-                                <th className="p-4 font-bold text-white/60 text-sm uppercase">Foydalanuvchi</th>
-                                <th className="p-4 font-bold text-white/60 text-sm uppercase">Daraja</th>
-                                <th className="p-4 font-bold text-white/60 text-sm uppercase">Summa</th>
-                                <th className="p-4 font-bold text-white/60 text-sm uppercase">Holat</th>
-                                <th className="p-4 font-bold text-white/60 text-sm uppercase">Isbot</th>
-                                <th className="p-4 font-bold text-white/60 text-sm uppercase text-right">Amallar</th>
-                              </tr>
-                            </thead>
-                            <tbody className="divide-y divide-white/5">
-                              {adminOrders.length === 0 ? (
-                                <tr>
-                                  <td colSpan="6" className="p-8 text-center text-white/40 font-bold">
-                                    Hozircha buyurtmalar yo'q
-                                  </td>
-                                </tr>
-                              ) : (
-                                adminOrders.map((order, i) => (
-                                  <tr key={i} className="hover:bg-white/5 transition-colors">
-                                    <td className="p-4">
-                                      <div className="font-bold">{order.user?.name || 'Noma\'lum'}</div>
-                                      <div className="text-xs text-white/40">{order.user?.email}</div>
-                                    </td>
-                                    <td className="p-4 font-black text-xl text-blue-400">{order.levelId}</td>
-                                    <td className="p-4 font-mono">{order.amount?.toLocaleString()} so'm</td>
-                                    <td className="p-4">
-                                      <span className={`px-2 py-1 rounded text-xs font-bold uppercase ${order.status === 'approved' ? 'bg-green-500/20 text-green-400' :
-                                        order.status === 'rejected' ? 'bg-red-500/20 text-red-400' :
-                                          'bg-yellow-500/20 text-yellow-400'
-                                        }`}>
-                                        {order.status}
-                                      </span>
-                                    </td>
-                                    <td className="p-4 text-sm text-white/60 truncate max-w-[200px]" title={order.transactionProof}>
-                                      {order.transactionProof || 'N/A'}
-                                    </td>
-                                    <td className="p-4 text-right">
-                                      {order.status === 'pending' && (
-                                        <button
-                                          onClick={() => handleApproveOrder(order._id)}
-                                          className="px-4 py-2 bg-green-500 text-white rounded-lg font-bold hover:bg-green-600 transition-colors shadow-lg shadow-green-500/20"
-                                        >
-                                          Tasdiqlash
-                                        </button>
-                                      )}
-                                      {order.status === 'approved' && (
-                                        <span className="text-green-500 flex items-center justify-end gap-1 font-bold text-sm">
-                                          <CheckCircle size={16} /> Tasdiqlangan
-                                        </span>
-                                      )}
-                                    </td>
-                                  </tr>
-                                ))
-                              )}
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* SUBMISSIONS TAB */}
-                  {adminTab === 'submissions' && (
-                    <div className="space-y-6 animate-in fade-in duration-300">
-                      <div className="flex justify-between items-center bg-white/5 p-4 rounded-xl border border-white/10">
-                        <h3 className="text-xl font-bold flex items-center gap-3">
-                          <CheckCircle2 className="text-blue-400" />
-                          Barcha Topshiriqlar
-                        </h3>
-                        <button onClick={fetchSubmissions} className="bg-white/10 p-2 rounded-lg hover:bg-white/20 transition-colors" title="Yangilash">
-                          <TrendingUp size={20} />
-                        </button>
-                      </div>
-
-                      <div className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 overflow-hidden">
-                        <table className="w-full text-left">
-                          <thead className="bg-white/5 border-b border-white/10 text-white/60 text-xs uppercase font-bold">
-                            <tr>
-                              <th className="p-4">O'quvchi</th>
-                              <th className="p-4">Dars</th>
-                              <th className="p-4">Turi</th>
-                              <th className="p-4">Natija</th>
-                              <th className="p-4">Status</th>
-                              <th className="p-4 text-right">Amal</th>
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y divide-white/5">
-                            {submissions.length === 0 ? (
-                              <tr><td colSpan="6" className="p-8 text-center text-white/40">Hozircha topshiriqlar yo'q</td></tr>
-                            ) : (
-                              submissions.map((sub) => {
-                                const level = levels.find(l => l.id === sub.levelId);
-                                const lesson = level?.lessons.find(l => l.id === sub.lessonId);
-                                return (
-                                  <tr key={sub._id} className="hover:bg-white/5 transition-colors">
-                                    <td className="p-4">
-                                      <div className="font-bold">{sub.user?.name || "Noma'lum"}</div>
-                                      <div className="text-xs text-white/40">{sub.user?.email}</div>
-                                    </td>
-                                    <td className="p-4 text-sm">
-                                      <div className="font-bold text-white">{lesson ? lesson.title : sub.lessonId}</div>
-                                      <div className="text-white/40 text-xs font-mono">{level ? level.title : sub.levelId}</div>
-                                    </td>
-                                    <td className="p-4">
-                                      <span className={`px-2 py-1 rounded text-xs font-bold uppercase ${sub.type === 'quiz' ? 'bg-purple-500/20 text-purple-400' : 'bg-orange-500/20 text-orange-400'}`}>
-                                        {sub.type}
-                                      </span>
-                                    </td>
-                                    <td className="p-4">
-                                      {sub.type === 'quiz' ? (
-                                        <span className="font-bold text-lg">{sub.score} ball</span>
-                                      ) : (
-                                        sub.fileUrl ? (
-                                          <a href={`https://arabiyya-pro-backend.onrender.com${sub.fileUrl}`} target="_blank" rel="noreferrer" className="text-blue-400 hover:underline flex items-center gap-1">
-                                            <Download size={14} /> Fayl
-                                          </a>
-                                        ) : <span className="text-white/40">Fayl yo'q</span>
-                                      )}
-                                    </td>
-                                    <td className="p-4">
-                                      <span className={`px-2 py-1 rounded text-xs font-bold uppercase ${sub.status === 'approved' ? 'bg-green-500/20 text-green-400' :
-                                        sub.status === 'rejected' ? 'bg-red-500/20 text-red-400' :
-                                          'bg-yellow-500/20 text-yellow-400'
-                                        }`}>
-                                        {sub.status}
-                                      </span>
-                                    </td>
-                                    <td className="p-4 text-right">
-                                      <button
-                                        onClick={() => {
-                                          setEditingSubmission(sub);
-                                          setShowGradeModal(true);
-                                        }}
-                                        className="bg-white/10 hover:bg-white/20 text-white px-3 py-1 rounded-lg text-sm font-bold transition-colors"
-                                      >
-                                        Baholash
-                                      </button>
-                                    </td>
-                                  </tr>
-                                );
-                              })
-                            )}
-                          </tbody>
-                        </table>
-                      </div>
-
-                      {/* GRADE MODAL */}
-                      {showGradeModal && editingSubmission && (
-                        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-                          <div className="bg-[#0f172a] border border-white/20 rounded-3xl p-8 max-w-lg w-full space-y-6 relative shadow-2xl">
-                            <button onClick={() => setShowGradeModal(false)} className="absolute top-4 right-4 text-white/40 hover:text-white"><X size={24} /></button>
-
-                            <h3 className="text-2xl font-black mb-4 border-b border-white/10 pb-4">Topshiriqni Baholash</h3>
-
-                            <div className="space-y-4">
-                              <div className="bg-white/5 p-4 rounded-xl">
-                                <div className="text-xs font-bold text-white/40 uppercase mb-1">O'quvchi</div>
-                                <div className="text-lg font-bold">{editingSubmission.user?.name}</div>
-                                <div className="text-white/60 text-xs">{editingSubmission.user?.email}</div>
-                              </div>
-
-                              <div className="grid grid-cols-2 gap-4">
-                                <div className="bg-white/5 p-4 rounded-xl">
-                                  <div className="text-xs font-bold text-white/40 uppercase mb-1">Turi</div>
-                                  <div className="font-mono text-blue-300">{editingSubmission.type}</div>
-                                </div>
-                                <div className="bg-white/5 p-4 rounded-xl">
-                                  <div className="text-xs font-bold text-white/40 uppercase mb-1">Status</div>
-                                  <div className="font-bold uppercase">{editingSubmission.status}</div>
-                                </div>
-                              </div>
-
-                              {editingSubmission.type === 'homework' && editingSubmission.fileUrl && (
+                        ) : (
+                          // EDIT MODE: Detailed Lesson Management
+                          <div className="space-y-6">
+                            {/* Header */}
+                            <div className="flex items-center justify-between bg-white/5 p-6 rounded-2xl border border-white/10">
+                              <div className="flex items-center gap-4">
+                                <button
+                                  onClick={() => setEditingLevel(null)}
+                                  className="p-2 rounded-xl hover:bg-white/10 text-white/60 hover:text-white transition-all"
+                                >
+                                  <ArrowLeft size={24} />
+                                </button>
                                 <div>
-                                  <label className="text-xs font-bold text-white/40 uppercase mb-1 block">YUKLANGAN FAYL</label>
-                                  <a href={`https://arabiyya-pro-backend.onrender.com${editingSubmission.fileUrl}`} target="_blank" rel="noreferrer" className="w-full bg-blue-600/20 text-blue-400 px-4 py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-blue-600/30 transition-colors border border-blue-500/20 font-bold">
-                                    <Download size={18} /> Yuklab olish / Ko'rish
-                                  </a>
+                                  <h3 className="text-2xl font-black flex items-center gap-3">
+                                    <span className="text-3xl">{editingLevel.icon}</span>
+                                    {editingLevel.title}
+                                  </h3>
+                                  <p className="text-white/60 text-sm">Darslarni boshqarish</p>
                                 </div>
-                              )}
-
-                              <div>
-                                <label className="text-xs font-bold text-white/40 uppercase mb-1 block">Baho (Ball)</label>
-                                <input
-                                  type="number"
-                                  value={editingSubmission.score || 0}
-                                  onChange={(e) => setEditingSubmission({ ...editingSubmission, score: parseInt(e.target.value) })}
-                                  className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white font-bold text-xl focus:border-blue-500 transition-colors"
-                                />
                               </div>
-
-                              <div>
-                                <label className="text-xs font-bold text-white/40 uppercase mb-1 block">Ustoz Izohi</label>
-                                <textarea
-                                  value={editingSubmission.comment || ''}
-                                  onChange={(e) => setEditingSubmission({ ...editingSubmission, comment: e.target.value })}
-                                  placeholder="O'quvchiga izoh qoldiring..."
-                                  className="w-full h-24 bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white resize-none focus:border-blue-500 transition-colors"
-                                ></textarea>
+                              <div className={`px-4 py-2 rounded-xl text-xs font-bold border bg-white/5 border-white/10`}>
+                                {editingLevel.lessons.length} ta dars
                               </div>
+                            </div>
 
-                              <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/10">
+                            {/* Add New Lesson Form */}
+                            <div className="bg-white/5 p-6 rounded-2xl border border-white/10">
+                              <h4 className="font-bold text-lg mb-4 flex items-center gap-2">
+                                <Plus size={20} className="text-green-400" />
+                                Yangi dars qo'shish
+                              </h4>
+                              <div className="grid md:grid-cols-4 gap-4">
+                                <div className="md:col-span-2">
+                                  <input
+                                    type="text"
+                                    placeholder="Dars mavzusi (Sarlavha)"
+                                    className="w-full px-4 py-3 bg-black/20 border border-white/10 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-blue-500/50"
+                                    value={newLessonData.title}
+                                    onChange={(e) => setNewLessonData({ ...newLessonData, title: e.target.value })}
+                                  />
+                                </div>
+                                <div>
+                                  <input
+                                    type="text"
+                                    placeholder="Davomiylik (masalan: 10:00)"
+                                    className="w-full px-4 py-3 bg-black/20 border border-white/10 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-blue-500/50"
+                                    value={newLessonData.duration}
+                                    onChange={(e) => setNewLessonData({ ...newLessonData, duration: e.target.value })}
+                                  />
+                                </div>
                                 <button
-                                  onClick={() => handleGrade('rejected')}
-                                  className="bg-red-500/10 hover:bg-red-500/20 text-red-400 font-bold py-3 rounded-xl transition-colors border border-red-500/20"
+                                  className="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-6 rounded-xl transition-all flex items-center justify-center gap-2"
+                                  onClick={async () => {
+                                    if (!newLessonData.title) return;
+                                    try {
+                                      const token = localStorage.getItem('token');
+                                      const res = await fetch(`https://arabiyya-pro-backend.onrender.com/api/levels/${editingLevel.id}/lessons`, {
+                                        method: 'POST',
+                                        headers: {
+                                          'Content-Type': 'application/json',
+                                          'Authorization': `Bearer ${token}`
+                                        },
+                                        body: JSON.stringify({
+                                          title: newLessonData.title,
+                                          duration: newLessonData.duration || "00:00",
+                                          videoUrl: newLessonData.videoUrl
+                                        })
+                                      });
+                                      const data = await res.json();
+                                      if (data.success) {
+                                        // Refresh levels to get updated data
+                                        fetchLevels();
+                                        setNewLessonData({ title: '', duration: '', videoUrl: '' });
+                                      } else {
+                                        alert('Xatolik: ' + data.message);
+                                      }
+                                    } catch (err) {
+                                      console.error(err);
+                                      alert('Server xatosi');
+                                    }
+                                  }}
                                 >
-                                  Rad etish ❌
-                                </button>
-                                <button
-                                  onClick={() => handleGrade('approved')}
-                                  className="bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-xl transition-colors shadow-lg shadow-green-500/20"
-                                >
-                                  Tasdiqlash ✅
+                                  <Plus size={18} />
+                                  Qo'shish
                                 </button>
                               </div>
                             </div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
 
-                  {/* USERS TAB */}
-                  {adminTab === 'users' && (
-                    <div className="space-y-6">
-                      <div className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 p-6">
-                        <div className="flex flex-col md:flex-row gap-4 justify-between items-center mb-6">
-                          <div className="relative w-full md:w-96">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                              <Search size={18} className="text-white/40" />
-                            </div>
-                            <input
-                              type="text"
-                              placeholder="Ism yoki email bo'yicha qidirish..."
-                              value={searchTerm}
-                              onChange={(e) => setSearchTerm(e.target.value)}
-                              className="block w-full pl-10 pr-3 py-3 border border-white/10 rounded-xl leading-5 bg-black/20 text-white placeholder-white/40 focus:outline-none focus:bg-black/40 focus:ring-1 focus:ring-blue-500 transition-all font-medium"
-                            />
-                          </div>
-                          <div className="text-sm text-white/40 font-bold">
-                            Jami: {adminUsers.length} ta
-                          </div>
-                        </div>
+                            {/* Lessons List - Grouped by Modules */}
+                            <div className="space-y-4">
+                              {Array.from({ length: Math.ceil(editingLevel.lessons.length / 5) }, (_, moduleIndex) => {
+                                const moduleLessons = editingLevel.lessons.slice(moduleIndex * 5, (moduleIndex + 1) * 5);
+                                const moduleNumber = moduleIndex + 1;
 
-                        <div className="overflow-x-auto">
-                          <table className="w-full text-left">
-                            <thead className="bg-white/5 border-b border-white/10">
-                              <tr>
-                                <th className="p-4 font-bold text-white/60 text-sm uppercase tracking-wider">Foydalanuvchi</th>
-                                <th className="p-4 font-bold text-white/60 text-sm uppercase tracking-wider">Email</th>
-                                <th className="p-4 font-bold text-white/60 text-sm uppercase tracking-wider">Daraja</th>
-                                <th className="p-4 font-bold text-white/60 text-sm uppercase tracking-wider">Rol</th>
-                                <th className="p-4 font-bold text-white/60 text-sm uppercase tracking-wider text-right">Amallar</th>
-                              </tr>
-                            </thead>
-                            <tbody className="divide-y divide-white/5">
-                              {adminUsers
-                                .filter(u =>
-                                  (u.name && u.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
-                                  (u.email && u.email.toLowerCase().includes(searchTerm.toLowerCase()))
-                                )
-                                .map((u, i) => (
-                                  <tr key={i} className="hover:bg-white/5 transition-colors group">
-                                    <td className="p-4">
+                                return (
+                                  <div key={moduleIndex} className="bg-white/5 rounded-2xl border border-white/10 overflow-hidden">
+                                    {/* Module Header */}
+                                    <div className="bg-white/5 p-4 border-b border-white/10 flex items-center justify-between">
                                       <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center font-black text-sm shadow-lg group-hover:scale-110 transition-transform">
-                                          {u.name.charAt(0)}
+                                        <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${editingLevel.color} text-white font-black flex items-center justify-center text-lg`}>
+                                          {moduleNumber}
                                         </div>
                                         <div>
-                                          <div className="font-bold text-white">{u.name}</div>
-                                          <div className="text-[10px] text-white/40 font-mono">ID: {u._id.slice(-6).toUpperCase()}</div>
+                                          <h5 className="font-black text-lg">Modul {moduleNumber}</h5>
+                                          <p className="text-xs text-white/60">{moduleLessons.length} ta dars</p>
                                         </div>
                                       </div>
-                                    </td>
-                                    <td className="p-4 text-white/70 text-sm font-medium">{u.email}</td>
-                                    <td className="p-4">
-                                      <span className={`px-2.5 py-1 rounded-lg text-xs font-bold border ${u.currentLevel ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-white/10 text-white/40 border-white/10'
-                                        }`}>
-                                        {u.currentLevel || 'N/A'}
-                                      </span>
-                                    </td>
-                                    <td className="p-4">
-                                      <span className={`px-2.5 py-1 rounded-lg text-xs font-bold border uppercase tracking-wider ${u.role === 'admin'
-                                        ? 'bg-red-500/10 text-red-400 border-red-500/20'
-                                        : 'bg-blue-500/10 text-blue-400 border-blue-500/20'
-                                        }`}>
-                                        {u.role}
-                                      </span>
-                                    </td>
-                                    <td className="p-4 text-right">
-                                      {u._id !== user.id && (
-                                        <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                          {/* Daraja berish tugmasi */}
-                                          <button
-                                            onClick={() => {
-                                              setGrantingLevelTo(u);
-                                              setShowGrantLevelModal(true);
-                                            }}
-                                            className="px-3 py-1.5 rounded-lg text-xs font-bold bg-green-500/20 text-green-300 hover:bg-green-500/30 border border-green-500/20 transition-all flex items-center gap-1"
-                                            title="Bepul daraja berish"
-                                          >
-                                            <Gift size={14} />
-                                            Daraja berish
-                                          </button>
-
-                                          <button
-                                            onClick={() => handleRoleUpdate(u._id, u.role === 'admin' ? 'user' : 'admin')}
-                                            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${u.role === 'admin'
-                                              ? 'bg-white/10 text-white hover:bg-white/20'
-                                              : 'bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30 border border-indigo-500/20'
-                                              }`}
-                                          >
-                                            {u.role === 'admin' ? 'User qilish' : 'Admin qilish'}
-                                          </button>
-                                          <button
-                                            onClick={() => handleDeleteUser(u._id, u.name)}
-                                            className="p-1.5 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20 transition-all"
-                                            title="O'chirish"
-                                          >
-                                            <Trash2 size={16} />
-                                          </button>
-                                        </div>
-                                      )}
-                                    </td>
-                                  </tr>
-                                ))}
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* COURSES TAB */}
-                  {adminTab === 'courses' && (
-                    <div className="space-y-6">
-                      {!editingLevel ? (
-                        // VIEW MODE: List of Levels
-                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                          {levels.map((level) => (
-                            <div key={level.id} className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 overflow-hidden group hover:border-white/20 transition-all">
-                              <div className={`h-2 bg-gradient-to-r ${level.color}`}></div>
-                              <div className="p-6">
-                                <div className="flex items-start justify-between mb-4">
-                                  <div className="text-4xl">{level.icon}</div>
-                                  <span className="px-3 py-1 bg-white/5 rounded-lg text-xs font-bold border border-white/10">
-                                    {Math.ceil(level.lessons.length / 5)} ta modul • {level.lessons.length} dars
-                                  </span>
-                                </div>
-                                <h3 className="text-xl font-black mb-2">{level.title}</h3>
-                                <p className="text-sm text-white/60 mb-6 line-clamp-2">{level.description}</p>
-
-                                <div className="space-y-2">
-                                  {level.lessons.slice(0, 3).map((lesson, idx) => (
-                                    <div key={lesson.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition-colors text-xs text-white/70">
-                                      <div className="w-5 h-5 bg-white/10 rounded-full flex items-center justify-center text-[10px] font-bold">
-                                        {idx + 1}
-                                      </div>
-                                      <span className="truncate">{lesson.title}</span>
-                                    </div>
-                                  ))}
-                                  {level.lessons.length > 3 && (
-                                    <div className="text-center text-xs text-white/40 py-1 font-bold">
-                                      + yana {level.lessons.length - 3} ta dars
-                                    </div>
-                                  )}
-                                </div>
-
-                                <button
-                                  onClick={() => setEditingLevel(level)}
-                                  className="w-full mt-6 py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 font-bold text-sm transition-all flex items-center justify-center gap-2"
-                                >
-                                  <Settings size={16} />
-                                  Boshqarish
-                                </button>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        // EDIT MODE: Detailed Lesson Management
-                        <div className="space-y-6">
-                          {/* Header */}
-                          <div className="flex items-center justify-between bg-white/5 p-6 rounded-2xl border border-white/10">
-                            <div className="flex items-center gap-4">
-                              <button
-                                onClick={() => setEditingLevel(null)}
-                                className="p-2 rounded-xl hover:bg-white/10 text-white/60 hover:text-white transition-all"
-                              >
-                                <ArrowLeft size={24} />
-                              </button>
-                              <div>
-                                <h3 className="text-2xl font-black flex items-center gap-3">
-                                  <span className="text-3xl">{editingLevel.icon}</span>
-                                  {editingLevel.title}
-                                </h3>
-                                <p className="text-white/60 text-sm">Darslarni boshqarish</p>
-                              </div>
-                            </div>
-                            <div className={`px-4 py-2 rounded-xl text-xs font-bold border bg-white/5 border-white/10`}>
-                              {editingLevel.lessons.length} ta dars
-                            </div>
-                          </div>
-
-                          {/* Add New Lesson Form */}
-                          <div className="bg-white/5 p-6 rounded-2xl border border-white/10">
-                            <h4 className="font-bold text-lg mb-4 flex items-center gap-2">
-                              <Plus size={20} className="text-green-400" />
-                              Yangi dars qo'shish
-                            </h4>
-                            <div className="grid md:grid-cols-4 gap-4">
-                              <div className="md:col-span-2">
-                                <input
-                                  type="text"
-                                  placeholder="Dars mavzusi (Sarlavha)"
-                                  className="w-full px-4 py-3 bg-black/20 border border-white/10 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-blue-500/50"
-                                  value={newLessonData.title}
-                                  onChange={(e) => setNewLessonData({ ...newLessonData, title: e.target.value })}
-                                />
-                              </div>
-                              <div>
-                                <input
-                                  type="text"
-                                  placeholder="Davomiylik (masalan: 10:00)"
-                                  className="w-full px-4 py-3 bg-black/20 border border-white/10 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-blue-500/50"
-                                  value={newLessonData.duration}
-                                  onChange={(e) => setNewLessonData({ ...newLessonData, duration: e.target.value })}
-                                />
-                              </div>
-                              <button
-                                className="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-6 rounded-xl transition-all flex items-center justify-center gap-2"
-                                onClick={async () => {
-                                  if (!newLessonData.title) return;
-                                  try {
-                                    const token = localStorage.getItem('token');
-                                    const res = await fetch(`https://arabiyya-pro-backend.onrender.com/api/levels/${editingLevel.id}/lessons`, {
-                                      method: 'POST',
-                                      headers: {
-                                        'Content-Type': 'application/json',
-                                        'Authorization': `Bearer ${token}`
-                                      },
-                                      body: JSON.stringify({
-                                        title: newLessonData.title,
-                                        duration: newLessonData.duration || "00:00",
-                                        videoUrl: newLessonData.videoUrl
-                                      })
-                                    });
-                                    const data = await res.json();
-                                    if (data.success) {
-                                      // Refresh levels to get updated data
-                                      fetchLevels();
-                                      setNewLessonData({ title: '', duration: '', videoUrl: '' });
-                                    } else {
-                                      alert('Xatolik: ' + data.message);
-                                    }
-                                  } catch (err) {
-                                    console.error(err);
-                                    alert('Server xatosi');
-                                  }
-                                }}
-                              >
-                                <Plus size={18} />
-                                Qo'shish
-                              </button>
-                            </div>
-                          </div>
-
-                          {/* Lessons List - Grouped by Modules */}
-                          <div className="space-y-4">
-                            {Array.from({ length: Math.ceil(editingLevel.lessons.length / 5) }, (_, moduleIndex) => {
-                              const moduleLessons = editingLevel.lessons.slice(moduleIndex * 5, (moduleIndex + 1) * 5);
-                              const moduleNumber = moduleIndex + 1;
-
-                              return (
-                                <div key={moduleIndex} className="bg-white/5 rounded-2xl border border-white/10 overflow-hidden">
-                                  {/* Module Header */}
-                                  <div className="bg-white/5 p-4 border-b border-white/10 flex items-center justify-between">
-                                    <div className="flex items-center gap-3">
-                                      <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${editingLevel.color} text-white font-black flex items-center justify-center text-lg`}>
-                                        {moduleNumber}
-                                      </div>
-                                      <div>
-                                        <h5 className="font-black text-lg">Modul {moduleNumber}</h5>
-                                        <p className="text-xs text-white/60">{moduleLessons.length} ta dars</p>
+                                      <div className="text-sm text-white/60 font-bold">
+                                        Darslar: {moduleIndex * 5 + 1} - {moduleIndex * 5 + moduleLessons.length}
                                       </div>
                                     </div>
-                                    <div className="text-sm text-white/60 font-bold">
-                                      Darslar: {moduleIndex * 5 + 1} - {moduleIndex * 5 + moduleLessons.length}
-                                    </div>
-                                  </div>
 
-                                  {/* Module Lessons Table */}
-                                  <table className="w-full text-left">
-                                    <thead className="bg-white/5 border-b border-white/10">
-                                      <tr>
-                                        <th className="p-3 font-bold text-white/60 text-xs w-12 text-center">#</th>
-                                        <th className="p-3 font-bold text-white/60 text-xs">Mavzu</th>
-                                        <th className="p-3 font-bold text-white/60 text-xs">Vaqt</th>
-                                        <th className="p-3 font-bold text-white/60 text-xs text-right">Amallar</th>
-                                      </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-white/5">
-                                      {moduleLessons.map((lesson, lessonIndex) => {
-                                        const globalIndex = moduleIndex * 5 + lessonIndex;
-                                        return (
-                                          <tr key={lesson.id} className="hover:bg-white/5 group">
-                                            <td className="p-3 text-center font-bold text-white/40 text-sm">{globalIndex + 1}</td>
-                                            <td className="p-3 font-medium text-sm">{lesson.title}</td>
-                                            <td className="p-3 text-white/60 text-xs font-mono">{lesson.duration}</td>
-                                            <td className="p-3 text-right">
-                                              <button
-                                                className="p-2 text-blue-400 hover:bg-blue-500/20 rounded-lg transition-all opacity-0 group-hover:opacity-100 mr-2"
-                                                title="Tahrirlash"
-                                                onClick={() => {
-                                                  setEditingLessonId(lesson.id);
-                                                  setEditLessonTab('main');
-                                                  setEditLessonData({
-                                                    title: lesson.title,
-                                                    duration: lesson.duration,
-                                                    ebookUrl: lesson.ebookUrl || '',
-                                                    theory: lesson.theory || (lesson.content?.mainContent || ''),
-                                                    practice: lesson.practice || '',
-                                                    homework: typeof lesson.homework === 'string' ? lesson.homework : (lesson.homework?.description || ''),
-                                                    quiz: lesson.quiz || []
-                                                  });
-                                                  setShowEditLessonModal(true);
-                                                }}
-                                              >
-                                                <Settings size={16} />
-                                              </button>
-                                              <button
-                                                className="p-2 text-red-400 hover:bg-red-500/20 rounded-lg transition-all opacity-0 group-hover:opacity-100"
-                                                title="O'chirish"
-                                                onClick={async () => {
-                                                  if (!window.confirm('Rostdan ham o\'chirmoqchimisiz?')) return;
-                                                  try {
-                                                    const token = localStorage.getItem('token');
-                                                    const res = await fetch(`https://arabiyya-pro-backend.onrender.com/api/levels/${editingLevel.id}/lessons/${lesson.id}`, {
-                                                      method: 'DELETE',
-                                                      headers: { 'Authorization': `Bearer ${token}` }
+                                    {/* Module Lessons Table */}
+                                    <table className="w-full text-left">
+                                      <thead className="bg-white/5 border-b border-white/10">
+                                        <tr>
+                                          <th className="p-3 font-bold text-white/60 text-xs w-12 text-center">#</th>
+                                          <th className="p-3 font-bold text-white/60 text-xs">Mavzu</th>
+                                          <th className="p-3 font-bold text-white/60 text-xs">Vaqt</th>
+                                          <th className="p-3 font-bold text-white/60 text-xs text-right">Amallar</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody className="divide-y divide-white/5">
+                                        {moduleLessons.map((lesson, lessonIndex) => {
+                                          const globalIndex = moduleIndex * 5 + lessonIndex;
+                                          return (
+                                            <tr key={lesson.id} className="hover:bg-white/5 group">
+                                              <td className="p-3 text-center font-bold text-white/40 text-sm">{globalIndex + 1}</td>
+                                              <td className="p-3 font-medium text-sm">{lesson.title}</td>
+                                              <td className="p-3 text-white/60 text-xs font-mono">{lesson.duration}</td>
+                                              <td className="p-3 text-right">
+                                                <button
+                                                  className="p-2 text-blue-400 hover:bg-blue-500/20 rounded-lg transition-all opacity-0 group-hover:opacity-100 mr-2"
+                                                  title="Tahrirlash"
+                                                  onClick={() => {
+                                                    setEditingLessonId(lesson.id);
+                                                    setEditLessonTab('main');
+                                                    setEditLessonData({
+                                                      title: lesson.title,
+                                                      duration: lesson.duration,
+                                                      ebookUrl: lesson.ebookUrl || '',
+                                                      theory: lesson.theory || (lesson.content?.mainContent || ''),
+                                                      practice: lesson.practice || '',
+                                                      homework: typeof lesson.homework === 'string' ? lesson.homework : (lesson.homework?.description || ''),
+                                                      quiz: lesson.quiz || []
                                                     });
-                                                    const data = await res.json();
-                                                    if (data.success) {
-                                                      fetchLevels();
-                                                    } else {
-                                                      alert('O\'chirishda xatolik: ' + data.message);
+                                                    setShowEditLessonModal(true);
+                                                  }}
+                                                >
+                                                  <Settings size={16} />
+                                                </button>
+                                                <button
+                                                  className="p-2 text-red-400 hover:bg-red-500/20 rounded-lg transition-all opacity-0 group-hover:opacity-100"
+                                                  title="O'chirish"
+                                                  onClick={async () => {
+                                                    if (!window.confirm('Rostdan ham o\'chirmoqchimisiz?')) return;
+                                                    try {
+                                                      const token = localStorage.getItem('token');
+                                                      const res = await fetch(`https://arabiyya-pro-backend.onrender.com/api/levels/${editingLevel.id}/lessons/${lesson.id}`, {
+                                                        method: 'DELETE',
+                                                        headers: { 'Authorization': `Bearer ${token}` }
+                                                      });
+                                                      const data = await res.json();
+                                                      if (data.success) {
+                                                        fetchLevels();
+                                                      } else {
+                                                        alert('O\'chirishda xatolik: ' + data.message);
+                                                      }
+                                                    } catch (err) {
+                                                      console.error(err);
+                                                      alert('Server xatosi');
                                                     }
-                                                  } catch (err) {
-                                                    console.error(err);
-                                                    alert('Server xatosi');
-                                                  }
-                                                }}
-                                              >
-                                                <Trash2 size={16} />
-                                              </button>
-                                            </td>
-                                          </tr>
-                                        );
-                                      })}
-                                    </tbody>
-                                  </table>
+                                                  }}
+                                                >
+                                                  <Trash2 size={16} />
+                                                </button>
+                                              </td>
+                                            </tr>
+                                          );
+                                        })}
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                );
+                              })}
+                              {editingLevel.lessons.length === 0 && (
+                                <div className="bg-white/5 rounded-2xl border border-white/10 p-12 text-center text-white/40">
+                                  Ushbu darajada hali darslar yo'q
                                 </div>
-                              );
-                            })}
-                            {editingLevel.lessons.length === 0 && (
-                              <div className="bg-white/5 rounded-2xl border border-white/10 p-12 text-center text-white/40">
-                                Ushbu darajada hali darslar yo'q
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* SETTINGS TAB */}
-                  {adminTab === 'settings' && (
-                    <div className="space-y-8">
-                      {/* Section 1: General Settings (Mock) */}
-                      <div className="bg-white/5 p-6 rounded-2xl border border-white/10">
-                        <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                          <Globe size={20} className="text-blue-400" />
-                          Umumiy Sozlamalar
-                        </h3>
-                        <div className="grid md:grid-cols-2 gap-6">
-                          <div className="space-y-2">
-                            <label className="text-sm text-white/60">Tizim Tili</label>
-                            <select className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500/50">
-                              <option value="uz">O'zbekcha</option>
-                              <option value="ru">Русский</option>
-                              <option value="en">English</option>
-                            </select>
-                          </div>
-                          <div className="space-y-2">
-                            <label className="text-sm text-white/60">Mavzu (Theme)</label>
-                            <select className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500/50">
-                              <option value="dark">Qorong'u (Dark)</option>
-                              <option value="light">Yorug' (Light)</option>
-                              <option value="system">Tizim moslashuvi</option>
-                            </select>
-                          </div>
-                        </div>
-                        <div className="mt-4 flex justify-end">
-                          <button className="bg-blue-600 hover:bg-blue-500 px-6 py-2 rounded-xl text-sm font-bold transition-all">
-                            Saqlash
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* Section 2: Admin Users Management */}
-                      <div className="bg-white/5 p-6 rounded-2xl border border-white/10">
-                        <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                          <Shield size={20} className="text-purple-400" />
-                          Adminlar Boshqaruvi
-                        </h3>
-                        <p className="text-sm text-white/60 mb-6">
-                          Quyidagi foydalanuvchilar tizimda <b>Admin</b> huquqiga ega.
-                        </p>
-
-                        <div className="space-y-4">
-                          {adminUsers.filter(u => u.role === 'admin').map(admin => (
-                            <div key={admin._id} className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5">
-                              <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-full flex items-center justify-center font-bold text-white">
-                                  {admin.name?.charAt(0)}
-                                </div>
-                                <div>
-                                  <div className="font-bold">{admin.name}</div>
-                                  <div className="text-xs text-white/50">{admin.email}</div>
-                                </div>
-                              </div>
-                              {admin._id !== user.id && (
-                                <button
-                                  onClick={() => handleRoleUpdate(admin._id, 'user')}
-                                  className="text-red-400 hover:bg-red-500/10 px-3 py-1.5 rounded-lg text-xs font-bold transition-all border border-red-500/20"
-                                >
-                                  Adminlikdan olish
-                                </button>
-                              )}
-                              {admin._id === user.id && (
-                                <span className="text-xs bg-green-500/20 text-green-400 px-3 py-1 rounded-lg border border-green-500/20">
-                                  Siz
-                                </span>
                               )}
                             </div>
-                          ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* SETTINGS TAB */}
+                    {adminTab === 'settings' && (
+                      <div className="space-y-8">
+                        {/* Section 1: General Settings (Mock) */}
+                        <div className="bg-white/5 p-6 rounded-2xl border border-white/10">
+                          <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+                            <Globe size={20} className="text-blue-400" />
+                            Umumiy Sozlamalar
+                          </h3>
+                          <div className="grid md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                              <label className="text-sm text-white/60">Tizim Tili</label>
+                              <select className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500/50">
+                                <option value="uz">O'zbekcha</option>
+                                <option value="ru">Русский</option>
+                                <option value="en">English</option>
+                              </select>
+                            </div>
+                            <div className="space-y-2">
+                              <label className="text-sm text-white/60">Mavzu (Theme)</label>
+                              <select className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500/50">
+                                <option value="dark">Qorong'u (Dark)</option>
+                                <option value="light">Yorug' (Light)</option>
+                                <option value="system">Tizim moslashuvi</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div className="mt-4 flex justify-end">
+                            <button className="bg-blue-600 hover:bg-blue-500 px-6 py-2 rounded-xl text-sm font-bold transition-all">
+                              Saqlash
+                            </button>
+                          </div>
                         </div>
 
-                        <div className="mt-6 pt-6 border-t border-white/10">
-                          <h4 className="font-bold text-sm mb-2">Yangi Admin qo'shish</h4>
-                          <p className="text-xs text-white/50 mb-4">Foydalanuvchilar ro'yxatidan kerakli odamni topib, "Admin qilish" tugmasini bosing.</p>
-                          <button
-                            onClick={() => setAdminTab('users')}
-                            className="w-full py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-sm font-bold transition-all"
-                          >
-                            Foydalanuvchilarga o'tish
-                          </button>
+                        {/* Section 2: Admin Users Management */}
+                        <div className="bg-white/5 p-6 rounded-2xl border border-white/10">
+                          <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+                            <Shield size={20} className="text-purple-400" />
+                            Adminlar Boshqaruvi
+                          </h3>
+                          <p className="text-sm text-white/60 mb-6">
+                            Quyidagi foydalanuvchilar tizimda <b>Admin</b> huquqiga ega.
+                          </p>
+
+                          <div className="space-y-4">
+                            {adminUsers.filter(u => u.role === 'admin').map(admin => (
+                              <div key={admin._id} className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5">
+                                <div className="flex items-center gap-3">
+                                  <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-full flex items-center justify-center font-bold text-white">
+                                    {admin.name?.charAt(0)}
+                                  </div>
+                                  <div>
+                                    <div className="font-bold">{admin.name}</div>
+                                    <div className="text-xs text-white/50">{admin.email}</div>
+                                  </div>
+                                </div>
+                                {admin._id !== user.id && (
+                                  <button
+                                    onClick={() => handleRoleUpdate(admin._id, 'user')}
+                                    className="text-red-400 hover:bg-red-500/10 px-3 py-1.5 rounded-lg text-xs font-bold transition-all border border-red-500/20"
+                                  >
+                                    Adminlikdan olish
+                                  </button>
+                                )}
+                                {admin._id === user.id && (
+                                  <span className="text-xs bg-green-500/20 text-green-400 px-3 py-1 rounded-lg border border-green-500/20">
+                                    Siz
+                                  </span>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+
+                          <div className="mt-6 pt-6 border-t border-white/10">
+                            <h4 className="font-bold text-sm mb-2">Yangi Admin qo'shish</h4>
+                            <p className="text-xs text-white/50 mb-4">Foydalanuvchilar ro'yxatidan kerakli odamni topib, "Admin qilish" tugmasini bosing.</p>
+                            <button
+                              onClick={() => setAdminTab('users')}
+                              className="w-full py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-sm font-bold transition-all"
+                            >
+                              Foydalanuvchilarga o'tish
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Section 3: Security */}
+                        <div className="bg-white/5 p-6 rounded-2xl border border-white/10">
+                          <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+                            <Lock size={20} className="text-red-400" />
+                            Xavfsizlik
+                          </h3>
+                          <div className="space-y-4">
+                            <input
+                              type="password"
+                              placeholder="Eski parol"
+                              className="w-full bg-black/20 px-4 py-3 rounded-xl border border-white/10 text-white focus:outline-none focus:border-blue-500/50"
+                              value={passwordForm.oldPassword}
+                              onChange={(e) => setPasswordForm({ ...passwordForm, oldPassword: e.target.value })}
+                            />
+                            <input
+                              type="password"
+                              placeholder="Yangi parol (kamida 6 ta belgi)"
+                              className="w-full bg-black/20 px-4 py-3 rounded-xl border border-white/10 text-white focus:outline-none focus:border-blue-500/50"
+                              value={passwordForm.newPassword}
+                              onChange={(e) => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
+                            />
+                            <button
+                              onClick={handleUpdatePassword}
+                              className="w-full bg-red-500/20 hover:bg-red-500/30 text-red-400 font-bold py-3 rounded-xl transition-all border border-red-500/20"
+                            >
+                              Parolni yangilash
+                            </button>
+                          </div>
                         </div>
                       </div>
+                    )}
 
-                      {/* Section 3: Security */}
-                      <div className="bg-white/5 p-6 rounded-2xl border border-white/10">
-                        <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                          <Lock size={20} className="text-red-400" />
-                          Xavfsizlik
-                        </h3>
-                        <div className="space-y-4">
-                          <input
-                            type="password"
-                            placeholder="Eski parol"
-                            className="w-full bg-black/20 px-4 py-3 rounded-xl border border-white/10 text-white focus:outline-none focus:border-blue-500/50"
-                            value={passwordForm.oldPassword}
-                            onChange={(e) => setPasswordForm({ ...passwordForm, oldPassword: e.target.value })}
-                          />
-                          <input
-                            type="password"
-                            placeholder="Yangi parol (kamida 6 ta belgi)"
-                            className="w-full bg-black/20 px-4 py-3 rounded-xl border border-white/10 text-white focus:outline-none focus:border-blue-500/50"
-                            value={passwordForm.newPassword}
-                            onChange={(e) => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
-                          />
-                          <button
-                            onClick={handleUpdatePassword}
-                            className="w-full bg-red-500/20 hover:bg-red-500/30 text-red-400 font-bold py-3 rounded-xl transition-all border border-red-500/20"
-                          >
-                            Parolni yangilash
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
+                  </>
+                ) : (
+                  <div className="text-center py-24">
+                    <Loader2 className="animate-spin mx-auto text-white/40 mb-4" size={40} />
+                    <p className="text-white/40 font-bold">Ma'lumotlar yuklanmoqda...</p>
+                  </div>
+                )}
 
-                </>
-              ) : (
-                <div className="text-center py-24">
-                  <Loader2 className="animate-spin mx-auto text-white/40 mb-4" size={40} />
-                  <p className="text-white/40 font-bold">Ma'lumotlar yuklanmoqda...</p>
-                </div>
-              )}
+              </div>
 
             </div>
-
-          </div>
-        )}
+          )
+        }
 
       </main >
 
@@ -4322,144 +4196,448 @@ const App = () => {
       `}</style>
 
       {/* Purchase Modal */}
-      {showPurchaseModal && selectedLevel && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
-          <div className="bg-[#1e1e2e] w-full max-w-md rounded-3xl p-8 border border-white/10 shadow-2xl relative">
-            <button
-              onClick={() => setShowPurchaseModal(false)}
-              className="absolute top-4 right-4 p-2 bg-white/5 rounded-full hover:bg-white/10 transition-colors"
-            >
-              <X size={20} className="text-white/60" />
-            </button>
+      {
+        showPurchaseModal && selectedLevel && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
+            <div className="bg-[#1e1e2e] w-full max-w-md rounded-3xl p-8 border border-white/10 shadow-2xl relative">
+              <button
+                onClick={() => setShowPurchaseModal(false)}
+                className="absolute top-4 right-4 p-2 bg-white/5 rounded-full hover:bg-white/10 transition-colors"
+              >
+                <X size={20} className="text-white/60" />
+              </button>
 
-            <div className="text-center space-y-6">
-              <div className={`w-20 h-20 mx-auto bg-gradient-to-br ${selectedLevel.color} rounded-2xl flex items-center justify-center shadow-lg`}>
-                <Lock size={40} className="text-white" />
-              </div>
-              <div>
-                <h3 className="text-2xl font-black">{selectedLevel.title} ({selectedLevel.id})</h3>
-                <p className="text-white/60">Kursni to'liq ochish uchun to'lov qiling</p>
-              </div>
-
-              <div className="bg-white/5 p-6 rounded-2xl border border-white/10 space-y-4">
-                <div className="flex justify-between items-center text-sm font-bold text-white/60">
-                  <span>Kurs narxi:</span>
-                  <span className="text-xl text-green-400 font-black">300,000 so'm</span>
+              <div className="text-center space-y-6">
+                <div className={`w-20 h-20 mx-auto bg-gradient-to-br ${selectedLevel.color} rounded-2xl flex items-center justify-center shadow-lg`}>
+                  <Lock size={40} className="text-white" />
                 </div>
-                <div className="h-px bg-white/10"></div>
-                <div className="text-left space-y-2">
-                  <p className="text-xs font-bold text-white/40 uppercase">To'lov uchun karta:</p>
-                  <div className="bg-black/40 p-4 rounded-xl font-mono text-xl text-center tracking-widest border border-white/10 select-all text-white font-bold shadow-inner">
-                    9860 0825 3462 9983
+                <div>
+                  <h3 className="text-2xl font-black">{selectedLevel.title} ({selectedLevel.id})</h3>
+                  <p className="text-white/60">Kursni to'liq ochish uchun to'lov qiling</p>
+                </div>
+
+                <div className="bg-white/5 p-6 rounded-2xl border border-white/10 space-y-4">
+                  <div className="flex justify-between items-center text-sm font-bold text-white/60">
+                    <span>Kurs narxi:</span>
+                    <span className="text-xl text-green-400 font-black">300,000 so'm</span>
                   </div>
-                  <p className="text-center text-xs text-white/40 mt-1 uppercase font-bold tracking-wider">Humo • Arabiyya Pro</p>
+                  <div className="h-px bg-white/10"></div>
+                  <div className="text-left space-y-2">
+                    <p className="text-xs font-bold text-white/40 uppercase">To'lov uchun karta:</p>
+                    <div className="bg-black/40 p-4 rounded-xl font-mono text-xl text-center tracking-widest border border-white/10 select-all text-white font-bold shadow-inner">
+                      9860 0825 3462 9983
+                    </div>
+                    <p className="text-center text-xs text-white/40 mt-1 uppercase font-bold tracking-wider">Humo • Arabiyya Pro</p>
+                  </div>
                 </div>
+
+                <form onSubmit={handlePurchaseSubmit} className="space-y-4">
+                  <div className="space-y-2 text-left">
+                    <label className="text-sm font-bold text-white/80 ml-1">To'lov isboti</label>
+                    <input
+                      type="text"
+                      required
+                      value={purchaseProof}
+                      onChange={(e) => setPurchaseProof(e.target.value)}
+                      placeholder="Chek raqami yoki Telegram username..."
+                      className="w-full px-4 py-3 bg-white/5 rounded-xl border border-white/10 outline-none focus:border-blue-500 transition-colors text-white"
+                    />
+                    <p className="text-xs text-white/40 ml-1">Admin to'lovni tekshirib tasdiqlaydi (1-2 soat)</p>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={isSubmittingOrder}
+                    className="w-full py-4 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl font-black text-lg hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-white"
+                  >
+                    {isSubmittingOrder ? <Loader2 className="animate-spin" /> : <><CheckCircle2 size={20} /> Tasdiqlash uchun yuborish</>}
+                  </button>
+                </form>
               </div>
-
-              <form onSubmit={handlePurchaseSubmit} className="space-y-4">
-                <div className="space-y-2 text-left">
-                  <label className="text-sm font-bold text-white/80 ml-1">To'lov isboti</label>
-                  <input
-                    type="text"
-                    required
-                    value={purchaseProof}
-                    onChange={(e) => setPurchaseProof(e.target.value)}
-                    placeholder="Chek raqami yoki Telegram username..."
-                    className="w-full px-4 py-3 bg-white/5 rounded-xl border border-white/10 outline-none focus:border-blue-500 transition-colors text-white"
-                  />
-                  <p className="text-xs text-white/40 ml-1">Admin to'lovni tekshirib tasdiqlaydi (1-2 soat)</p>
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={isSubmittingOrder}
-                  className="w-full py-4 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl font-black text-lg hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-white"
-                >
-                  {isSubmittingOrder ? <Loader2 className="animate-spin" /> : <><CheckCircle2 size={20} /> Tasdiqlash uchun yuborish</>}
-                </button>
-              </form>
             </div>
           </div>
-        </div>
-      )}
+        )
+      }
 
       {/* Grant Level Modal (Admin) */}
-      {showGrantLevelModal && grantingLevelTo && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-300">
-          <div className="bg-gradient-to-br from-slate-900/95 to-slate-800/95 backdrop-blur-2xl rounded-3xl max-w-md w-full border border-white/20 shadow-2xl p-8 animate-in slide-in-from-bottom-4 duration-500 relative">
-            <button
-              onClick={() => {
-                setShowGrantLevelModal(false);
-                setGrantingLevelTo(null);
-                setSelectedGrantLevel('');
-              }}
-              className="absolute top-4 right-4 p-2 hover:bg-white/10 rounded-xl transition-all text-white/60 hover:text-white"
-            >
-              <X size={24} />
-            </button>
+      {
+        showGrantLevelModal && grantingLevelTo && (
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-300">
+            <div className="bg-gradient-to-br from-slate-900/95 to-slate-800/95 backdrop-blur-2xl rounded-3xl max-w-md w-full border border-white/20 shadow-2xl p-8 animate-in slide-in-from-bottom-4 duration-500 relative">
+              <button
+                onClick={() => {
+                  setShowGrantLevelModal(false);
+                  setGrantingLevelTo(null);
+                  setSelectedGrantLevel('');
+                }}
+                className="absolute top-4 right-4 p-2 hover:bg-white/10 rounded-xl transition-all text-white/60 hover:text-white"
+              >
+                <X size={24} />
+              </button>
 
-            <div className="text-center space-y-6">
-              <div className="w-20 h-20 mx-auto bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg">
-                <Gift size={40} className="text-white" />
-              </div>
-
-              <div>
-                <h3 className="text-2xl font-black">Bepul Daraja Berish</h3>
-                <p className="text-white/60 mt-2">
-                  <span className="font-bold text-white">{grantingLevelTo.name}</span> ga daraja bering
-                </p>
-              </div>
-
-              <div className="space-y-4">
-                <div className="space-y-2 text-left">
-                  <label className="text-sm font-bold text-white/80 ml-1">Darajani tanlang</label>
-                  <select
-                    value={selectedGrantLevel}
-                    onChange={(e) => setSelectedGrantLevel(e.target.value)}
-                    className="w-full px-4 py-3 bg-white/5 rounded-xl border border-white/10 outline-none focus:border-green-500 transition-colors text-white font-bold"
-                  >
-                    <option value="" className="bg-slate-900">Darajani tanlash...</option>
-                    {levels.filter(l => !grantingLevelTo.purchasedLevels?.includes(l.id)).map(lvl => (
-                      <option key={lvl.id} value={lvl.id} className="bg-slate-900">
-                        {lvl.icon} {lvl.id} - {lvl.title}
-                      </option>
-                    ))}
-                  </select>
+              <div className="text-center space-y-6">
+                <div className="w-20 h-20 mx-auto bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg">
+                  <Gift size={40} className="text-white" />
                 </div>
 
-                <button
-                  onClick={async () => {
-                    if (!selectedGrantLevel) return alert('Iltimos, daraja tanlang!');
+                <div>
+                  <h3 className="text-2xl font-black">Bepul Daraja Berish</h3>
+                  <p className="text-white/60 mt-2">
+                    <span className="font-bold text-white">{grantingLevelTo.name}</span> ga daraja bering
+                  </p>
+                </div>
 
+                <div className="space-y-4">
+                  <div className="space-y-2 text-left">
+                    <label className="text-sm font-bold text-white/80 ml-1">Darajani tanlang</label>
+                    <select
+                      value={selectedGrantLevel}
+                      onChange={(e) => setSelectedGrantLevel(e.target.value)}
+                      className="w-full px-4 py-3 bg-white/5 rounded-xl border border-white/10 outline-none focus:border-green-500 transition-colors text-white font-bold"
+                    >
+                      <option value="" className="bg-slate-900">Darajani tanlash...</option>
+                      {levels.filter(l => !grantingLevelTo.purchasedLevels?.includes(l.id)).map(lvl => (
+                        <option key={lvl.id} value={lvl.id} className="bg-slate-900">
+                          {lvl.icon} {lvl.id} - {lvl.title}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <button
+                    onClick={async () => {
+                      if (!selectedGrantLevel) return alert('Iltimos, daraja tanlang!');
+
+                      try {
+                        const token = localStorage.getItem('token');
+                        const res = await fetch(`https://arabiyya-pro-backend.onrender.com/api/admin/grant-level`, {
+                          method: 'POST',
+                          headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                          },
+                          body: JSON.stringify({
+                            userId: grantingLevelTo._id,
+                            levelId: selectedGrantLevel
+                          })
+                        });
+
+                        const data = await res.json();
+                        if (data.success) {
+                          alert(`✅ ${grantingLevelTo.name} uchun ${selectedGrantLevel} darajasi ochildi!`);
+                          setShowGrantLevelModal(false);
+                          setGrantingLevelTo(null);
+                          setSelectedGrantLevel('');
+                          // Refresh users list
+                          if (view === 'admin' && adminTab === 'users') {
+                            const token2 = localStorage.getItem('token');
+                            const usersRes = await fetch('https://arabiyya-pro-backend.onrender.com/api/admin/users', {
+                              headers: { 'Authorization': `Bearer ${token2}` }
+                            });
+                            const usersData = await usersRes.json();
+                            if (usersData.success) setAdminUsers(usersData.users);
+                          }
+                        } else {
+                          alert('Xatolik: ' + data.message);
+                        }
+                      } catch (err) {
+                        console.error(err);
+                        alert('Server xatosi');
+                      }
+                    }}
+                    className="w-full py-4 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl font-black text-lg hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl flex items-center justify-center gap-2 text-white"
+                  >
+                    <Gift size={20} />
+                    Bepul Berish
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )
+      }
+
+      {/* ADMIN: Edit Lesson Modal */}
+      {/* ADMIN: Edit Lesson Modal - Enhanced with Tabs */}
+      {
+        showEditLessonModal && editingLessonId && (
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-300">
+            <div className="bg-slate-900 border border-white/20 rounded-3xl w-full max-w-5xl h-[90vh] flex flex-col shadow-2xl animate-in slide-in-from-bottom-4 duration-500 overflow-hidden">
+
+              {/* Header */}
+              <div className="p-6 border-b border-white/10 flex justify-between items-center bg-slate-900/50 backdrop-blur-xl">
+                <h3 className="text-2xl font-black text-white flex items-center gap-3">
+                  <Settings className="text-blue-400" />
+                  Darsni Tahrirlash: <span className="text-blue-400">{editLessonData.title}</span>
+                </h3>
+                <button onClick={() => setShowEditLessonModal(false)} className="bg-white/5 hover:bg-white/10 p-2 rounded-lg transition-colors">
+                  <X size={20} className="text-white/60" />
+                </button>
+              </div>
+
+              {/* Content Area with Sidebar/Tabs */}
+              <div className="flex-1 flex overflow-hidden">
+                {/* Sidebar Tabs */}
+                <div className="w-64 bg-black/20 border-r border-white/10 p-4 space-y-2 overflow-y-auto hidden md:block">
+                  {[
+                    { id: 'main', label: 'Asosiy', icon: <Video size={18} /> },
+                    { id: 'theory', label: 'Nazariy', icon: <BookOpen size={18} /> },
+                    { id: 'practice', label: 'Amaliy', icon: <PenTool size={18} /> },
+                    { id: 'homework', label: 'Uyga Vazifa', icon: <Home size={18} /> },
+                    { id: 'quiz', label: 'Test', icon: <CheckCircle2 size={18} /> }
+                  ].map(tab => (
+                    <button
+                      key={tab.id}
+                      onClick={() => setEditLessonTab(tab.id)}
+                      className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all text-sm ${editLessonTab === tab.id
+                        ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
+                        : 'text-white/60 hover:bg-white/5 hover:text-white'
+                        }`}
+                    >
+                      {tab.icon}
+                      {tab.label}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Main Content Area */}
+                <div className="flex-1 p-8 overflow-y-auto bg-slate-900/30">
+
+                  {/* Mobile Tabs (Visible only on small screens) */}
+                  <div className="md:hidden flex overflow-x-auto gap-2 mb-6 pb-2">
+                    {[
+                      { id: 'main', label: 'Asosiy' },
+                      { id: 'theory', label: 'Nazariy' },
+                      { id: 'practice', label: 'Amaliy' },
+                      { id: 'homework', label: 'Vazifa' },
+                      { id: 'quiz', label: 'Test' }
+                    ].map(tab => (
+                      <button
+                        key={tab.id}
+                        onClick={() => setEditLessonTab(tab.id)}
+                        className={`px-4 py-2 rounded-lg font-bold text-xs whitespace-nowrap ${editLessonTab === tab.id
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-white/5 text-white/60'
+                          }`}
+                      >
+                        {tab.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* TAB: Main */}
+                  {editLessonTab === 'main' && (
+                    <div className="space-y-6 animate-in fade-in duration-300">
+                      <h4 className="text-xl font-bold mb-4 flex items-center gap-2"><Video size={20} className="text-blue-400" /> Asosiy Ma'lumotlar</h4>
+                      <div className="space-y-4">
+                        <div>
+                          <label className="text-xs font-bold text-white/60 mb-1 block uppercase">Mavzu (Title)</label>
+                          <input
+                            type="text"
+                            value={editLessonData.title}
+                            onChange={e => setEditLessonData({ ...editLessonData, title: e.target.value })}
+                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none font-bold"
+                          />
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="text-xs font-bold text-white/60 mb-1 block uppercase">Davomiyligi</label>
+                            <input
+                              type="text"
+                              value={editLessonData.duration}
+                              onChange={e => setEditLessonData({ ...editLessonData, duration: e.target.value })}
+                              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none font-mono"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-xs font-bold text-white/60 mb-1 block uppercase">Kitob Link (PDF)</label>
+                            <input
+                              type="text"
+                              value={editLessonData.ebookUrl}
+                              onChange={e => setEditLessonData({ ...editLessonData, ebookUrl: e.target.value })}
+                              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none"
+                              placeholder="https://example.com/book.pdf"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* TAB: Theory */}
+                  {editLessonTab === 'theory' && (
+                    <div className="h-full flex flex-col animate-in fade-in duration-300">
+                      <div className="flex justify-between items-center mb-4">
+                        <h4 className="text-xl font-bold flex items-center gap-2"><BookOpen size={20} className="text-blue-400" /> Nazariy Qism</h4>
+                        <span className="text-xs text-white/40">Markdown va HTML qo'llab-quvvatlanadi</span>
+                      </div>
+                      <textarea
+                        value={editLessonData.theory}
+                        onChange={e => setEditLessonData({ ...editLessonData, theory: e.target.value })}
+                        className="flex-1 w-full bg-white/5 border border-white/10 rounded-xl p-6 text-white focus:border-blue-500 outline-none text-base leading-relaxed font-mono min-h-[400px]"
+                        placeholder="# Darsning nazariy qismi
+Bu yerga dars matnini yozing..."
+                      ></textarea>
+                    </div>
+                  )}
+
+                  {/* TAB: Practice */}
+                  {editLessonTab === 'practice' && (
+                    <div className="h-full flex flex-col animate-in fade-in duration-300">
+                      <h4 className="text-xl font-bold mb-4 flex items-center gap-2"><PenTool size={20} className="text-blue-400" /> Amaliy Mashg'ulotlar</h4>
+                      <textarea
+                        value={editLessonData.practice}
+                        onChange={e => setEditLessonData({ ...editLessonData, practice: e.target.value })}
+                        className="flex-1 w-full bg-white/5 border border-white/10 rounded-xl p-6 text-white focus:border-blue-500 outline-none text-base leading-relaxed font-mono min-h-[400px]"
+                        placeholder="Amaliy mashqlar va ko'rsatmalar..."
+                      ></textarea>
+                    </div>
+                  )}
+
+                  {/* TAB: Homework */}
+                  {editLessonTab === 'homework' && (
+                    <div className="h-full flex flex-col animate-in fade-in duration-300">
+                      <h4 className="text-xl font-bold mb-4 flex items-center gap-2"><Home size={20} className="text-blue-400" /> Uyga Vazifa</h4>
+                      <textarea
+                        value={editLessonData.homework}
+                        onChange={e => setEditLessonData({ ...editLessonData, homework: e.target.value })}
+                        className="flex-1 w-full bg-white/5 border border-white/10 rounded-xl p-6 text-white focus:border-blue-500 outline-none text-base leading-relaxed font-mono min-h-[400px]"
+                        placeholder="Uyga vazifa tavsifi..."
+                      ></textarea>
+                    </div>
+                  )}
+
+                  {/* TAB: Quiz */}
+                  {editLessonTab === 'quiz' && (
+                    <div className="space-y-6 animate-in fade-in duration-300 pb-20">
+                      <div className="flex justify-between items-center mb-4 sticky top-0 bg-slate-900/90 backdrop-blur z-10 py-4 border-b border-white/10">
+                        <h4 className="text-xl font-bold flex items-center gap-2"><CheckCircle2 size={20} className="text-blue-400" /> Test Savollari ({editLessonData.quiz?.length || 0})</h4>
+                        <button
+                          onClick={() => setEditLessonData({
+                            ...editLessonData,
+                            quiz: [...(editLessonData.quiz || []), { question: '', options: ['', '', '', ''], correctAnswer: 0 }]
+                          })}
+                          className="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl font-bold text-sm flex items-center gap-2 shadow-lg shadow-green-500/20"
+                        >
+                          <Plus size={16} /> Savol Qo'shish
+                        </button>
+                      </div>
+
+                      <div className="space-y-6">
+                        {editLessonData.quiz?.map((q, idx) => (
+                          <div key={idx} className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4 relative group hover:border-white/20 transition-colors">
+                            <div className="absolute top-4 right-4 flex gap-2">
+                              <span className="bg-white/10 px-2 py-1 rounded text-xs font-bold text-white/50">#{idx + 1}</span>
+                              <button
+                                onClick={() => {
+                                  if (!confirm("Bu savolni o'chirmoqchimisiz?")) return;
+                                  const newQuiz = [...editLessonData.quiz];
+                                  newQuiz.splice(idx, 1);
+                                  setEditLessonData({ ...editLessonData, quiz: newQuiz });
+                                }}
+                                className="text-red-400 hover:bg-red-500/20 p-1.5 rounded-lg transition-colors"
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            </div>
+
+                            <div>
+                              <label className="text-xs font-bold text-white/40 mb-1 block">Savol Matni</label>
+                              <input
+                                type="text"
+                                value={q.question}
+                                onChange={e => {
+                                  const newQuiz = [...editLessonData.quiz];
+                                  newQuiz[idx].question = e.target.value;
+                                  setEditLessonData({ ...editLessonData, quiz: newQuiz });
+                                }}
+                                className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/20 focus:border-blue-500 outline-none font-medium"
+                                placeholder="Savol matnini kiriting..."
+                              />
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              {q.options.map((opt, optIdx) => (
+                                <div key={optIdx} className={`flex items-center gap-3 p-3 rounded-xl border transition-colors ${q.correctAnswer === optIdx ? 'bg-green-500/10 border-green-500/50' : 'bg-black/20 border-white/5'}`}>
+                                  <input
+                                    type="radio"
+                                    name={`correct-${idx}`}
+                                    checked={q.correctAnswer === optIdx}
+                                    onChange={() => {
+                                      const newQuiz = [...editLessonData.quiz];
+                                      newQuiz[idx].correctAnswer = optIdx;
+                                      setEditLessonData({ ...editLessonData, quiz: newQuiz });
+                                    }}
+                                    className="w-4 h-4 text-green-500 accent-green-500 cursor-pointer"
+                                  />
+                                  <input
+                                    type="text"
+                                    value={opt}
+                                    onChange={e => {
+                                      const newQuiz = [...editLessonData.quiz];
+                                      newQuiz[idx].options[optIdx] = e.target.value;
+                                      setEditLessonData({ ...editLessonData, quiz: newQuiz });
+                                    }}
+                                    className="w-full bg-transparent border-none outline-none text-sm text-white placeholder-white/20"
+                                    placeholder={`Variant ${optIdx + 1}`}
+                                  />
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                        {editLessonData.quiz?.length === 0 && (
+                          <div className="text-center py-16 text-white/30 border-2 border-dashed border-white/10 rounded-2xl flex flex-col items-center gap-4">
+                            <CheckCircle2 size={48} className="text-white/10" />
+                            <p>Test savollari yo'q. "Savol Qo'shish" tugmasini bosing.</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                </div>
+              </div>
+
+              {/* Footer Actions */}
+              <div className="p-6 border-t border-white/10 bg-slate-900/50 backdrop-blur-xl flex justify-end gap-4">
+                <button
+                  onClick={() => setShowEditLessonModal(false)}
+                  className="px-6 py-3 rounded-xl text-white/60 hover:text-white font-bold transition-colors hover:bg-white/5"
+                >
+                  Bekor qilish
+                </button>
+                <button
+                  className="px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition-colors shadow-lg shadow-blue-500/20 flex items-center gap-2"
+                  onClick={async () => {
                     try {
                       const token = localStorage.getItem('token');
-                      const res = await fetch(`https://arabiyya-pro-backend.onrender.com/api/admin/grant-level`, {
-                        method: 'POST',
+                      const formPayload = {
+                        ...editLessonData,
+                        quiz: editLessonData.quiz || []
+                      };
+
+                      const res = await fetch(`https://arabiyya-pro-backend.onrender.com/api/levels/${editingLevel.id}/lessons/${editingLessonId}`, {
+                        method: 'PUT',
                         headers: {
                           'Content-Type': 'application/json',
                           'Authorization': `Bearer ${token}`
                         },
-                        body: JSON.stringify({
-                          userId: grantingLevelTo._id,
-                          levelId: selectedGrantLevel
-                        })
+                        body: JSON.stringify(formPayload)
                       });
 
                       const data = await res.json();
                       if (data.success) {
-                        alert(`✅ ${grantingLevelTo.name} uchun ${selectedGrantLevel} darajasi ochildi!`);
-                        setShowGrantLevelModal(false);
-                        setGrantingLevelTo(null);
-                        setSelectedGrantLevel('');
-                        // Refresh users list
-                        if (view === 'admin' && adminTab === 'users') {
-                          const token2 = localStorage.getItem('token');
-                          const usersRes = await fetch('https://arabiyya-pro-backend.onrender.com/api/admin/users', {
-                            headers: { 'Authorization': `Bearer ${token2}` }
-                          });
-                          const usersData = await usersRes.json();
-                          if (usersData.success) setAdminUsers(usersData.users);
+                        setShowEditLessonModal(false);
+                        // Refresh data
+                        const levelsRes = await fetch('https://arabiyya-pro-backend.onrender.com/api/levels');
+                        const levelsData = await levelsRes.json();
+                        if (levelsData.success) {
+                          setLevels(levelsData.levels);
+                          const updatedLevel = levelsData.levels.find(l => l.id === editingLevel.id);
+                          if (updatedLevel) setEditingLevel(updatedLevel);
                         }
+                        alert('✅ Dars muvaffaqiyatli saqlandi!');
                       } else {
                         alert('Xatolik: ' + data.message);
                       }
@@ -4468,316 +4646,18 @@ const App = () => {
                       alert('Server xatosi');
                     }
                   }}
-                  className="w-full py-4 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl font-black text-lg hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl flex items-center justify-center gap-2 text-white"
                 >
-                  <Gift size={20} />
-                  Bepul Berish
+                  <Save size={20} />
+                  Saqlash
                 </button>
               </div>
+
             </div>
           </div>
-        </div>
-      )}
+        )
+      }
 
-      {/* ADMIN: Edit Lesson Modal */}
-      {/* ADMIN: Edit Lesson Modal - Enhanced with Tabs */}
-      {showEditLessonModal && editingLessonId && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-300">
-          <div className="bg-slate-900 border border-white/20 rounded-3xl w-full max-w-5xl h-[90vh] flex flex-col shadow-2xl animate-in slide-in-from-bottom-4 duration-500 overflow-hidden">
-
-            {/* Header */}
-            <div className="p-6 border-b border-white/10 flex justify-between items-center bg-slate-900/50 backdrop-blur-xl">
-              <h3 className="text-2xl font-black text-white flex items-center gap-3">
-                <Settings className="text-blue-400" />
-                Darsni Tahrirlash: <span className="text-blue-400">{editLessonData.title}</span>
-              </h3>
-              <button onClick={() => setShowEditLessonModal(false)} className="bg-white/5 hover:bg-white/10 p-2 rounded-lg transition-colors">
-                <X size={20} className="text-white/60" />
-              </button>
-            </div>
-
-            {/* Content Area with Sidebar/Tabs */}
-            <div className="flex-1 flex overflow-hidden">
-              {/* Sidebar Tabs */}
-              <div className="w-64 bg-black/20 border-r border-white/10 p-4 space-y-2 overflow-y-auto hidden md:block">
-                {[
-                  { id: 'main', label: 'Asosiy', icon: <Video size={18} /> },
-                  { id: 'theory', label: 'Nazariy', icon: <BookOpen size={18} /> },
-                  { id: 'practice', label: 'Amaliy', icon: <PenTool size={18} /> },
-                  { id: 'homework', label: 'Uyga Vazifa', icon: <Home size={18} /> },
-                  { id: 'quiz', label: 'Test', icon: <CheckCircle2 size={18} /> }
-                ].map(tab => (
-                  <button
-                    key={tab.id}
-                    onClick={() => setEditLessonTab(tab.id)}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all text-sm ${editLessonTab === tab.id
-                      ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
-                      : 'text-white/60 hover:bg-white/5 hover:text-white'
-                      }`}
-                  >
-                    {tab.icon}
-                    {tab.label}
-                  </button>
-                ))}
-              </div>
-
-              {/* Main Content Area */}
-              <div className="flex-1 p-8 overflow-y-auto bg-slate-900/30">
-
-                {/* Mobile Tabs (Visible only on small screens) */}
-                <div className="md:hidden flex overflow-x-auto gap-2 mb-6 pb-2">
-                  {[
-                    { id: 'main', label: 'Asosiy' },
-                    { id: 'theory', label: 'Nazariy' },
-                    { id: 'practice', label: 'Amaliy' },
-                    { id: 'homework', label: 'Vazifa' },
-                    { id: 'quiz', label: 'Test' }
-                  ].map(tab => (
-                    <button
-                      key={tab.id}
-                      onClick={() => setEditLessonTab(tab.id)}
-                      className={`px-4 py-2 rounded-lg font-bold text-xs whitespace-nowrap ${editLessonTab === tab.id
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-white/5 text-white/60'
-                        }`}
-                    >
-                      {tab.label}
-                    </button>
-                  ))}
-                </div>
-
-                {/* TAB: Main */}
-                {editLessonTab === 'main' && (
-                  <div className="space-y-6 animate-in fade-in duration-300">
-                    <h4 className="text-xl font-bold mb-4 flex items-center gap-2"><Video size={20} className="text-blue-400" /> Asosiy Ma'lumotlar</h4>
-                    <div className="space-y-4">
-                      <div>
-                        <label className="text-xs font-bold text-white/60 mb-1 block uppercase">Mavzu (Title)</label>
-                        <input
-                          type="text"
-                          value={editLessonData.title}
-                          onChange={e => setEditLessonData({ ...editLessonData, title: e.target.value })}
-                          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none font-bold"
-                        />
-                      </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <label className="text-xs font-bold text-white/60 mb-1 block uppercase">Davomiyligi</label>
-                          <input
-                            type="text"
-                            value={editLessonData.duration}
-                            onChange={e => setEditLessonData({ ...editLessonData, duration: e.target.value })}
-                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none font-mono"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-xs font-bold text-white/60 mb-1 block uppercase">Kitob Link (PDF)</label>
-                          <input
-                            type="text"
-                            value={editLessonData.ebookUrl}
-                            onChange={e => setEditLessonData({ ...editLessonData, ebookUrl: e.target.value })}
-                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none"
-                            placeholder="https://example.com/book.pdf"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* TAB: Theory */}
-                {editLessonTab === 'theory' && (
-                  <div className="h-full flex flex-col animate-in fade-in duration-300">
-                    <div className="flex justify-between items-center mb-4">
-                      <h4 className="text-xl font-bold flex items-center gap-2"><BookOpen size={20} className="text-blue-400" /> Nazariy Qism</h4>
-                      <span className="text-xs text-white/40">Markdown va HTML qo'llab-quvvatlanadi</span>
-                    </div>
-                    <textarea
-                      value={editLessonData.theory}
-                      onChange={e => setEditLessonData({ ...editLessonData, theory: e.target.value })}
-                      className="flex-1 w-full bg-white/5 border border-white/10 rounded-xl p-6 text-white focus:border-blue-500 outline-none text-base leading-relaxed font-mono min-h-[400px]"
-                      placeholder="# Darsning nazariy qismi
-Bu yerga dars matnini yozing..."
-                    ></textarea>
-                  </div>
-                )}
-
-                {/* TAB: Practice */}
-                {editLessonTab === 'practice' && (
-                  <div className="h-full flex flex-col animate-in fade-in duration-300">
-                    <h4 className="text-xl font-bold mb-4 flex items-center gap-2"><PenTool size={20} className="text-blue-400" /> Amaliy Mashg'ulotlar</h4>
-                    <textarea
-                      value={editLessonData.practice}
-                      onChange={e => setEditLessonData({ ...editLessonData, practice: e.target.value })}
-                      className="flex-1 w-full bg-white/5 border border-white/10 rounded-xl p-6 text-white focus:border-blue-500 outline-none text-base leading-relaxed font-mono min-h-[400px]"
-                      placeholder="Amaliy mashqlar va ko'rsatmalar..."
-                    ></textarea>
-                  </div>
-                )}
-
-                {/* TAB: Homework */}
-                {editLessonTab === 'homework' && (
-                  <div className="h-full flex flex-col animate-in fade-in duration-300">
-                    <h4 className="text-xl font-bold mb-4 flex items-center gap-2"><Home size={20} className="text-blue-400" /> Uyga Vazifa</h4>
-                    <textarea
-                      value={editLessonData.homework}
-                      onChange={e => setEditLessonData({ ...editLessonData, homework: e.target.value })}
-                      className="flex-1 w-full bg-white/5 border border-white/10 rounded-xl p-6 text-white focus:border-blue-500 outline-none text-base leading-relaxed font-mono min-h-[400px]"
-                      placeholder="Uyga vazifa tavsifi..."
-                    ></textarea>
-                  </div>
-                )}
-
-                {/* TAB: Quiz */}
-                {editLessonTab === 'quiz' && (
-                  <div className="space-y-6 animate-in fade-in duration-300 pb-20">
-                    <div className="flex justify-between items-center mb-4 sticky top-0 bg-slate-900/90 backdrop-blur z-10 py-4 border-b border-white/10">
-                      <h4 className="text-xl font-bold flex items-center gap-2"><CheckCircle2 size={20} className="text-blue-400" /> Test Savollari ({editLessonData.quiz?.length || 0})</h4>
-                      <button
-                        onClick={() => setEditLessonData({
-                          ...editLessonData,
-                          quiz: [...(editLessonData.quiz || []), { question: '', options: ['', '', '', ''], correctAnswer: 0 }]
-                        })}
-                        className="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl font-bold text-sm flex items-center gap-2 shadow-lg shadow-green-500/20"
-                      >
-                        <Plus size={16} /> Savol Qo'shish
-                      </button>
-                    </div>
-
-                    <div className="space-y-6">
-                      {editLessonData.quiz?.map((q, idx) => (
-                        <div key={idx} className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4 relative group hover:border-white/20 transition-colors">
-                          <div className="absolute top-4 right-4 flex gap-2">
-                            <span className="bg-white/10 px-2 py-1 rounded text-xs font-bold text-white/50">#{idx + 1}</span>
-                            <button
-                              onClick={() => {
-                                if (!confirm("Bu savolni o'chirmoqchimisiz?")) return;
-                                const newQuiz = [...editLessonData.quiz];
-                                newQuiz.splice(idx, 1);
-                                setEditLessonData({ ...editLessonData, quiz: newQuiz });
-                              }}
-                              className="text-red-400 hover:bg-red-500/20 p-1.5 rounded-lg transition-colors"
-                            >
-                              <Trash2 size={16} />
-                            </button>
-                          </div>
-
-                          <div>
-                            <label className="text-xs font-bold text-white/40 mb-1 block">Savol Matni</label>
-                            <input
-                              type="text"
-                              value={q.question}
-                              onChange={e => {
-                                const newQuiz = [...editLessonData.quiz];
-                                newQuiz[idx].question = e.target.value;
-                                setEditLessonData({ ...editLessonData, quiz: newQuiz });
-                              }}
-                              className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/20 focus:border-blue-500 outline-none font-medium"
-                              placeholder="Savol matnini kiriting..."
-                            />
-                          </div>
-
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {q.options.map((opt, optIdx) => (
-                              <div key={optIdx} className={`flex items-center gap-3 p-3 rounded-xl border transition-colors ${q.correctAnswer === optIdx ? 'bg-green-500/10 border-green-500/50' : 'bg-black/20 border-white/5'}`}>
-                                <input
-                                  type="radio"
-                                  name={`correct-${idx}`}
-                                  checked={q.correctAnswer === optIdx}
-                                  onChange={() => {
-                                    const newQuiz = [...editLessonData.quiz];
-                                    newQuiz[idx].correctAnswer = optIdx;
-                                    setEditLessonData({ ...editLessonData, quiz: newQuiz });
-                                  }}
-                                  className="w-4 h-4 text-green-500 accent-green-500 cursor-pointer"
-                                />
-                                <input
-                                  type="text"
-                                  value={opt}
-                                  onChange={e => {
-                                    const newQuiz = [...editLessonData.quiz];
-                                    newQuiz[idx].options[optIdx] = e.target.value;
-                                    setEditLessonData({ ...editLessonData, quiz: newQuiz });
-                                  }}
-                                  className="w-full bg-transparent border-none outline-none text-sm text-white placeholder-white/20"
-                                  placeholder={`Variant ${optIdx + 1}`}
-                                />
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      ))}
-                      {editLessonData.quiz?.length === 0 && (
-                        <div className="text-center py-16 text-white/30 border-2 border-dashed border-white/10 rounded-2xl flex flex-col items-center gap-4">
-                          <CheckCircle2 size={48} className="text-white/10" />
-                          <p>Test savollari yo'q. "Savol Qo'shish" tugmasini bosing.</p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-              </div>
-            </div>
-
-            {/* Footer Actions */}
-            <div className="p-6 border-t border-white/10 bg-slate-900/50 backdrop-blur-xl flex justify-end gap-4">
-              <button
-                onClick={() => setShowEditLessonModal(false)}
-                className="px-6 py-3 rounded-xl text-white/60 hover:text-white font-bold transition-colors hover:bg-white/5"
-              >
-                Bekor qilish
-              </button>
-              <button
-                className="px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition-colors shadow-lg shadow-blue-500/20 flex items-center gap-2"
-                onClick={async () => {
-                  try {
-                    const token = localStorage.getItem('token');
-                    const formPayload = {
-                      ...editLessonData,
-                      quiz: editLessonData.quiz || []
-                    };
-
-                    const res = await fetch(`https://arabiyya-pro-backend.onrender.com/api/levels/${editingLevel.id}/lessons/${editingLessonId}`, {
-                      method: 'PUT',
-                      headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                      },
-                      body: JSON.stringify(formPayload)
-                    });
-
-                    const data = await res.json();
-                    if (data.success) {
-                      setShowEditLessonModal(false);
-                      // Refresh data
-                      const levelsRes = await fetch('https://arabiyya-pro-backend.onrender.com/api/levels');
-                      const levelsData = await levelsRes.json();
-                      if (levelsData.success) {
-                        setLevels(levelsData.levels);
-                        const updatedLevel = levelsData.levels.find(l => l.id === editingLevel.id);
-                        if (updatedLevel) setEditingLevel(updatedLevel);
-                      }
-                      alert('✅ Dars muvaffaqiyatli saqlandi!');
-                    } else {
-                      alert('Xatolik: ' + data.message);
-                    }
-                  } catch (err) {
-                    console.error(err);
-                    alert('Server xatosi');
-                  }
-                }}
-              >
-                <Save size={20} />
-                Saqlash
-              </button>
-            </div>
-
-          </div>
-        </div>
-      )}
-
-    </div>
+    </div >
   );
 };
 
