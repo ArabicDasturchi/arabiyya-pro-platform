@@ -22,6 +22,7 @@ const App = () => {
   const [selectedLesson, setSelectedLesson] = useState(null);
   const [lessonTestAnswers, setLessonTestAnswers] = useState([]);
   const [lessonTestStep, setLessonTestStep] = useState(0);
+  const [lessonTestStarted, setLessonTestStarted] = useState(false);
   const [examAnswers, setExamAnswers] = useState([]);
   const [examStep, setExamStep] = useState(0);
   const [showChat, setShowChat] = useState(false);
@@ -1749,7 +1750,7 @@ const App = () => {
               <div className="bg-white/5 backdrop-blur-xl rounded-3xl p-8 border border-white/10 min-h-[500px]">
                 {/* Video Tab */}
                 {lessonTab === 'video' && (
-                  <div className="space-y-6">
+                  <div className="space-y-6 animate-in fade-in duration-300">
                     <h3 className="text-2xl font-black">📹 Video Dars</h3>
                     <div className="aspect-video bg-gradient-to-br from-purple-600/20 to-blue-600/20 rounded-2xl flex items-center justify-center cursor-pointer group relative overflow-hidden border border-white/10">
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
@@ -1760,57 +1761,195 @@ const App = () => {
                   </div>
                 )}
 
-                {/* Amaliy Tab */}
-                {lessonTab === 'amaliy' && (
-                  <div className="space-y-6">
-                    <h3 className="text-2xl font-black">📝 Amaliy Vazifalar (100 ball)</h3>
-                    <div className="bg-white/5 p-8 rounded-2xl border border-white/10">
-                      <p className="text-white/80 leading-relaxed">
-                        Amaliy mashqlar va topshiriqlar bu yerda bo'ladi (admin panel orqali qo'shiladi).
-                      </p>
+                {/* Nazariy Tab */}
+                {lessonTab === 'nazariy' && (
+                  <div className="space-y-6 animate-in fade-in duration-300">
+                    <div className="bg-white/5 p-8 rounded-3xl border border-white/10 leading-relaxed space-y-4">
+                      <h3 className="text-2xl font-bold mb-4 flex items-center gap-2">
+                        <BookOpen className="text-blue-400" /> Nazariy Ma'lumot
+                      </h3>
+                      {selectedLesson.theory ? (
+                        <div className="whitespace-pre-wrap text-white/90 font-serif leading-loose text-lg">{selectedLesson.theory}</div>
+                      ) : (
+                        <div className="whitespace-pre-wrap text-white/90">
+                          {typeof selectedLesson.content === 'string'
+                            ? selectedLesson.content
+                            : selectedLesson.content?.mainContent || "Nazariy ma'lumotlar kiritilmagan."}
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
 
-                {/* Nazariy Tab */}
-                {lessonTab === 'nazariy' && (
-                  <div className="space-y-6">
-                    <h3 className="text-2xl font-black">📖 Nazariy Qism</h3>
-                    <div className="bg-white/5 p-8 rounded-2xl border border-white/10">
-                      <p className="text-white/80 text-lg leading-relaxed">
-                        Batafsil nazariy ma'lumot, tushuntirishlar va misollar (admin panel orqali).
-                      </p>
+                {/* Amaliy Tab */}
+                {lessonTab === 'amaliy' && (
+                  <div className="space-y-6 animate-in fade-in duration-300">
+                    <div className="bg-white/5 p-8 rounded-3xl border border-white/10 leading-relaxed">
+                      <h3 className="text-2xl font-bold mb-4 flex items-center gap-2">
+                        <PenTool className="text-yellow-400" /> Amaliy Mashg'ulot
+                      </h3>
+                      <div className="whitespace-pre-wrap text-white/90 font-serif leading-loose text-lg">
+                        {selectedLesson.practice || "Amaliy mashg'ulotlar kiritilmagan."}
+                      </div>
                     </div>
                   </div>
                 )}
 
                 {/* Uyga Vazifa Tab */}
                 {lessonTab === 'uyga' && (
-                  <div className="space-y-6 text-center py-12">
-                    <Download size={64} className="mx-auto text-emerald-400" />
-                    <h3 className="text-2xl font-black">✍️ Uyga Vazifa (100 ball)</h3>
-                    <p className="text-white/60 max-w-md mx-auto">
-                      Uy vazifasi topshiriqlari va yuklash tizimi.
-                    </p>
-                    <button className="bg-emerald-500 text-white px-6 py-3 rounded-xl font-bold hover:scale-105 transition-transform">
-                      Vazifa Yuklash
-                    </button>
+                  <div className="space-y-8 animate-in fade-in duration-300">
+                    <div className="bg-white/5 p-8 rounded-3xl border border-white/10 text-left">
+                      <h3 className="text-2xl font-bold mb-6 flex items-center gap-2 border-b border-white/10 pb-4">
+                        <Home className="text-emerald-400" /> Uyga Vazifa
+                      </h3>
+                      <div className="whitespace-pre-wrap text-white/90 font-serif leading-loose text-lg min-h-[100px]">
+                        {selectedLesson.homework || "Uyga vazifa kiritilmagan."}
+                      </div>
+                    </div>
+
+                    <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-3xl p-8 text-center space-y-6">
+                      <Download size={48} className="mx-auto text-emerald-400" />
+                      <div>
+                        <h4 className="text-xl font-bold text-emerald-400 mb-2">Vazifani Yuklash</h4>
+                        <p className="text-white/60 text-sm max-w-md mx-auto">Vazifani bajarib bo'lgach, uni rasmga olib yoki audio yozib shu yerga yuklang.</p>
+                      </div>
+
+                      <div className="flex justify-center">
+                        <label className="bg-gradient-to-r from-emerald-500 to-green-600 text-white px-8 py-4 rounded-xl font-bold hover:scale-105 transition-transform cursor-pointer flex items-center gap-3 shadow-lg shadow-emerald-500/20">
+                          <Upload size={24} />
+                          Fayl Tanlash (Rasm/Audio)
+                          <input type="file" className="hidden" onChange={(e) => {
+                            alert("✅ Vazifa qabul qilindi! (Hozircha demo rejimida)");
+                          }} />
+                        </label>
+                      </div>
+                      <p className="text-white/40 text-xs mt-4">Fayl hajmi 10MB dan oshmasligi kerak (JPG, PNG, MP3)</p>
+                    </div>
                   </div>
                 )}
 
                 {/* Test Tab */}
                 {lessonTab === 'test' && (
-                  <div className="text-center py-12 space-y-6">
-                    <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto shadow-2xl animate-pulse">
-                      <Brain size={48} className="text-white" />
-                    </div>
-                    <h3 className="text-2xl font-bold text-white">📊 Test (100 ball baholash)</h3>
-                    <p className="text-white/60 max-w-md mx-auto">
-                      AI test tizimi: savollar, javoblar va avtomatik baholash.
-                    </p>
-                    <button className="bg-white text-black px-8 py-3 rounded-xl font-black hover:scale-105 transition-transform">
-                      Testni Boshlash
-                    </button>
+                  <div className="py-6 space-y-6 animate-in fade-in duration-300">
+                    {!lessonTestStarted ? (
+                      <div className="text-center py-16 space-y-8 bg-white/5 rounded-3xl border border-white/10">
+                        <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto shadow-2xl animate-pulse">
+                          <Brain size={48} className="text-white" />
+                        </div>
+                        <div>
+                          <h3 className="text-3xl font-black text-white mb-2">📊 Test (100 ball)</h3>
+                          <p className="text-white/60 max-w-md mx-auto text-lg">
+                            Mavzu bo'yicha {selectedLesson.quiz?.length || 0} ta savol. Bilimingizni sinab ko'ring!
+                          </p>
+                        </div>
+
+                        {(!selectedLesson.quiz || selectedLesson.quiz.length === 0) ? (
+                          <div className="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-xl inline-block text-yellow-200">
+                            ⚠️ Bu dars uchun testlar hali kiritilmagan.
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => {
+                              setLessonTestStarted(true);
+                              setLessonTestStep(0);
+                              setLessonTestAnswers([]);
+                            }}
+                            className="bg-white text-black px-10 py-4 rounded-xl font-black text-lg hover:scale-105 transition-transform shadow-xl shadow-white/10"
+                          >
+                            Testni Boshlash 🚀
+                          </button>
+                        )}
+                      </div>
+                    ) : (
+                      // Test Jarayoni
+                      <div className="max-w-3xl mx-auto bg-slate-900 border border-white/20 rounded-3xl p-8 shadow-2xl relative overflow-hidden">
+                        <div className="absolute top-0 left-0 w-full h-2 bg-white/10">
+                          <div
+                            className="h-full bg-blue-500 transition-all duration-500"
+                            style={{ width: `${((lessonTestStep + 1) / (selectedLesson.quiz?.length || 1)) * 100}%` }}
+                          ></div>
+                        </div>
+
+                        {lessonTestStep < (selectedLesson.quiz?.length || 0) ? (
+                          <div className="space-y-8 mt-4 animate-in slide-in-from-right-8 duration-300">
+                            <div className="flex justify-between items-center text-sm font-bold text-white/50 border-b border-white/10 pb-4">
+                              <span>Savol {lessonTestStep + 1} / {selectedLesson.quiz.length}</span>
+                              <span className="bg-blue-500/10 text-blue-400 px-3 py-1 rounded-lg border border-blue-500/20">Test Jarayoni</span>
+                            </div>
+
+                            <h3 className="text-2xl font-bold leading-relaxed">{selectedLesson.quiz[lessonTestStep].question}</h3>
+
+                            <div className="space-y-3 grid gap-3">
+                              {selectedLesson.quiz[lessonTestStep].options.map((opt, idx) => (
+                                <button
+                                  key={idx}
+                                  onClick={() => {
+                                    const newAnswers = [...lessonTestAnswers];
+                                    newAnswers[lessonTestStep] = idx;
+                                    setLessonTestAnswers(newAnswers);
+
+                                    // Keyingi savolga o'tish
+                                    if (lessonTestStep + 1 < selectedLesson.quiz.length) {
+                                      setTimeout(() => setLessonTestStep(prev => prev + 1), 200);
+                                    } else {
+                                      // Test tugadi, natijani ko'rsatish uchun stepni oshiramiz
+                                      setTimeout(() => setLessonTestStep(prev => prev + 1), 200);
+                                    }
+                                  }}
+                                  className="w-full text-left p-5 rounded-xl bg-white/5 hover:bg-blue-500 hover:text-white border border-white/10 hover:border-blue-500 transition-all font-medium text-lg flex items-center gap-4 group"
+                                >
+                                  <span className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-sm font-bold group-hover:bg-white group-hover:text-blue-500 transition-colors">
+                                    {['A', 'B', 'C', 'D'][idx]}
+                                  </span>
+                                  {opt}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="text-center space-y-8 py-8 animate-in zoom-in duration-300">
+                            <div className="relative inline-block">
+                              <div className="absolute inset-0 bg-yellow-400/20 blur-xl rounded-full animate-pulse"></div>
+                              <Trophy size={80} className="relative z-10 text-yellow-400 mx-auto drop-shadow-lg" />
+                            </div>
+
+                            <div>
+                              <h3 className="text-4xl font-black mb-2">Test Yakunlandi!</h3>
+                              <p className="text-white/60 text-lg">Sizning natijangiz:</p>
+                            </div>
+
+                            <div className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500">
+                              {lessonTestAnswers.filter((ans, idx) => ans === selectedLesson.quiz[idx].correctAnswer).length}
+                              <span className="text-3xl text-white/40 font-bold mx-2">/</span>
+                              {selectedLesson.quiz.length}
+                            </div>
+
+                            <div className="flex gap-4 justify-center pt-8 border-t border-white/10">
+                              <button
+                                onClick={() => {
+                                  setLessonTestStarted(false);
+                                  setLessonTestStep(0);
+                                  setLessonTestAnswers([]);
+                                }}
+                                className="px-8 py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl font-bold transition-colors"
+                              >
+                                Qayta topshirish
+                              </button>
+                              <button
+                                onClick={() => {
+                                  // Keyingi darsga o'tish logikasi (agar kerak bo'lsa)
+                                  // Yoki shunchaki modalni yopish/boshqa joyga o'tish
+                                  setView('level-lessons');
+                                }}
+                                className="px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition-colors shadow-lg shadow-blue-500/20"
+                              >
+                                Darslarni davom ettirish
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
