@@ -1557,37 +1557,13 @@ const App = () => {
               </div>
 
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {/* Special Alphabet Learning Card */}
-                <div
-                  onClick={() => setView('alphabet-learning')}
-                  className="md:col-span-2 lg:col-span-3 relative bg-gradient-to-r from-emerald-500 to-teal-600 rounded-3xl p-8 cursor-pointer hover:scale-[1.01] transition-all shadow-2xl group overflow-hidden border-2 border-white/20"
-                >
-                  <div className="absolute top-0 right-0 p-8 opacity-10 transform rotate-12 group-hover:rotate-0 transition-transform duration-700">
-                    <span className="text-9xl font-black text-white">ا ب ت</span>
-                  </div>
-                  <div className="relative z-10 space-y-6">
-                    <div className="flex flex-col md:flex-row md:items-center gap-6">
-                      <div className="w-20 h-20 bg-white/10 rounded-2xl backdrop-blur-md flex items-center justify-center border border-white/20 shadow-lg">
-                        <BookOpen size={40} className="text-white" />
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-3 mb-2">
-                          <h3 className="text-3xl md:text-4xl font-black text-white">Arab Harflari</h3>
-                          <span className="bg-white/20 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest text-white border border-white/20 shadow-sm">Bepul</span>
-                        </div>
-                        <p className="text-lg text-emerald-100 max-w-2xl font-medium">
-                          Arab tilini noldan o'rganuvchilar uchun maxsus bo'lim. Harflar, talaffuz va yozish qoidalarini mukammal o'rganing.
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-3 text-white font-bold group-hover:gap-5 transition-all bg-white/10 w-fit px-6 py-3 rounded-xl hover:bg-white/20">
-                      <span>Darslarni Boshlash</span>
-                      <ArrowRight size={20} />
-                    </div>
-                  </div>
-                </div>
-                {levels.map((lvl, index) => {
+                {levels.filter(l => l.id !== 'INTRO').map((lvl, index) => {
+                  // Quick Fix Override for ALPHABET display
+                  if (lvl.id === 'ALPHABET' || lvl.title.includes('Arab Harflari')) {
+                    lvl.title = "Arab Alifbosi";
+                    lvl.description = "Harflar, talaffuz va yozish qoidalarini mukammal o'rganing.";
+                    lvl.icon = "ا";
+                  }
                   const isCompleted = completedLevels.includes(lvl.id);
                   const isUnlocked = isLevelUnlocked(lvl.id);
                   const isLocked = user?.role !== 'admin' && !isUnlocked; // Admin uchun barcha ochiq
