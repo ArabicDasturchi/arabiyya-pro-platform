@@ -3194,16 +3194,16 @@ const App = () => {
         {/* ============================================ */}
         {
           view === 'admin' && user && user.role === 'admin' && (
-            <div className="max-w-7xl mx-auto min-h-[600px] flex gap-8">
+            <div className="max-w-7xl mx-auto min-h-[600px] flex flex-col md:flex-row gap-8">
 
-              {/* Sidebar Navigation */}
+              {/* Sidebar Navigation (Desktop) */}
               <div className="w-64 flex-shrink-0 hidden md:block">
                 <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-4 sticky top-32 space-y-2">
                   <div className="px-4 py-3 mb-2">
                     <h3 className="text-white/40 text-xs font-bold uppercase tracking-wider">Menu</h3>
                   </div>
                   {[
-                    { id: 'dashboard', label: 'Boshqaruv Paneli', icon: LayoutDashboard },
+                    { id: 'dashboard', label: 'Boshqaruv', icon: LayoutDashboard },
                     { id: 'orders', label: 'Buyurtmalar', icon: ClipboardCheck },
                     { id: 'submissions', label: 'Topshiriqlar', icon: CheckCircle2 },
                     { id: 'users', label: 'Foydalanuvchilar', icon: Users },
@@ -3219,6 +3219,32 @@ const App = () => {
                         }`}
                     >
                       <item.icon size={18} />
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Mobile Navigation (Admin) */}
+              <div className="md:hidden w-full overflow-x-auto pb-4 mb-4 custom-scrollbar">
+                <div className="flex gap-2 min-w-max">
+                  {[
+                    { id: 'dashboard', label: 'Boshqaruv', icon: LayoutDashboard },
+                    { id: 'orders', label: 'Buyurtmalar', icon: ClipboardCheck },
+                    { id: 'submissions', label: 'Topshiriqlar', icon: CheckCircle2 },
+                    { id: 'users', label: 'Users', icon: Users },
+                    { id: 'courses', label: 'Kurslar', icon: BookOpen },
+                    { id: 'settings', label: 'Sozlamalar', icon: Settings },
+                  ].map((item) => (
+                    <button
+                      key={item.id}
+                      onClick={() => setAdminTab(item.id)}
+                      className={`flex items-center gap-2 px-4 py-3 rounded-xl font-bold text-xs whitespace-nowrap transition-all border ${adminTab === item.id
+                        ? 'bg-blue-500/20 text-blue-400 border-blue-500/20'
+                        : 'bg-white/5 text-white/60 border-white/10'
+                        }`}
+                    >
+                      <item.icon size={16} />
                       {item.label}
                     </button>
                   ))}
