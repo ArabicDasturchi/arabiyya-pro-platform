@@ -175,4 +175,36 @@ router.delete('/:levelId/lessons/:lessonId', [authMiddleware, adminMiddleware], 
   }
 });
 
+// @route   PUT /api/levels/:levelId/exam
+// @desc    Update level exam questions
+// @access  Private/Admin
+router.put('/:levelId/exam', [authMiddleware, adminMiddleware], async (req, res) => {
+  try {
+    const { levelId } = req.params;
+    const { examQuestions } = req.body;
+
+    const level = await Level.findOne({ id: levelId });
+
+    if (!level) {
+      return res.status(404).json({ success: false, message: 'Daraja topilmadi' });
+    }
+
+    if (examQuestions) {
+      level.examQuestions = examQuestions;
+    }
+
+    await level.save();
+
+    res.json({
+      success: true,
+      message: 'Imtihon savollari yangilandi',
+      level
+    });
+
+  } catch (error) {
+    console.error('Update exam error:', error);
+    res.status(500).json({ success: false, message: 'Server xatosi' });
+  }
+});
+
 export default router;

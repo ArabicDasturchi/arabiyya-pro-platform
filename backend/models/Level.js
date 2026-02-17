@@ -32,6 +32,22 @@ const levelSchema = new mongoose.Schema({
     lessons: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Lesson'
+    }],
+    examQuestions: [{
+        question: {
+            type: String,
+            required: true
+        },
+        options: [{
+            type: String,
+            required: true
+        }],
+        correctAnswer: {
+            type: Number,
+            required: true,
+            min: 0,
+            max: 3
+        }
     }]
 }, {
     timestamps: true

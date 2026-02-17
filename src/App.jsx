@@ -75,6 +75,10 @@ const App = () => {
   const [moduleTab, setModuleTab] = useState('video');
   const [lessonTab, setLessonTab] = useState('video'); // Dars sahifalari uchun
 
+  // Level Exam Editor State (Admin)
+  const [showExamEditor, setShowExamEditor] = useState(false);
+  const [editingExamQuestions, setEditingExamQuestions] = useState([]);
+
   const apiKey = "AIzaSyBsmkZPeYer67MBM8Ac-hkUFMsrgNaUrc4"; // API key integration point
 
   // Check for existing session on load
@@ -550,11 +554,28 @@ const App = () => {
 
   // Handle level exam
   const handleExamAnswer = async (index) => {
-    const currentExam = generateLevelExam(selectedLevel.id);
+    // Helper to get questions
+    let currentExam = [];
+    if (selectedLevel.examQuestions && selectedLevel.examQuestions.length > 0) {
+      currentExam = selectedLevel.examQuestions.map(q => ({
+        q: q.question,
+        a: q.options,
+        c: q.correctAnswer
+      }));
+    } else {
+      try {
+        currentExam = generateLevelExam(selectedLevel.id);
+      } catch (e) {
+        currentExam = []; // Fallback
+      }
+    }
+
     const newAnswers = [...examAnswers, index];
     setExamAnswers(newAnswers);
 
-    if (examStep < 14) {
+    const questionsCount = currentExam.length || 15; // Default 15 if fallback
+
+    if (examStep < questionsCount - 1) {
       setExamStep(examStep + 1);
     } else {
       const correctCount = newAnswers.filter((ans, i) => ans === currentExam[i].c).length;
@@ -577,15 +598,15 @@ const App = () => {
         const data = await response.json();
         const aiFeedback = data.success ? data.analysis : "Yaxshi natija!";
 
-        if (correctCount >= 13) {
-          alert(`🎉 Imtihondan muvaffaqiyatli o'tdingiz! ${correctCount}/15 to'g'ri\n\n💡 AI Professional Tahlil:\n${aiFeedback}\n\n🚀 Keyingi darajaga o'tishingiz mumkin!`);
+        if (correctCount >= Math.ceil(questionsCount * 0.86)) {
+          alert(`🎉 Imtihondan muvaffaqiyatli o'tdingiz! ${correctCount}/${questionsCount} to'g'ri\n\n💡 AI Professional Tahlil:\n${aiFeedback}\n\n🚀 Keyingi darajaga o'tishingiz mumkin!`);
           setCompletedLevels([...completedLevels, selectedLevel.id]);
 
           // Certificate for C2 completion (Backend Integration)
           if (selectedLevel.id === 'C2') {
             const newCert = {
               level: 'Certified Arabic Language Specialist', // Display Name
-              score: `${Math.round((correctCount / 15) * 100)}%`,
+              score: `${Math.round((correctCount / questionsCount) * 100)}%`,
               certificateNumber: `AP-${Date.now().toString().slice(-8)}`,
               issueDate: new Date()
             };
@@ -624,16 +645,16 @@ const App = () => {
 
           setView('levels');
         } else {
-          alert(`📚 ${correctCount}/15 to'g'ri javob (kamida 13 ta kerak)\n\n💡 AI Professional Tahlil:\n${aiFeedback}\n\n🔄 Bu darajani takrorlash va mustahkamlash tavsiya etiladi.`);
+          alert(`📚 ${correctCount}/${questionsCount} to'g'ri javob (kamida ${Math.ceil(questionsCount * 0.86)} ta kerak)\n\n💡 AI Professional Tahlil:\n${aiFeedback}\n\n🔄 Bu darajani takrorlash va mustahkamlash tavsiya etiladi.`);
           setView('level-lessons');
         }
       } catch (error) {
-        if (correctCount >= 13) {
-          alert(`🎉 Imtihondan o'tdingiz! ${correctCount}/15. Keyingi darajaga o'tishingiz mumkin!`);
+        if (correctCount >= Math.ceil(questionsCount * 0.86)) {
+          alert(`🎉 Imtihondan o'tdingiz! ${correctCount}/${questionsCount}. Keyingi darajaga o'tishingiz mumkin!`);
           setCompletedLevels([...completedLevels, selectedLevel.id]);
           setView('levels');
         } else {
-          alert(`📚 ${correctCount}/15 to'g'ri. Kamida 13 ta kerak. Darajani takrorlang.`);
+          alert(`📚 ${correctCount}/${questionsCount} to'g'ri. Kamida ${Math.ceil(questionsCount * 0.86)} ta kerak. Darajani takrorlang.`);
           setView('level-lessons');
         }
       }
@@ -2585,7 +2606,7 @@ const App = () => {
                           </div>
                         </div>
                         <div className="text-right">
-                          <div className="text-4xl font-black">{examStep + 1}/15</div>
+                          <div className="text-4xl font-black">{examStep + 1}/{(selectedLevel.examQuestions?.length) || 15}</div>
                           <div className="text-sm text-white/60">Savol</div>
                         </div>
                       </div>
@@ -2593,14 +2614,14 @@ const App = () => {
                       <div className="relative h-4 bg-white/10 rounded-full overflow-hidden">
                         <div
                           className="h-full bg-gradient-to-r from-purple-500 via-pink-500 to-purple-600 rounded-full transition-all duration-700 shadow-lg"
-                          style={{ width: `${((examStep + 1) / 15) * 100}%` }}
+                          style={{ width: `${((examStep + 1) / ((selectedLevel.examQuestions?.length) || 15)) * 100}%` }}
                         >
                           <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
                         </div>
                       </div>
 
                       <div className="flex justify-between text-sm font-bold text-white/60">
-                        <span>O'tish bali: 13/15</span>
+                        <span>O'tish bali: {Math.ceil(((selectedLevel.examQuestions?.length) || 15) * 0.86)}/{(selectedLevel.examQuestions?.length) || 15}</span>
                         <span>AI Professional Tahlil</span>
                       </div>
                     </div>
@@ -2617,44 +2638,56 @@ const App = () => {
                         </div>
                       </div>
                     ) : (
-                      <div className="space-y-8">
-                        {/* Question */}
-                        <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl p-10 rounded-3xl border border-white/20 shadow-xl">
-                          <div className="flex items-start gap-4 mb-4">
-                            <div className="bg-gradient-to-br from-purple-500 to-pink-600 w-12 h-12 rounded-xl flex items-center justify-center font-black text-xl shadow-lg flex-shrink-0">
-                              {examStep + 1}
-                            </div>
-                            <div className="flex-1">
-                              <div className="text-sm font-bold text-purple-400 mb-3">
-                                Imtihon savoli {examStep + 1} / 15
+                      (() => {
+                        const currentQuestions = (selectedLevel.examQuestions && selectedLevel.examQuestions.length > 0)
+                          ? selectedLevel.examQuestions.map(q => ({ q: q.question, a: q.options }))
+                          : (typeof generateLevelExam === 'function' ? generateLevelExam(selectedLevel.id) : []); // Fallback
+
+                        const currentQ = currentQuestions[examStep];
+                        if (!currentQ) return <div className="text-white/50 text-center py-10">Savol topilmadi. Tizim xatosi.</div>;
+
+                        return (
+                          <div className="space-y-8">
+                            {/* Question */}
+                            <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl p-10 rounded-3xl border border-white/20 shadow-xl">
+                              <div className="flex items-start gap-4 mb-4">
+                                <div className="bg-gradient-to-br from-purple-500 to-pink-600 w-12 h-12 rounded-xl flex items-center justify-center font-black text-xl shadow-lg flex-shrink-0">
+                                  {examStep + 1}
+                                </div>
+                                <div className="flex-1">
+                                  <div className="text-sm font-bold text-purple-400 mb-3">
+                                    Imtihon savoli {examStep + 1} / {currentQuestions.length}
+                                  </div>
+                                  <div className="text-2xl font-bold leading-relaxed whitespace-pre-wrap">
+                                    {currentQ.q}
+                                  </div>
+                                </div>
                               </div>
-                              <p className="text-2xl font-bold leading-relaxed">
-                                {generateLevelExam(selectedLevel.id)[examStep].q}
-                              </p>
+                            </div>
+
+                            {/* Answers */}
+                            <div className="grid gap-5">
+                              {currentQ.a.map((opt, i) => (
+                                <button
+                                  key={i}
+                                  onClick={() => handleExamAnswer(i)}
+                                  className="group relative w-full p-7 bg-white/5 backdrop-blur-xl rounded-2xl text-left font-bold text-lg hover:bg-gradient-to-r hover:from-purple-500/20 hover:to-pink-600/20 transition-all duration-300 flex items-center justify-between border-2 border-white/10 hover:border-purple-400 hover:scale-105"
+                                >
+                                  <div className="flex items-center gap-4">
+                                    <div className="w-10 h-10 rounded-xl bg-white/10 group-hover:bg-gradient-to-br group-hover:from-purple-500 group-hover:to-pink-600 flex items-center justify-center font-black transition-all shadow-lg">
+                                      {String.fromCharCode(65 + i)}
+                                    </div>
+                                    <span>{opt}</span>
+                                  </div>
+                                  <ArrowRight className="opacity-0 group-hover:opacity-100 group-hover:translate-x-2 transition-all text-purple-400" size={24} />
+                                </button>
+                              ))}
                             </div>
                           </div>
-                        </div>
-
-                        {/* Answers */}
-                        <div className="grid gap-5">
-                          {generateLevelExam(selectedLevel.id)[examStep].a.map((opt, i) => (
-                            <button
-                              key={i}
-                              onClick={() => handleExamAnswer(i)}
-                              className="group relative w-full p-7 bg-white/5 backdrop-blur-xl rounded-2xl text-left font-bold text-lg hover:bg-gradient-to-r hover:from-purple-500/20 hover:to-pink-600/20 transition-all duration-300 flex items-center justify-between border-2 border-white/10 hover:border-purple-400 hover:scale-105"
-                            >
-                              <div className="flex items-center gap-4">
-                                <div className="w-10 h-10 rounded-xl bg-white/10 group-hover:bg-gradient-to-br group-hover:from-purple-500 group-hover:to-pink-600 flex items-center justify-center font-black transition-all shadow-lg">
-                                  {String.fromCharCode(65 + i)}
-                                </div>
-                                <span>{opt}</span>
-                              </div>
-                              <ArrowRight className="opacity-0 group-hover:opacity-100 group-hover:translate-x-2 transition-all text-purple-400" size={24} />
-                            </button>
-                          ))}
-                        </div>
-                      </div>
+                        );
+                      })()
                     )}
+
                   </div>
                 </div>
               </div>
@@ -3656,6 +3689,31 @@ const App = () => {
                               <div className={`px-4 py-2 rounded-xl text-xs font-bold border bg-white/5 border-white/10`}>
                                 {editingLevel.lessons.length} ta dars
                               </div>
+                            </div>
+
+                            {/* Exam Management Button */}
+                            <div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 p-6 rounded-2xl border border-blue-500/20 flex items-center justify-between">
+                              <div>
+                                <h4 className="text-xl font-bold flex items-center gap-2 mb-1">
+                                  <Award className="text-blue-400" />
+                                  Daraja Imtihoni
+                                </h4>
+                                <p className="text-white/60 text-sm">
+                                  {editingLevel.examQuestions && editingLevel.examQuestions.length > 0
+                                    ? `${editingLevel.examQuestions.length} ta savol kiritilgan`
+                                    : "Imtihon savollari kiritilmagan"}
+                                </p>
+                              </div>
+                              <button
+                                onClick={() => {
+                                  setEditingExamQuestions(editingLevel.examQuestions || []);
+                                  setShowExamEditor(true);
+                                }}
+                                className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition-all shadow-lg shadow-blue-500/20 flex items-center gap-2"
+                              >
+                                <Settings size={18} />
+                                Imtihonni Tahrirlash
+                              </button>
                             </div>
 
                             {/* Add New Lesson Form */}
@@ -4817,7 +4875,159 @@ Bu yerga dars matnini yozing..."
         )
       }
 
-    </div >
+      {/* LEVEL EXAM EDITOR MODAL */}
+      {showExamEditor && editingLevel && (
+        <div className="fixed inset-0 z-[60] bg-black/90 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-300">
+          <div className="w-full max-w-4xl bg-[#0f172a] rounded-3xl border border-white/10 shadow-2xl flex flex-col max-h-[90vh]">
+
+            {/* Header */}
+            <div className="p-6 border-b border-white/10 flex justify-between items-center bg-slate-900/50 rounded-t-3xl">
+              <div>
+                <h3 className="text-2xl font-black flex items-center gap-3">
+                  <Brain className="text-blue-500" />
+                  {editingLevel.title} - Imtihon Savollari
+                </h3>
+                <p className="text-white/60 text-sm">Kamida 15 ta savol bo'lishi tavsiya etiladi</p>
+              </div>
+              <div className="flex items-center gap-4">
+                <span className="px-3 py-1 bg-white/10 rounded-lg text-sm font-bold border border-white/10">
+                  Jami: {editingExamQuestions.length}
+                </span>
+                <button onClick={() => setShowExamEditor(false)} className="p-2 hover:bg-white/10 rounded-xl transition-all">
+                  <X size={24} />
+                </button>
+              </div>
+            </div>
+
+            {/* Content - Scrollable */}
+            <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
+              {editingExamQuestions.map((q, idx) => (
+                <div key={idx} className="bg-white/5 border border-white/10 rounded-2xl p-6 relative group hover:border-white/20 transition-all">
+                  <div className="absolute top-4 right-4 flex gap-2">
+                    <span className="bg-white/10 px-2 py-1 rounded text-xs font-bold text-white/40">#{idx + 1}</span>
+                    <button
+                      onClick={() => {
+                        if (!confirm("O'chirilsinmi?")) return;
+                        const newQs = [...editingExamQuestions];
+                        newQs.splice(idx, 1);
+                        setEditingExamQuestions(newQs);
+                      }}
+                      className="p-1.5 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+
+                  <div className="space-y-4 pr-12">
+                    <div>
+                      <label className="text-xs font-bold text-white/40 uppercase mb-1 block">Savol</label>
+                      <textarea
+                        value={q.question}
+                        onChange={(e) => {
+                          const newQs = [...editingExamQuestions];
+                          newQs[idx].question = e.target.value;
+                          setEditingExamQuestions(newQs);
+                        }}
+                        className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500 outline-none resize-none font-medium text-lg leading-relaxed"
+                        rows={2}
+                        placeholder="Savol matnini kiriting..."
+                      />
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-4">
+                      {q.options.map((opt, optIdx) => (
+                        <div
+                          key={optIdx}
+                          onClick={() => {
+                            const newQs = [...editingExamQuestions];
+                            newQs[idx].correctAnswer = optIdx;
+                            setEditingExamQuestions(newQs);
+                          }}
+                          className={`flex items-center gap-3 p-3 rounded-xl border transition-all cursor-pointer ${q.correctAnswer === optIdx ? 'bg-green-500/10 border-green-500/50' : 'bg-black/20 border-white/5 hover:bg-white/5'
+                            }`}
+                        >
+                          <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${q.correctAnswer === optIdx ? 'border-green-500 text-green-500' : 'border-white/20 text-transparent'
+                            }`}>
+                            <div className={`w-2 h-2 rounded-full ${q.correctAnswer === optIdx ? 'bg-green-500' : ''}`} />
+                          </div>
+                          <input
+                            type="text"
+                            value={opt}
+                            onChange={(e) => {
+                              const newQs = [...editingExamQuestions];
+                              newQs[idx].options[optIdx] = e.target.value;
+                              setEditingExamQuestions(newQs);
+                            }}
+                            onClick={(e) => e.stopPropagation()}
+                            className="bg-transparent border-none outline-none w-full text-sm text-white placeholder-white/20"
+                            placeholder={`Variant ${['A', 'B', 'C', 'D'][optIdx]}`}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              <button
+                onClick={() => setEditingExamQuestions([
+                  ...editingExamQuestions,
+                  { question: '', options: ['', '', '', ''], correctAnswer: 0 }
+                ])}
+                className="w-full py-4 border-2 border-dashed border-white/10 rounded-2xl text-white/40 hover:text-white hover:border-white/30 hover:bg-white/5 transition-all font-bold flex items-center justify-center gap-2"
+              >
+                <Plus size={20} />
+                Yangi Savol Qo'shish
+              </button>
+            </div>
+
+            {/* Footer */}
+            <div className="p-6 border-t border-white/10 bg-slate-900/50 rounded-b-3xl flex justify-end gap-4">
+              <button
+                onClick={() => setShowExamEditor(false)}
+                className="px-6 py-3 rounded-xl text-white/60 hover:text-white font-bold transition-colors"
+              >
+                Bekor qilish
+              </button>
+              <button
+                onClick={async () => {
+                  const token = localStorage.getItem('token');
+                  if (!token) return;
+                  try {
+                    const res = await fetch(`https://arabiyya-pro-backend.onrender.com/api/levels/${editingLevel.id}/exam`, {
+                      method: 'PUT',
+                      headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                      },
+                      body: JSON.stringify({ examQuestions: editingExamQuestions })
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                      alert("✅ Imtihon savollari saqlandi!");
+                      setShowExamEditor(false);
+                      // Refresh levels
+                      fetchLevels();
+                    } else {
+                      alert("Xatolik: " + data.message);
+                    }
+                  } catch (err) {
+                    console.error(err);
+                    alert("Server xatosi");
+                  }
+                }}
+                className="px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition-all shadow-lg shadow-blue-500/20 flex items-center gap-2"
+              >
+                <Save size={20} />
+                Saqlash
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
+
+    </div>
   );
 };
 
