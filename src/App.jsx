@@ -148,6 +148,12 @@ const App = () => {
         console.log('🔄 User data refreshed:', data.user.name);
         console.log('💰 Purchased Levels:', data.user.purchasedLevels);
         setUser(data.user);
+
+        // Sync completed levels from backend (array of objects -> array of IDs)
+        if (data.user.completedLevels && Array.isArray(data.user.completedLevels)) {
+          setCompletedLevels(data.user.completedLevels.map(l => l.levelId));
+        }
+
         fetchMySubmissions(); // Update submissions history too
 
         // Legacy chat history restore removed to support multi-chat system
@@ -563,10 +569,11 @@ const App = () => {
         c: q.correctAnswer
       }));
     } else {
-      try {
-        currentExam = generateLevelExam(selectedLevel.id);
-      } catch (e) {
-        currentExam = []; // Fallback
+      currentExam = []; // No fallback
+      // Optional: alert handling for no exam configured
+      if (currentExam.length === 0) {
+        alert("Hozircha imtihon savollari kiritilmagan.");
+        return;
       }
     }
 
@@ -599,51 +606,78 @@ const App = () => {
         const aiFeedback = data.success ? data.analysis : "Yaxshi natija!";
 
         if (correctCount >= Math.ceil(questionsCount * 0.86)) {
-          alert(`🎉 Imtihondan muvaffaqiyatli o'tdingiz! ${correctCount}/${questionsCount} to'g'ri\n\n💡 AI Professional Tahlil:\n${aiFeedback}\n\n🚀 Keyingi darajaga o'tishingiz mumkin!`);
-          setCompletedLevels([...completedLevels, selectedLevel.id]);
+          // Save completion to backend
+          try {
+            const token = localStorage.getItem('token');
+            await fetch('https://arabiyya-pro-backend.onrender.com/api/users/complete-level', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify({
+                levelId: selectedLevel.id,
+                examScore: correctCount
+              })
+            });
+          } catch (err) {
+            console.error('Failed to save progress', err);
+          }
 
-          // Certificate for C2 completion (Backend Integration)
+          setCompletedLevels(prev => [...prev, selectedLevel.id]);
+
+          // Certificate Logic
           if (selectedLevel.id === 'C2') {
-            const newCert = {
-              level: 'Certified Arabic Language Specialist', // Display Name
-              score: `${Math.round((correctCount / questionsCount) * 100)}%`,
-              certificateNumber: `AP-${Date.now().toString().slice(-8)}`,
-              issueDate: new Date()
-            };
+            const requiredLevels = ['A1', 'A2', 'B1', 'B2', 'C1'];
+            // Check if user has all required levels OR is admin
+            const hasAllLevels = requiredLevels.every(lvl => completedLevels.includes(lvl) || lvl === selectedLevel.id);
 
-            // Optimistic Update
-            setCertificates(prev => [...prev, {
-              ...newCert,
-              id: Date.now(),
-              name: user.name,
-              date: newCert.issueDate.toLocaleDateString('en-US')
-            }]);
+            if (user?.role === 'admin' || hasAllLevels) {
+              const newCert = {
+                level: 'Certified Arabic Language Specialist',
+                score: `${Math.round((correctCount / questionsCount) * 100)}%`,
+                certificateNumber: `AP-${Date.now().toString().slice(-8)}`,
+                issueDate: new Date()
+              };
 
-            // Save to Backend
-            try {
-              const token = localStorage.getItem('token');
-              fetch('https://arabiyya-pro-backend.onrender.com/api/auth/certificates', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                  level: newCert.level,
-                  score: correctCount, // Store raw score or percentage as needed by backend schema
-                  certificateNumber: newCert.certificateNumber
-                })
-              }).then(res => res.json())
-                .then(d => {
-                  if (d.success) console.log("Certificate saved!", d);
-                  else console.error("Certificate save failed", d);
-                });
-            } catch (e) {
-              console.error("Certificate request error", e);
+              setCertificates(prev => [...prev, {
+                ...newCert,
+                id: Date.now(),
+                name: user.name,
+                date: newCert.issueDate.toLocaleDateString('en-US')
+              }]);
+
+              try {
+                const token = localStorage.getItem('token');
+                fetch('https://arabiyya-pro-backend.onrender.com/api/auth/certificates', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                  },
+                  body: JSON.stringify({
+                    level: newCert.level,
+                    score: correctCount,
+                    certificateNumber: newCert.certificateNumber
+                  })
+                }).then(res => res.json())
+                  .then(d => {
+                    if (d.success) console.log("Certificate saved!", d);
+                  });
+              } catch (e) {
+                console.error("Certificate request error", e);
+              }
+
+              alert(`🎉 Tabriklaymiz! Siz C2 darajasini muvaffaqiyatli tugatdingiz va MAXSUS SERTIFIKAT bilan taqdirlandingiz!\n\nTog'ri javoblar: ${correctCount}/${questionsCount}`);
+            } else {
+              alert(`🎉 C2 Imtihonidan o'tdingiz! (${correctCount}/${questionsCount})\nLekin Sertifikat olish uchun barcha oldingi darajalarni (A1-C1) tugatishingiz kerak.`);
             }
+          } else {
+            alert(`🎉 Imtihondan muvaffaqiyatli o'tdingiz! ${correctCount}/${questionsCount} to'g'ri\n\n💡 AI Professional Tahlil:\n${aiFeedback}\n\n🚀 Keyingi darajaga o'tishingiz mumkin!`);
           }
 
           setView('levels');
+          refreshUser();
         } else {
           alert(`📚 ${correctCount}/${questionsCount} to'g'ri javob (kamida ${Math.ceil(questionsCount * 0.86)} ta kerak)\n\n💡 AI Professional Tahlil:\n${aiFeedback}\n\n🔄 Bu darajani takrorlash va mustahkamlash tavsiya etiladi.`);
           setView('level-lessons');
@@ -2641,10 +2675,26 @@ const App = () => {
                       (() => {
                         const currentQuestions = (selectedLevel.examQuestions && selectedLevel.examQuestions.length > 0)
                           ? selectedLevel.examQuestions.map(q => ({ q: q.question, a: q.options }))
-                          : (typeof generateLevelExam === 'function' ? generateLevelExam(selectedLevel.id) : []); // Fallback
+                          : []; // No fallback to hardcoded functions
 
                         const currentQ = currentQuestions[examStep];
-                        if (!currentQ) return <div className="text-white/50 text-center py-10">Savol topilmadi. Tizim xatosi.</div>;
+                        if (!currentQ) return (
+                          <div className="text-center py-16 space-y-6">
+                            <div className="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center mx-auto">
+                              <FileText size={48} className="text-white/40" />
+                            </div>
+                            <div>
+                              <h3 className="text-2xl font-bold text-white">Imtihon savollari yo'q</h3>
+                              <p className="text-white/60">Ushbu daraja uchun hali imtihon savollari kiritilmagan.</p>
+                            </div>
+                            <button
+                              onClick={() => setView('level-lessons')}
+                              className="px-8 py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl font-bold transition-all"
+                            >
+                              Ortga qaytish
+                            </button>
+                          </div>
+                        );
 
                         return (
                           <div className="space-y-8">

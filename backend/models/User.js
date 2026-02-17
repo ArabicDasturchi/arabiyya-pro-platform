@@ -24,8 +24,16 @@ const userSchema = new mongoose.Schema({
   },
   purchasedLevels: {
     type: [String],
-    default: [] // All levels must be purchased
+    default: []
   },
+  completedLevels: [{
+    levelId: String,
+    examScore: Number,
+    completedAt: {
+      type: Date,
+      default: Date.now
+    }
+  }],
   password: {
     type: String,
     required: [true, 'Parol kiritish majburiy'],
