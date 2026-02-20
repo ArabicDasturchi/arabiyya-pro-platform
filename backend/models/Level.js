@@ -17,6 +17,7 @@ const levelSchema = new mongoose.Schema({
     },
     icon: String,
     color: String,
+    levelBookUrl: String,
     totalLessons: {
         type: Number,
         default: 0

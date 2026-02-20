@@ -207,4 +207,39 @@ router.put('/:levelId/exam', [authMiddleware, adminMiddleware], async (req, res)
   }
 });
 
+// @route   PUT /api/levels/:levelId
+// @desc    Update level details (e.g., book URL)
+// @access  Private/Admin
+router.put('/:levelId', [authMiddleware, adminMiddleware], async (req, res) => {
+  try {
+    const { levelId } = req.params;
+    const { title, description, icon, color, levelBookUrl, isActive } = req.body;
+
+    const level = await Level.findOne({ id: levelId });
+
+    if (!level) {
+      return res.status(404).json({ success: false, message: 'Daraja topilmadi' });
+    }
+
+    if (title !== undefined) level.title = title;
+    if (description !== undefined) level.description = description;
+    if (icon !== undefined) level.icon = icon;
+    if (color !== undefined) level.color = color;
+    if (levelBookUrl !== undefined) level.levelBookUrl = levelBookUrl;
+    if (isActive !== undefined) level.isActive = isActive;
+
+    await level.save();
+
+    res.json({
+      success: true,
+      message: 'Daraja ma\'lumotlari yangilandi',
+      level
+    });
+
+  } catch (error) {
+    console.error('Update level error:', error);
+    res.status(500).json({ success: false, message: 'Server xatosi' });
+  }
+});
+
 export default router;

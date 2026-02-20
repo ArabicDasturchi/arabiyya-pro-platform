@@ -355,9 +355,51 @@ const App = () => {
           const updated = formattedLevels.find(l => l.id === editingLevel.id);
           if (updated) setEditingLevel(updated);
         }
+        if (selectedLevel) {
+          const updatedSelected = formattedLevels.find(l => l.id === selectedLevel.id);
+          if (updatedSelected) {
+            setSelectedLevel(updatedSelected);
+            // Also sync current lesson if open
+            if (selectedLesson) {
+              const updatedLesson = updatedSelected.lessons.find(ls => ls.id === selectedLesson.id);
+              if (updatedLesson) setSelectedLesson(updatedLesson);
+            }
+          }
+        }
       }
     } catch (err) {
       console.error('Error fetching levels:', err);
+    }
+  };
+
+  const handleSaveLevelSettings = async () => {
+    if (!editingLevel) return;
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`https://arabiyya-pro-backend.onrender.com/api/levels/${editingLevel.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          title: editingLevel.title,
+          description: editingLevel.description,
+          icon: editingLevel.icon,
+          color: editingLevel.color,
+          levelBookUrl: editingLevel.levelBookUrl
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert('Daraja sozlamalari saqlandi!');
+        fetchLevels();
+      } else {
+        alert('Xatolik: ' + data.message);
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Server xatosi');
     }
   };
 
@@ -1927,8 +1969,8 @@ const App = () => {
                           <p className="text-white/60 text-lg">Ushbu dars uchun maxsus tayyorlangan elektron kitobni yuklab oling.</p>
                         </div>
 
-                        {selectedLesson.ebookUrl ? (
-                          <a href={selectedLesson.ebookUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3 px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-lg transition-all hover:scale-105 shadow-xl shadow-blue-600/30">
+                        {selectedLesson.ebookUrl || selectedLevel.levelBookUrl ? (
+                          <a href={selectedLesson.ebookUrl || selectedLevel.levelBookUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3 px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-lg transition-all hover:scale-105 shadow-xl shadow-blue-600/30">
                             <Download size={24} /> Yuklab Olish (PDF)
                           </a>
                         ) : (
@@ -3765,6 +3807,33 @@ const App = () => {
                               <div className={`px-4 py-2 rounded-xl text-xs font-bold border bg-white/5 border-white/10`}>
                                 {editingLevel.lessons.length} ta dars
                               </div>
+                            </div>
+
+                            {/* Level Settings (e.g. Book URL) */}
+                            <div className="bg-white/5 p-6 rounded-2xl border border-white/10 space-y-4">
+                              <h4 className="font-bold text-lg flex items-center gap-2">
+                                <Book size={20} className="text-blue-400" />
+                                Daraja Kitobi (Barcha darslar uchun umumiy PDF)
+                              </h4>
+                              <div className="flex flex-col md:flex-row gap-4">
+                                <input
+                                  type="text"
+                                  placeholder="Libel-wide PDF Kitob URL manzilini kiriting..."
+                                  className="flex-1 bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500/50"
+                                  value={editingLevel.levelBookUrl || ''}
+                                  onChange={(e) => setEditingLevel({ ...editingLevel, levelBookUrl: e.target.value })}
+                                />
+                                <button
+                                  onClick={handleSaveLevelSettings}
+                                  className="bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-8 rounded-xl transition-all flex items-center justify-center gap-2"
+                                >
+                                  <Save size={18} />
+                                  Saqlash
+                                </button>
+                              </div>
+                              <p className="text-xs text-white/40">
+                                💡 Bu yerga kiritilgan PDF manzil ushbu darajadagi <b>barcha darslarning</b> "Kitob" sahifasida chiqib turadi.
+                              </p>
                             </div>
 
                             {/* Exam Management Button */}
