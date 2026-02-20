@@ -2,6 +2,7 @@ import express from 'express';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
+import { authMiddleware, adminMiddleware } from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -39,7 +40,7 @@ const upload = multer({
 
 // @route   POST /api/upload
 // @desc    Upload PDF file
-router.post('/', upload.single('file'), (req, res) => {
+router.post('/', [authMiddleware, adminMiddleware], upload.single('file'), (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).json({ success: false, message: 'Fayl tanlanmadi' });

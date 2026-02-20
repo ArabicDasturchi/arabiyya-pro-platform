@@ -3809,23 +3809,79 @@ const App = () => {
                               </div>
                             </div>
 
-                            {/* Level Settings (e.g. Book URL) */}
                             <div className="bg-white/5 p-6 rounded-2xl border border-white/10 space-y-4">
-                              <h4 className="font-bold text-lg flex items-center gap-2">
-                                <Book size={20} className="text-blue-400" />
-                                Daraja Kitobi (Barcha darslar uchun umumiy PDF)
-                              </h4>
+                              <div className="flex justify-between items-center">
+                                <h4 className="font-bold text-lg flex items-center gap-2">
+                                  <Book size={20} className="text-blue-400" />
+                                  Daraja Kitobi (Barcha darslar uchun umumiy PDF)
+                                </h4>
+                                {editingLevel.levelBookUrl && (
+                                  <button
+                                    onClick={() => setEditingLevel({ ...editingLevel, levelBookUrl: '' })}
+                                    className="text-red-400 text-xs hover:text-red-300 font-bold"
+                                  >
+                                    O'chirish
+                                  </button>
+                                )}
+                              </div>
+
                               <div className="flex flex-col md:flex-row gap-4">
-                                <input
-                                  type="text"
-                                  placeholder="Libel-wide PDF Kitob URL manzilini kiriting..."
-                                  className="flex-1 bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500/50"
-                                  value={editingLevel.levelBookUrl || ''}
-                                  onChange={(e) => setEditingLevel({ ...editingLevel, levelBookUrl: e.target.value })}
-                                />
+                                {editingLevel.levelBookUrl ? (
+                                  <div className="flex-1 bg-green-500/10 border border-green-500/20 rounded-xl px-4 py-3 flex items-center justify-between">
+                                    <span className="text-green-400 text-sm truncate">{editingLevel.levelBookUrl}</span>
+                                    <CheckCircle2 size={16} className="text-green-500" />
+                                  </div>
+                                ) : (
+                                  <div className="flex-1 flex gap-2">
+                                    <label className="flex-1 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-xl px-4 py-3 text-white cursor-pointer transition-all flex items-center justify-center gap-2">
+                                      <Upload size={18} className="text-blue-400" />
+                                      <span className="text-sm">PDF Yuklash</span>
+                                      <input
+                                        type="file"
+                                        accept=".pdf"
+                                        className="hidden"
+                                        onChange={async (e) => {
+                                          const file = e.target.files[0];
+                                          if (!file) return;
+                                          const formData = new FormData();
+                                          formData.append('file', file);
+                                          try {
+                                            const token = localStorage.getItem('token');
+                                            const originalLabel = e.target.parentElement.innerHTML;
+                                            e.target.parentElement.innerHTML = 'Yuklanmoqda...';
+
+                                            const res = await fetch('https://arabiyya-pro-backend.onrender.com/api/upload', {
+                                              method: 'POST',
+                                              headers: { 'Authorization': `Bearer ${token}` },
+                                              body: formData
+                                            });
+                                            const data = await res.json();
+                                            if (data.success) {
+                                              setEditingLevel({ ...editingLevel, levelBookUrl: data.fileUrl });
+                                            } else {
+                                              alert('Xatolik: ' + data.message);
+                                              e.target.parentElement.innerHTML = originalLabel;
+                                            }
+                                          } catch (err) {
+                                            console.error(err);
+                                            alert('Server xatosi');
+                                          }
+                                        }}
+                                      />
+                                    </label>
+                                    <input
+                                      type="text"
+                                      placeholder="Yoki URL manzil..."
+                                      className="w-1/3 bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500/50 text-sm"
+                                      value={editingLevel.levelBookUrl || ''}
+                                      onChange={(e) => setEditingLevel({ ...editingLevel, levelBookUrl: e.target.value })}
+                                    />
+                                  </div>
+                                )}
+
                                 <button
                                   onClick={handleSaveLevelSettings}
-                                  className="bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-8 rounded-xl transition-all flex items-center justify-center gap-2"
+                                  className="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20"
                                 >
                                   <Save size={18} />
                                   Saqlash
