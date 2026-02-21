@@ -1972,7 +1972,11 @@ const App = () => {
                         </div>
 
                         {(() => {
-                          const rawUrl = selectedLesson.ebookUrl || selectedLevel.levelBookUrl;
+                          const isValid = (url) => url && !url.includes('/book-');
+                          const lessonBook = isValid(selectedLesson.ebookUrl) ? selectedLesson.ebookUrl : null;
+                          const levelBook = isValid(selectedLevel.levelBookUrl) ? selectedLevel.levelBookUrl : null;
+                          const rawUrl = lessonBook || levelBook;
+
                           if (!rawUrl) return (
                             <button disabled className="inline-flex items-center gap-3 px-8 py-4 bg-white/5 text-white/40 rounded-xl font-bold text-lg cursor-not-allowed border border-white/10">
                               <Lock size={24} /> Hozircha mavjud emas
