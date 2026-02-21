@@ -1971,15 +1971,25 @@ const App = () => {
                           <p className="text-white/60 text-lg">Ushbu dars uchun maxsus tayyorlangan elektron kitobni yuklab oling.</p>
                         </div>
 
-                        {selectedLesson.ebookUrl || selectedLevel.levelBookUrl ? (
-                          <a href={selectedLesson.ebookUrl || selectedLevel.levelBookUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3 px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-lg transition-all hover:scale-105 shadow-xl shadow-blue-600/30">
-                            <Download size={24} /> Yuklab Olish (PDF)
-                          </a>
-                        ) : (
-                          <button disabled className="inline-flex items-center gap-3 px-8 py-4 bg-white/5 text-white/40 rounded-xl font-bold text-lg cursor-not-allowed border border-white/10">
-                            <Lock size={24} /> Hozircha mavjud emas
-                          </button>
-                        )}
+                        {(() => {
+                          const rawUrl = selectedLesson.ebookUrl || selectedLevel.levelBookUrl;
+                          if (!rawUrl) return (
+                            <button disabled className="inline-flex items-center gap-3 px-8 py-4 bg-white/5 text-white/40 rounded-xl font-bold text-lg cursor-not-allowed border border-white/10">
+                              <Lock size={24} /> Hozircha mavjud emas
+                            </button>
+                          );
+
+                          // Ensure URL is absolute
+                          const finalUrl = rawUrl.startsWith('http')
+                            ? rawUrl
+                            : `https://arabiyya-pro-backend.onrender.com${rawUrl.startsWith('/') ? '' : '/'}${rawUrl}`;
+
+                          return (
+                            <a href={finalUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3 px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-lg transition-all hover:scale-105 shadow-xl shadow-blue-600/30">
+                              <Download size={24} /> Yuklab Olish (PDF)
+                            </a>
+                          );
+                        })()}
                       </div>
                     </div>
 
@@ -3819,7 +3829,11 @@ const App = () => {
                                 </h4>
                                 {editingLevel.levelBookUrl && (
                                   <button
-                                    onClick={() => setEditingLevel({ ...editingLevel, levelBookUrl: '' })}
+                                    onClick={() => {
+                                      if (window.confirm('Haqiqatdan ham kitobni o\'chirmoqchimisiz?')) {
+                                        setEditingLevel({ ...editingLevel, levelBookUrl: '' });
+                                      }
+                                    }}
                                     className="text-red-400 text-xs hover:text-red-300 font-bold"
                                   >
                                     O'chirish
@@ -3830,7 +3844,7 @@ const App = () => {
                               <div className="flex flex-col md:flex-row gap-4">
                                 {editingLevel.levelBookUrl ? (
                                   <div className="flex-1 bg-green-500/10 border border-green-500/20 rounded-xl px-4 py-3 flex items-center justify-between">
-                                    <span className="text-green-400 text-sm truncate">{editingLevel.levelBookUrl}</span>
+                                    <span className="text-green-400 text-sm truncate max-w-[400px]">{editingLevel.levelBookUrl}</span>
                                     <CheckCircle2 size={16} className="text-green-500" />
                                   </div>
                                 ) : (
@@ -3851,7 +3865,6 @@ const App = () => {
                                             const file = e.target.files[0];
                                             if (!file) return;
 
-                                            // Client-side quick check
                                             if (!file.name.toLowerCase().endsWith('.pdf')) {
                                               alert('Faqat PDF fayl tanlash mumkin!');
                                               return;
@@ -3876,7 +3889,7 @@ const App = () => {
                                               }
                                             } catch (err) {
                                               console.error('Upload Error:', err);
-                                              alert('Aloqa xatosi! Internetingizni tekshiring yoki server band bo\'lishi mumkin.');
+                                              alert('Aloqa xatosi!');
                                             } finally {
                                               setUploadingLevelBook(false);
                                             }
@@ -3886,7 +3899,7 @@ const App = () => {
                                     </label>
                                     <input
                                       type="text"
-                                      placeholder="Yoki URL manzil..."
+                                      placeholder="URL manzil..."
                                       className="w-1/3 bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500/50 text-sm"
                                       value={editingLevel.levelBookUrl || ''}
                                       onChange={(e) => setEditingLevel({ ...editingLevel, levelBookUrl: e.target.value })}
@@ -3903,7 +3916,7 @@ const App = () => {
                                 </button>
                               </div>
                               <p className="text-xs text-white/40">
-                                💡 Bu yerga kiritilgan PDF manzil ushbu darajadagi <b>barcha darslarning</b> "Kitob" sahifasida chiqib turadi.
+                                💡 Bu yerga kitob yuklab <b>Saqlash</b> tugmasini bossangiz, u darajadagi barcha darslarda ko'rinadi.
                               </p>
                             </div>
 
