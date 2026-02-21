@@ -40,7 +40,18 @@ app.use(morgan('dev')); // Logging
 app.use(cors()); // Allow all origins for simplicity and to fix CORS errors
 app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({ limit: '100mb', extended: true }));
-app.use('/uploads', express.static('uploads')); // Serve uploaded files statically
+const __dirname = path.resolve();
+const uploadsPath = path.join(__dirname, 'uploads');
+app.use('/uploads', express.static(uploadsPath));
+
+// Custom handler for missing files in /uploads to give better error message
+app.use('/uploads', (req, res) => {
+  res.status(404).json({
+    success: false,
+    message: 'Fayl serverdan topilmadi. Balki u o\'chirib yuborilgan yoki hali yuklanmagan.',
+    path: req.originalUrl
+  });
+});
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGODB_URI)
@@ -181,9 +192,11 @@ app.get('/', (req, res) => {
 
 // 404 Handler
 app.use((req, res) => {
+  console.log(`❌ 404 Not Found: ${req.originalUrl}`);
   res.status(404).json({
     success: false,
-    message: 'Endpoint not found'
+    message: 'Endpoint not found',
+    requestedUrl: req.originalUrl
   });
 });
 

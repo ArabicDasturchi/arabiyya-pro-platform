@@ -6,8 +6,10 @@ import { authMiddleware, adminMiddleware } from '../middleware/auth.js';
 
 const router = express.Router();
 
-// Ensure uploads directory exists with full path
-const uploadDir = 'uploads';
+// Ensure uploads directory exists with absolute path
+const __dirname = path.resolve();
+const uploadDir = path.join(__dirname, 'uploads');
+
 if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
 }
@@ -15,7 +17,7 @@ if (!fs.existsSync(uploadDir)) {
 // Multer storage configuration
 const storage = multer.diskStorage({
     destination(req, file, cb) {
-        cb(null, 'uploads/');
+        cb(null, uploadDir); // Use absolute path here
     },
     filename(req, file, cb) {
         // Safe filename with timestamp
@@ -59,7 +61,8 @@ router.post('/', [authMiddleware, adminMiddleware], (req, res) => {
 
             // Detect protocol (http or https)
             const protocol = req.headers['x-forwarded-proto'] || req.protocol;
-            const fileUrl = `${protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+            const host = req.get('host');
+            const fileUrl = `${protocol}://${host}/uploads/${req.file.filename}`;
 
             console.log('File uploaded successfully:', fileUrl);
             res.json({
