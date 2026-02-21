@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import helmet from 'helmet';
 import compression from 'compression';
 import morgan from 'morgan';
+import path from 'path';
 
 // Import models
 import User from './models/User.js';
