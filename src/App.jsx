@@ -3850,6 +3850,13 @@ const App = () => {
                                           onChange={async (e) => {
                                             const file = e.target.files[0];
                                             if (!file) return;
+
+                                            // Client-side quick check
+                                            if (!file.name.toLowerCase().endsWith('.pdf')) {
+                                              alert('Faqat PDF fayl tanlash mumkin!');
+                                              return;
+                                            }
+
                                             const formData = new FormData();
                                             formData.append('file', file);
                                             try {
@@ -3860,15 +3867,16 @@ const App = () => {
                                                 headers: { 'Authorization': `Bearer ${token}` },
                                                 body: formData
                                               });
+
                                               const data = await res.json();
                                               if (data.success) {
                                                 setEditingLevel({ ...editingLevel, levelBookUrl: data.fileUrl });
                                               } else {
-                                                alert('Xatolik: ' + data.message);
+                                                alert('Yuklashda xatolik: ' + (data.message || 'Noma\'lum xato'));
                                               }
                                             } catch (err) {
-                                              console.error(err);
-                                              alert('Server xatosi: ' + err.message);
+                                              console.error('Upload Error:', err);
+                                              alert('Aloqa xatosi! Internetingizni tekshiring yoki server band bo\'lishi mumkin.');
                                             } finally {
                                               setUploadingLevelBook(false);
                                             }
@@ -4838,6 +4846,12 @@ const App = () => {
                                       onChange={async (e) => {
                                         const file = e.target.files[0];
                                         if (!file) return;
+
+                                        if (!file.name.toLowerCase().endsWith('.pdf')) {
+                                          alert('Faqat PDF fayl tanlash mumkin!');
+                                          return;
+                                        }
+
                                         const formData = new FormData();
                                         formData.append('file', file);
                                         try {
@@ -4848,15 +4862,16 @@ const App = () => {
                                             headers: { 'Authorization': `Bearer ${token}` },
                                             body: formData
                                           });
+
                                           const data = await res.json();
                                           if (data.success) {
                                             setEditLessonData({ ...editLessonData, ebookUrl: data.fileUrl });
                                           } else {
-                                            alert('Xatolik: ' + data.message);
+                                            alert('Yuklashda xatolik: ' + (data.message || 'Noma\'lum xato'));
                                           }
                                         } catch (err) {
-                                          console.error(err);
-                                          alert('Server xatosi: ' + err.message);
+                                          console.error('Upload Error:', err);
+                                          alert('Aloqa xatosi! Internetingizni tekshiring.');
                                         } finally {
                                           setUploadingLessonBook(false);
                                         }
