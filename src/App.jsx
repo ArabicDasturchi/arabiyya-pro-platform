@@ -65,6 +65,8 @@ const App = () => {
   const [editLessonTab, setEditLessonTab] = useState('main');
   const [adminTab, setAdminTab] = useState('dashboard');
   const [adminOrders, setAdminOrders] = useState([]);
+  const [uploadingLevelBook, setUploadingLevelBook] = useState(false);
+  const [uploadingLessonBook, setUploadingLessonBook] = useState(false);
 
   // Alphabet Learning State
   const [alphabetModule, setAlphabetModule] = useState(1);
@@ -3833,41 +3835,46 @@ const App = () => {
                                   </div>
                                 ) : (
                                   <div className="flex-1 flex gap-2">
-                                    <label className="flex-1 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-xl px-4 py-3 text-white cursor-pointer transition-all flex items-center justify-center gap-2">
-                                      <Upload size={18} className="text-blue-400" />
-                                      <span className="text-sm">PDF Yuklash</span>
-                                      <input
-                                        type="file"
-                                        accept=".pdf"
-                                        className="hidden"
-                                        onChange={async (e) => {
-                                          const file = e.target.files[0];
-                                          if (!file) return;
-                                          const formData = new FormData();
-                                          formData.append('file', file);
-                                          try {
-                                            const token = localStorage.getItem('token');
-                                            const originalLabel = e.target.parentElement.innerHTML;
-                                            e.target.parentElement.innerHTML = 'Yuklanmoqda...';
-
-                                            const res = await fetch('https://arabiyya-pro-backend.onrender.com/api/upload', {
-                                              method: 'POST',
-                                              headers: { 'Authorization': `Bearer ${token}` },
-                                              body: formData
-                                            });
-                                            const data = await res.json();
-                                            if (data.success) {
-                                              setEditingLevel({ ...editingLevel, levelBookUrl: data.fileUrl });
-                                            } else {
-                                              alert('Xatolik: ' + data.message);
-                                              e.target.parentElement.innerHTML = originalLabel;
+                                    <label className={`flex-1 bg-white/5 ${uploadingLevelBook ? 'opacity-50 cursor-wait' : 'hover:bg-white/10 cursor-pointer'} border border-white/10 hover:border-white/20 rounded-xl px-4 py-3 text-white transition-all flex items-center justify-center gap-2`}>
+                                      {uploadingLevelBook ? (
+                                        <Loader2 size={18} className="animate-spin text-blue-400" />
+                                      ) : (
+                                        <Upload size={18} className="text-blue-400" />
+                                      )}
+                                      <span className="text-sm">{uploadingLevelBook ? 'Yuklanmoqda...' : 'PDF Yuklash'}</span>
+                                      {!uploadingLevelBook && (
+                                        <input
+                                          type="file"
+                                          accept=".pdf"
+                                          className="hidden"
+                                          onChange={async (e) => {
+                                            const file = e.target.files[0];
+                                            if (!file) return;
+                                            const formData = new FormData();
+                                            formData.append('file', file);
+                                            try {
+                                              setUploadingLevelBook(true);
+                                              const token = localStorage.getItem('token');
+                                              const res = await fetch('https://arabiyya-pro-backend.onrender.com/api/upload', {
+                                                method: 'POST',
+                                                headers: { 'Authorization': `Bearer ${token}` },
+                                                body: formData
+                                              });
+                                              const data = await res.json();
+                                              if (data.success) {
+                                                setEditingLevel({ ...editingLevel, levelBookUrl: data.fileUrl });
+                                              } else {
+                                                alert('Xatolik: ' + data.message);
+                                              }
+                                            } catch (err) {
+                                              console.error(err);
+                                              alert('Server xatosi: ' + err.message);
+                                            } finally {
+                                              setUploadingLevelBook(false);
                                             }
-                                          } catch (err) {
-                                            console.error(err);
-                                            alert('Server xatosi');
-                                          }
-                                        }}
-                                      />
+                                          }}
+                                        />
+                                      )}
                                     </label>
                                     <input
                                       type="text"
@@ -4816,44 +4823,46 @@ const App = () => {
                               </div>
                             ) : (
                               <div className="flex gap-2">
-                                <label className="flex-1 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-xl px-4 py-3 text-white cursor-pointer transition-all flex items-center justify-center gap-2">
-                                  <Upload size={18} className="text-blue-400" />
-                                  <span className="text-sm">PDF Yuklash</span>
-                                  <input
-                                    type="file"
-                                    accept=".pdf"
-                                    className="hidden"
-                                    onChange={async (e) => {
-                                      const file = e.target.files[0];
-                                      if (!file) return;
-
-                                      // Upload logic
-                                      const formData = new FormData();
-                                      formData.append('file', file);
-
-                                      try {
-                                        const token = localStorage.getItem('token');
-                                        // Show loading if needed
-                                        e.target.parentElement.innerHTML = '<span class="text-xs">Yuklanmoqda...</span>';
-
-                                        const res = await fetch('https://arabiyya-pro-backend.onrender.com/api/upload', {
-                                          method: 'POST',
-                                          body: formData
-                                          // No Content-Type header needed for FormData, functionality handled by browser
-                                        });
-                                        const data = await res.json();
-
-                                        if (data.success) {
-                                          setEditLessonData({ ...editLessonData, ebookUrl: data.fileUrl });
-                                        } else {
-                                          alert('Xatolik: ' + data.message);
+                                <label className={`flex-1 bg-white/5 ${uploadingLessonBook ? 'opacity-50 cursor-wait' : 'hover:bg-white/10 cursor-pointer'} border border-white/10 hover:border-white/20 rounded-xl px-4 py-3 text-white transition-all flex items-center justify-center gap-2`}>
+                                  {uploadingLessonBook ? (
+                                    <Loader2 size={18} className="animate-spin text-blue-400" />
+                                  ) : (
+                                    <Upload size={18} className="text-blue-400" />
+                                  )}
+                                  <span className="text-sm">{uploadingLessonBook ? 'Yuklanmoqda...' : 'PDF Yuklash'}</span>
+                                  {!uploadingLessonBook && (
+                                    <input
+                                      type="file"
+                                      accept=".pdf"
+                                      className="hidden"
+                                      onChange={async (e) => {
+                                        const file = e.target.files[0];
+                                        if (!file) return;
+                                        const formData = new FormData();
+                                        formData.append('file', file);
+                                        try {
+                                          setUploadingLessonBook(true);
+                                          const token = localStorage.getItem('token');
+                                          const res = await fetch('https://arabiyya-pro-backend.onrender.com/api/upload', {
+                                            method: 'POST',
+                                            headers: { 'Authorization': `Bearer ${token}` },
+                                            body: formData
+                                          });
+                                          const data = await res.json();
+                                          if (data.success) {
+                                            setEditLessonData({ ...editLessonData, ebookUrl: data.fileUrl });
+                                          } else {
+                                            alert('Xatolik: ' + data.message);
+                                          }
+                                        } catch (err) {
+                                          console.error(err);
+                                          alert('Server xatosi: ' + err.message);
+                                        } finally {
+                                          setUploadingLessonBook(false);
                                         }
-                                      } catch (err) {
-                                        console.error(err);
-                                        alert('Server xatosi');
-                                      }
-                                    }}
-                                  />
+                                      }}
+                                    />
+                                  )}
                                 </label>
                                 {/* Fallback text input */}
                                 <input

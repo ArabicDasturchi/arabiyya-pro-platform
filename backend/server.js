@@ -38,8 +38,8 @@ app.use(helmet()); // Security headers
 app.use(compression()); // Compress responses
 app.use(morgan('dev')); // Logging
 app.use(cors()); // Allow all origins for simplicity and to fix CORS errors
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '100mb' }));
+app.use(express.urlencoded({ limit: '100mb', extended: true }));
 app.use('/uploads', express.static('uploads')); // Serve uploaded files statically
 
 // MongoDB Connection

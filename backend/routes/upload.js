@@ -33,30 +33,42 @@ const upload = multer({
         if (extname && mimetype) {
             return cb(null, true);
         } else {
-            cb('Error: Faqat PDF fayllar!');
+            cb(new Error('Faqat PDF fayllar yuklash mumkin!'));
         }
     }
 });
 
 // @route   POST /api/upload
 // @desc    Upload PDF file
-router.post('/', [authMiddleware, adminMiddleware], upload.single('file'), (req, res) => {
-    try {
-        if (!req.file) {
-            return res.status(400).json({ success: false, message: 'Fayl tanlanmadi' });
+router.post('/', [authMiddleware, adminMiddleware], (req, res) => {
+    upload.single('file')(req, res, (err) => {
+        if (err instanceof multer.MulterError) {
+            // A Multer error occurred when uploading.
+            return res.status(400).json({ success: false, message: `Yuklashda xatolik: ${err.message}` });
+        } else if (err) {
+            // An unknown error occurred when uploading.
+            return res.status(400).json({ success: false, message: err.message });
         }
 
-        // Return full URL
-        const fileUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+        try {
+            if (!req.file) {
+                return res.status(400).json({ success: false, message: 'Fayl tanlanmadi' });
+            }
 
-        res.json({
-            success: true,
-            fileUrl
-        });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ success: false, message: 'Server xatosi' });
-    }
+            // Return full URL
+            // Handle proxy protocol (https on Render/Production)
+            const protocol = req.headers['x-forwarded-proto'] || req.protocol;
+            const fileUrl = `${protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+
+            res.json({
+                success: true,
+                fileUrl
+            });
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ success: false, message: 'Server xatosi' });
+        }
+    });
 });
 
 export default router;
