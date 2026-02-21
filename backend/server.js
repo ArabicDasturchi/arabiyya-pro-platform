@@ -6,6 +6,7 @@ import helmet from 'helmet';
 import compression from 'compression';
 import morgan from 'morgan';
 import path from 'path';
+import fs from 'fs';
 
 // Import models
 import User from './models/User.js';
@@ -24,116 +25,47 @@ import adminRoutes from './routes/admin.js';
 import submissionRoutes from './routes/submissions.js';
 import uploadRoutes from './routes/upload.js';
 
-// Import seed function
-
-
 // Load environment variables
 dotenv.config();
 
-// Initialize Express
 const app = express();
 const PORT = process.env.PORT || 5000;
+const __dirname = path.resolve();
+
+// Ensure uploads directory exists
+const uploadsPath = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsPath)) {
+  fs.mkdirSync(uploadsPath, { recursive: true });
+}
 
 // Middleware
-app.use(helmet()); // Security headers
-app.use(compression()); // Compress responses
-app.use(morgan('dev')); // Logging
-app.use(cors()); // Allow all origins for simplicity and to fix CORS errors
+app.use(helmet({
+  crossOriginResourcePolicy: false, // Allow loading images/PDFs from our own server
+}));
+app.use(compression());
+app.use(morgan('dev'));
+app.use(cors());
 app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({ limit: '100mb', extended: true }));
-const __dirname = path.resolve();
-const uploadsPath = path.join(__dirname, 'uploads');
+
+// Serve static files
 app.use('/uploads', express.static(uploadsPath));
 
-// Custom handler for missing files in /uploads to give better error message
+// Custom handler for missing files in /uploads
 app.use('/uploads', (req, res) => {
   res.status(404).json({
     success: false,
-    message: 'Fayl serverdan topilmadi. Balki u o\'chirib yuborilgan yoki hali yuklanmagan.',
+    message: 'Fayl serverdan topilmadi. Iltimos, qaytadan yuklang (Pushdan so\'ng fayllar o\'chadi).',
     path: req.originalUrl
   });
 });
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGODB_URI)
-  .then(() => {
-    console.log('✅ MongoDB connected successfully');
-    console.log(`📊 Database: ${mongoose.connection.name}`);
-  })
-  .catch((err) => {
-    console.error('❌ MongoDB connection error:', err);
-    process.exit(1);
-  });
-
-// Temporary Admin Promotion Endpoint (Placed at top for priority)
-app.get('/api/make-admin', async (req, res) => {
-  const { id } = req.query;
-  if (!id) return res.status(400).json({ success: false, message: 'User ID required (use ?id=...)' });
-
-  try {
-    const user = await User.findById(id);
-    if (!user) return res.status(404).json({ success: false, message: 'User not found with ID: ' + id });
-
-    user.role = 'admin';
-    await user.save();
-    console.log(`User ${user.email} (ID: ${id}) promoted to ADMIN via API`);
-    res.json({ success: true, message: `User ${user.email} is now an ADMIN!` });
-  } catch (error) {
-    console.error('Make Admin error:', error);
-    res.status(500).json({ success: false, error: error.message });
-  }
-});
-
-// Temporary Debug Endpoint: List Users
-app.get('/api/debug/users', async (req, res) => {
-  try {
-    const users = await User.find({}, 'username email role');
-    res.json(users);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+  .then(() => console.log('✅ MongoDB connected'))
+  .catch((err) => console.error('❌ MongoDB error:', err));
 
 // Routes
-
-// ==========================================
-// PAYMENT & ORDER ROUTES (Priority)
-// ==========================================
-
-// Create Purchase Order
-app.post('/api/purchase', async (req, res) => {
-  try {
-    const token = req.headers.authorization?.split(' ')[1];
-    if (!token) return res.status(401).json({ success: false, message: 'Unauthorized' });
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const userId = decoded.id;
-
-    const { levelId, amount, paymentType, transactionProof } = req.body;
-
-    const user = await User.findById(userId);
-    if (user.purchasedLevels && user.purchasedLevels.includes(levelId)) {
-      return res.status(400).json({ success: false, message: 'bu daraja allaqachon sotib olingan' });
-    }
-
-    const newOrder = new Order({
-      user: userId,
-      levelId,
-      amount,
-      paymentType,
-      transactionProof
-    });
-
-    await newOrder.save();
-    res.status(201).json({ success: true, message: 'Buyurtma yaratildi', order: newOrder });
-
-  } catch (error) {
-    console.error('Purchase Error:', error);
-    res.status(500).json({ success: false, message: 'Server xatosi' });
-  }
-});
-
-
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/levels', levelRoutes);
@@ -145,83 +77,21 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/submissions', submissionRoutes);
 app.use('/api/upload', uploadRoutes);
 
-
-
-// Duplicate route removed
-
-// Handle favicon.ico requests to prevent 404 logs
-app.get('/favicon.ico', (req, res) => res.status(204).end());
-
-// Health check endpoint
-app.get('/api/health', (req, res) => {
-  res.json({
-    status: 'OK',
-    message: 'Arabiyya Pro API is running',
-    timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV
-  });
-});
-
-// Root endpoint
-app.get('/', (req, res) => {
-  res.json({
-    message: 'Welcome to Arabiyya Pro API',
-    version: '1.0.0',
-    endpoints: {
-      health: '/api/health',
-      auth: '/api/auth',
-      users: '/api/users',
-      levels: '/api/levels',
-      lessons: '/api/lessons',
-      tests: '/api/tests',
-      certificates: '/api/certificates',
-      ai: '/api/ai'
-    }
-  });
-});
-
-
-
-// Error Handler
-
-
-// ==========================================
-// PAYMENT & ORDER ROUTES
-// ==========================================
-
-
+// Root & Health
+app.get('/api/health', (req, res) => res.json({ status: 'OK' }));
+app.get('/', (req, res) => res.json({ message: 'Arabiyya Pro API is running' }));
 
 // 404 Handler
 app.use((req, res) => {
-  console.log(`❌ 404 Not Found: ${req.originalUrl}`);
-  res.status(404).json({
-    success: false,
-    message: 'Endpoint not found',
-    requestedUrl: req.originalUrl
-  });
+  res.status(404).json({ success: false, message: 'Endpoint not found' });
 });
 
 // Global Error Handler
 app.use((err, req, res, next) => {
-  console.error('Error:', err);
-  res.status(err.status || 500).json({
-    success: false,
-    message: err.message || 'Internal server error',
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
-  });
+  console.error(err);
+  res.status(500).json({ success: false, message: 'Serverda xatolik yuz berdi' });
 });
 
-// Start server
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`🌍 Environment: ${process.env.NODE_ENV}`);
-  console.log(`📱 Frontend URL: ${process.env.FRONTEND_URL}`);
-  console.log(`\n✨ Arabiyya Pro Backend is ready!\n`);
-});
-
-// Handle unhandled promise rejections
-process.on('unhandledRejection', (err) => {
-  console.error('Unhandled Promise Rejection:', err);
-  // Close server & exit process
-  process.exit(1);
 });
