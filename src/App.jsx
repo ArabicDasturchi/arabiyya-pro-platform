@@ -67,6 +67,7 @@ const App = () => {
   const [adminOrders, setAdminOrders] = useState([]);
   const [uploadingLevelBook, setUploadingLevelBook] = useState(false);
   const [uploadingLessonBook, setUploadingLessonBook] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // Alphabet Learning State
   const [alphabetModule, setAlphabetModule] = useState(1);
