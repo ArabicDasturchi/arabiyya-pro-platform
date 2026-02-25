@@ -2068,13 +2068,20 @@ const App = () => {
                             </button>
                           );
 
+                          // URL doim absolyut — mobilda ham ishlaydi
+                          const finalUrl = rawUrl.startsWith('http')
+                            ? rawUrl
+                            : `https://arabiyya-pro-backend.onrender.com/${rawUrl.replace(/^\//, '')}`;
+
                           return (
-                            <button
-                              onClick={() => handleDownloadBook(rawUrl)}
+                            <a
+                              href={finalUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
                               className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-lg transition-all active:scale-95 shadow-xl shadow-blue-600/30"
                             >
                               <Download size={24} /> Yuklab Olish (PDF)
-                            </button>
+                            </a>
                           );
                         })()}
                       </div>

@@ -1,34 +1,28 @@
 import express from 'express';
 import multer from 'multer';
-import multerS3 from 'multer-s3';
-import { S3Client } from '@aws-sdk/client-s3';
 import path from 'path';
+import fs from 'fs';
 import { authMiddleware, adminMiddleware } from '../middleware/auth.js';
 
 const router = express.Router();
 
-// Backblaze B2 — S3-compatible client
-const s3 = new S3Client({
-    endpoint: `https://${process.env.B2_ENDPOINT}`,
-    region: process.env.B2_BUCKET_REGION || 'us-east-005',
-    credentials: {
-        accessKeyId: process.env.B2_KEY_ID,
-        secretAccessKey: process.env.B2_APPLICATION_KEY
-    },
-    forcePathStyle: false
+// Uploads papkasini yaratish
+const uploadsPath = path.join(process.cwd(), 'uploads');
+if (!fs.existsSync(uploadsPath)) {
+    fs.mkdirSync(uploadsPath, { recursive: true });
+}
+
+// Disk storage — oddiy va ishonchli
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => cb(null, uploadsPath),
+    filename: (req, file, cb) => {
+        const ext = path.extname(file.originalname).toLowerCase();
+        cb(null, `kitob-${Date.now()}${ext}`);
+    }
 });
 
-// Multer + Backblaze B2 storage
-const uploadMiddleware = multer({
-    storage: multerS3({
-        s3: s3,
-        bucket: process.env.B2_BUCKET_NAME,
-        contentType: multerS3.AUTO_CONTENT_TYPE,
-        key: function (req, file, cb) {
-            const ext = path.extname(file.originalname).toLowerCase();
-            cb(null, `books/kitob-${Date.now()}${ext}`);
-        }
-    }),
+const upload = multer({
+    storage,
     limits: { fileSize: 200 * 1024 * 1024 }, // 200MB
     fileFilter(req, file, cb) {
         if (file.originalname.toLowerCase().endsWith('.pdf')) {
@@ -41,37 +35,23 @@ const uploadMiddleware = multer({
 
 // @route POST /api/upload
 router.post('/', [authMiddleware, adminMiddleware], (req, res) => {
-    uploadMiddleware(req, res, (err) => {
+    upload(req, res, (err) => {
         if (err instanceof multer.MulterError) {
-            console.error('Multer Error:', err);
             return res.status(400).json({ success: false, message: `Fayl yuklashda xatolik: ${err.message}` });
         } else if (err) {
-            console.error('Upload Error:', err);
             return res.status(400).json({ success: false, message: err.message });
         }
 
-        try {
-            if (!req.file) {
-                return res.status(400).json({
-                    success: false,
-                    message: 'Fayl serverga yetib kelmadi.'
-                });
-            }
-
-            // multer-s3 avtomatik location hosil qiladi
-            // Agar location bo'lmasa, qo'lda URL yasaymiz
-            const fileUrl = req.file.location
-                || `https://${process.env.B2_BUCKET_NAME}.s3.${process.env.B2_BUCKET_REGION}.backblazeb2.com/${req.file.key}`;
-
-            console.log('✅ B2 Upload OK:', fileUrl);
-            console.log('   key:', req.file.key);
-            console.log('   location:', req.file.location);
-
-            res.json({ success: true, fileUrl });
-        } catch (error) {
-            console.error('Server error:', error);
-            res.status(500).json({ success: false, message: 'Serverda xatolik: ' + error.message });
+        if (!req.file) {
+            return res.status(400).json({ success: false, message: 'Fayl serverga kelmadi.' });
         }
+
+        // To'liq absolyut URL — smartfon va noutbukda ham ishlaydi
+        const BACKEND = process.env.BACKEND_URL || 'https://arabiyya-pro-backend.onrender.com';
+        const fileUrl = `${BACKEND}/uploads/${req.file.filename}`;
+
+        console.log('✅ Fayl yuklandi:', fileUrl);
+        res.json({ success: true, fileUrl });
     });
 });
 

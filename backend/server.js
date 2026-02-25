@@ -8,6 +8,9 @@ import morgan from 'morgan';
 import path from 'path';
 import fs from 'fs';
 
+// Load environment variables — birinchi bo'lishi kerak!
+dotenv.config();
+
 // Import models
 import User from './models/User.js';
 import Order from './models/Order.js';
@@ -26,22 +29,35 @@ import submissionRoutes from './routes/submissions.js';
 import uploadRoutes from './routes/upload.js';
 import downloadRoutes from './routes/download.js';
 
-// Load environment variables
-dotenv.config();
-
 const app = express();
 const PORT = process.env.PORT || 5000;
-const __dirname = path.resolve();
+
+// Uploads papkasi
+const uploadsPath = path.join(process.cwd(), 'uploads');
+if (!fs.existsSync(uploadsPath)) {
+  fs.mkdirSync(uploadsPath, { recursive: true });
+}
+
+// CORS — barcha qurilmalar (smartfon, noutbuk, planshet)
+const corsOptions = {
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  exposedHeaders: ['Content-Disposition', 'Content-Length'],
+};
+app.use(cors(corsOptions));
 
 // Middleware
 app.use(helmet({
-  crossOriginResourcePolicy: false, // Cloudinary URLlarni yuklashga ruxsat
+  crossOriginResourcePolicy: false,
 }));
 app.use(compression());
 app.use(morgan('dev'));
-app.use(cors());
 app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({ limit: '100mb', extended: true }));
+
+// Static fayllar — PDF kitoblar (smartfon va noutbukda ishlaydi)
+app.use('/uploads', cors(corsOptions), express.static(uploadsPath));
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGODB_URI)
@@ -62,15 +78,15 @@ app.use('/api/upload', uploadRoutes);
 app.use('/api/download', downloadRoutes);
 
 // Root & Health
-app.get('/api/health', (req, res) => res.json({ status: 'OK' }));
+app.get('/api/health', (req, res) => res.json({ status: 'OK', time: new Date().toISOString() }));
 app.get('/', (req, res) => res.json({ message: 'Arabiyya Pro API is running' }));
 
-// 404 Handler
+// 404
 app.use((req, res) => {
   res.status(404).json({ success: false, message: 'Endpoint not found' });
 });
 
-// Global Error Handler
+// Global Error
 app.use((err, req, res, next) => {
   console.error(err);
   res.status(500).json({ success: false, message: 'Serverda xatolik yuz berdi' });
