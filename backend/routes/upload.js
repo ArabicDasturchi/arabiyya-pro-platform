@@ -1,54 +1,50 @@
 import express from 'express';
 import multer from 'multer';
+import multerS3 from 'multer-s3';
+import { S3Client } from '@aws-sdk/client-s3';
 import path from 'path';
-import fs from 'fs';
 import { authMiddleware, adminMiddleware } from '../middleware/auth.js';
 
 const router = express.Router();
 
-// Ensure uploads directory exists with absolute path
-const __dirname = path.resolve();
-const uploadDir = path.join(__dirname, 'uploads');
-
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-// Multer storage configuration
-const storage = multer.diskStorage({
-    destination(req, file, cb) {
-        cb(null, uploadDir); // Use absolute path here
-    },
-    filename(req, file, cb) {
-        // Safe filename with timestamp
-        const ext = path.extname(file.originalname).toLowerCase();
-        cb(null, `kitob-${Date.now()}${ext}`);
+// Backblaze B2 — S3-compatible client
+const s3 = new S3Client({
+    endpoint: `https://${process.env.B2_ENDPOINT}`,
+    region: process.env.B2_BUCKET_REGION || 'us-west-004',
+    credentials: {
+        accessKeyId: process.env.B2_KEY_ID,
+        secretAccessKey: process.env.B2_APPLICATION_KEY
     }
 });
 
+// Multer + Backblaze B2 storage
 const upload = multer({
-    storage,
-    limits: { fileSize: 200 * 1024 * 1024 }, // Limit increased to 200MB
+    storage: multerS3({
+        s3: s3,
+        bucket: process.env.B2_BUCKET_NAME,
+        contentType: multerS3.AUTO_CONTENT_TYPE,
+        acl: 'public-read',
+        key: function (req, file, cb) {
+            const ext = path.extname(file.originalname).toLowerCase();
+            cb(null, `books/kitob-${Date.now()}${ext}`);
+        }
+    }),
+    limits: { fileSize: 200 * 1024 * 1024 }, // 200MB
     fileFilter(req, file, cb) {
-        const filetypes = /pdf/;
-        const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-        // More flexible mimetype check
-        const mimetype = filetypes.test(file.mimetype) || file.mimetype === 'application/octet-stream';
-
-        if (extname) {
-            return cb(null, true);
+        if (file.originalname.toLowerCase().endsWith('.pdf')) {
+            cb(null, true);
         } else {
             cb(new Error('Faqat PDF (.pdf) formatidagi fayllarni yuklash mumkin!'));
         }
     }
 }).single('file');
 
-// @route   POST /api/upload
+// @route POST /api/upload
 router.post('/', [authMiddleware, adminMiddleware], (req, res) => {
     upload(req, res, (err) => {
         if (err instanceof multer.MulterError) {
             console.error('Multer Error:', err);
-            return res.status(400).json({ success: false, message: `Fayl yuklashda xatolik (Multer): ${err.message}` });
+            return res.status(400).json({ success: false, message: `Fayl yuklashda xatolik: ${err.message}` });
         } else if (err) {
             console.error('Upload Error:', err);
             return res.status(400).json({ success: false, message: err.message });
@@ -56,15 +52,13 @@ router.post('/', [authMiddleware, adminMiddleware], (req, res) => {
 
         try {
             if (!req.file) {
-                return res.status(400).json({ success: false, message: 'Filingiz serverga yetib kelmadi. Iltimos, qayta urinib ko\'ring.' });
+                return res.status(400).json({ success: false, message: 'Fayl serverga yetib kelmadi. Iltimos, qayta urinib ko\'ring.' });
             }
 
-            // Detect protocol (http or https)
-            const protocol = req.headers['x-forwarded-proto'] || req.protocol;
-            const host = req.get('host');
-            const fileUrl = `${protocol}://${host}/uploads/${req.file.filename}`;
+            // Backblaze B2 public URL
+            const fileUrl = req.file.location;
 
-            console.log('File uploaded successfully:', fileUrl);
+            console.log('✅ Fayl Backblaze B2-ga yuklandi:', fileUrl);
             res.json({
                 success: true,
                 fileUrl

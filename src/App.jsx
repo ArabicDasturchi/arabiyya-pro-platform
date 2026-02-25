@@ -1168,22 +1168,22 @@ const App = () => {
 
       {/* NAVIGATION BAR */}
       <nav className="fixed top-0 w-full z-50 backdrop-blur-2xl bg-white/5 border-b border-white/10 shadow-2xl">
-        <div className="max-w-7xl mx-auto px-6 py-4">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 py-3 sm:py-4">
           <div className="flex justify-between items-center">
 
             {/* Logo */}
-            <div onClick={() => setView('home')} className="flex items-center gap-3 cursor-pointer group">
+            <div onClick={() => setView('home')} className="flex items-center gap-2 sm:gap-3 cursor-pointer group">
               <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl blur group-hover:blur-xl transition-all duration-300"></div>
-                <div className="relative w-14 h-14 bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-2xl group-hover:scale-110 transition-all duration-300">
-                  <BookOpen size={28} className="text-white" strokeWidth={2.5} />
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl sm:rounded-2xl blur group-hover:blur-xl transition-all duration-300"></div>
+                <div className="relative w-10 h-10 sm:w-14 sm:h-14 bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-600 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-2xl group-hover:scale-110 transition-all duration-300">
+                  <BookOpen size={20} className="text-white sm:w-7 sm:h-7" strokeWidth={2.5} />
                 </div>
               </div>
               <div className="flex flex-col">
-                <span className="text-2xl font-black bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent">
+                <span className="text-lg sm:text-2xl font-black bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent">
                   Arabiyya Pro
                 </span>
-                <span className="text-[10px] font-bold text-white/40 -mt-1 tracking-wider">AI-POWERED PLATFORM</span>
+                <span className="hidden sm:block text-[10px] font-bold text-white/40 -mt-1 tracking-wider">AI-POWERED PLATFORM</span>
               </div>
             </div>
 
@@ -1210,72 +1210,78 @@ const App = () => {
 
             {/* User Section */}
             <div className="flex items-center gap-4">
-              {!user ? (
-                <button
-                  onClick={() => setView('auth')}
-                  className="relative group"
-                >
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl blur group-hover:blur-lg transition-all duration-300"></div>
-                  <div className="relative bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-3 rounded-xl font-bold text-sm hover:scale-105 transition-all duration-300 shadow-xl flex items-center gap-2">
-                    <Rocket size={18} />
-                    Boshlash
-                  </div>
-                </button>
-              ) : (
-                <div className="flex items-center gap-3">
-                  <div
-                    onClick={() => setView('profile')}
-                    className="flex items-center gap-3 bg-white/10 backdrop-blur-xl px-4 py-2.5 rounded-xl border border-white/20 cursor-pointer hover:bg-white/20 transition-all group"
-                  >
-                    <div className="w-9 h-9 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-all">
-                      <User size={18} className="text-white" />
-                    </div>
-                    <div className="hidden sm:block">
-                      <div className="text-sm font-bold">{user.name}</div>
-                      <div className="text-[10px] text-white/50">{user.level || 'Yangi'}</div>
-                    </div>
-                  </div>
+              {/* User Section */}
+              <div className="flex items-center gap-2">
+                {!user ? (
                   <button
-                    onClick={() => {
-                      setUser(null);
-                      setView('home');
-                      setCompletedLessons([]);
-                      setCompletedLevels([]);
-                      setCertificates([]);
-                    }}
-                    className="p-2.5 hover:bg-white/10 rounded-xl transition-all border border-transparent hover:border-white/20"
+                    onClick={() => setView('auth')}
+                    className="relative group"
                   >
-                    <LogOut size={20} />
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl blur group-hover:blur-lg transition-all duration-300"></div>
+                    <div className="relative bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 sm:px-6 py-2.5 rounded-xl font-bold text-sm hover:scale-105 transition-all duration-300 shadow-xl flex items-center gap-2">
+                      <Rocket size={16} />
+                      <span className="hidden xs:inline sm:inline">Boshlash</span>
+                    </div>
                   </button>
-                  {user.role === 'admin' && (
-                    <button
-                      onClick={() => setView('admin')}
-                      className="p-2.5 bg-red-500/20 text-red-400 hover:bg-red-500/30 rounded-xl transition-all border border-red-500/20"
-                      title="Admin Panel"
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <div
+                      onClick={() => setView('profile')}
+                      className="flex items-center gap-2 bg-white/10 backdrop-blur-xl px-2 sm:px-4 py-2 rounded-xl border border-white/20 cursor-pointer hover:bg-white/20 transition-all group"
                     >
-                      <Shield size={20} />
+                      <div className="w-8 h-8 sm:w-9 sm:h-9 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-all">
+                        <User size={16} className="text-white" />
+                      </div>
+                      <div className="hidden sm:block">
+                        <div className="text-sm font-bold">{user.name}</div>
+                        <div className="text-[10px] text-white/50">{user.level || 'Yangi'}</div>
+                      </div>
+                    </div>
+                    {user.role === 'admin' && (
+                      <button
+                        onClick={() => { setView('admin'); setMobileMenuOpen(false); }}
+                        className="p-2 bg-red-500/20 text-red-400 hover:bg-red-500/30 rounded-xl transition-all border border-red-500/20"
+                        title="Admin Panel"
+                      >
+                        <Shield size={18} />
+                      </button>
+                    )}
+                    <button
+                      onClick={() => {
+                        localStorage.removeItem('token');
+                        setUser(null);
+                        setView('home');
+                        setCompletedLessons([]);
+                        setCompletedLevels([]);
+                        setCertificates([]);
+                      }}
+                      className="hidden sm:flex p-2 hover:bg-white/10 rounded-xl transition-all"
+                      title="Chiqish"
+                    >
+                      <LogOut size={18} />
                     </button>
-                  )}
-                </div>
-              )}
+                  </div>
+                )}
 
-              {/* Mobile Menu Button */}
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="md:hidden p-2.5 hover:bg-white/10 rounded-xl transition-all border border-transparent hover:border-white/20"
-              >
-                <Menu size={24} />
-              </button>
+                {/* Mobile Menu Button */}
+                <button
+                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                  className="md:hidden p-2 hover:bg-white/10 rounded-xl transition-all"
+                >
+                  {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+                </button>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Mobile Menu Dropdown */}
+        {/* Mobile Menu Dropdown — To'liq menyu */}
         {mobileMenuOpen && (
-          <div className="md:hidden bg-white/5 backdrop-blur-2xl border-t border-white/10 p-6 space-y-3">
+          <div className="md:hidden bg-black/40 backdrop-blur-2xl border-t border-white/10 py-4 px-4 space-y-2">
             {[
               { label: 'Kurslar', view: 'levels', icon: GraduationCap },
               { label: 'Sertifikatlar', view: 'certificates', icon: Award },
+              { label: 'Profil', view: 'profile', icon: User },
               { label: 'Yordam', view: 'help', icon: HelpCircle }
             ].map((item) => (
               <button
@@ -1284,18 +1290,44 @@ const App = () => {
                   setView(item.view);
                   setMobileMenuOpen(false);
                 }}
-                className="flex items-center gap-3 w-full text-left px-4 py-3 rounded-xl font-bold text-sm text-white/70 hover:text-white hover:bg-white/10 transition-all"
+                className={`flex items-center gap-3 w-full text-left px-4 py-3.5 rounded-xl font-bold text-sm transition-all ${view === item.view
+                    ? 'bg-blue-500/20 text-blue-400 border border-blue-500/20'
+                    : 'text-white/70 hover:text-white hover:bg-white/10'
+                  }`}
               >
                 <item.icon size={20} />
                 {item.label}
               </button>
             ))}
+            {user?.role === 'admin' && (
+              <button
+                onClick={() => { setView('admin'); setMobileMenuOpen(false); }}
+                className="flex items-center gap-3 w-full text-left px-4 py-3.5 rounded-xl font-bold text-sm text-red-400 bg-red-500/10 border border-red-500/20"
+              >
+                <Shield size={20} />
+                Admin Panel
+              </button>
+            )}
+            {user && (
+              <button
+                onClick={() => {
+                  localStorage.removeItem('token');
+                  setUser(null);
+                  setView('home');
+                  setMobileMenuOpen(false);
+                }}
+                className="flex items-center gap-3 w-full text-left px-4 py-3.5 rounded-xl font-bold text-sm text-white/50 hover:text-white hover:bg-white/10"
+              >
+                <LogOut size={20} />
+                Chiqish
+              </button>
+            )}
           </div>
         )}
       </nav>
 
       {/* MAIN CONTENT */}
-      < main className="relative pt-32 pb-20 px-6 max-w-7xl mx-auto min-h-screen" >
+      <main className="relative pt-24 sm:pt-32 pb-20 px-3 sm:px-6 max-w-7xl mx-auto min-h-screen">
 
         {/* ============================================ */}
         {/* HOME PAGE */}

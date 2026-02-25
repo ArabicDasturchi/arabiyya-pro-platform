@@ -32,33 +32,15 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const __dirname = path.resolve();
 
-// Ensure uploads directory exists
-const uploadsPath = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadsPath)) {
-  fs.mkdirSync(uploadsPath, { recursive: true });
-}
-
 // Middleware
 app.use(helmet({
-  crossOriginResourcePolicy: false, // Allow loading images/PDFs from our own server
+  crossOriginResourcePolicy: false, // Cloudinary URLlarni yuklashga ruxsat
 }));
 app.use(compression());
 app.use(morgan('dev'));
 app.use(cors());
 app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({ limit: '100mb', extended: true }));
-
-// Serve static files
-app.use('/uploads', express.static(uploadsPath));
-
-// Custom handler for missing files in /uploads
-app.use('/uploads', (req, res) => {
-  res.status(404).json({
-    success: false,
-    message: 'Fayl serverdan topilmadi. Iltimos, qaytadan yuklang (Pushdan so\'ng fayllar o\'chadi).',
-    path: req.originalUrl
-  });
-});
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGODB_URI)
