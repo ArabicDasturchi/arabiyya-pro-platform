@@ -374,6 +374,33 @@ const App = () => {
     }
   };
 
+  const handleCleanupLinks = async () => {
+    if (!window.confirm("Barcha buzilgan (localhost va /book-) linklarni tozalashni xohlaysizmi? Bu darsliklarni qayta yuklashni talab qilishi mumkin.")) return;
+
+    try {
+      setLoading(true);
+      const token = localStorage.getItem('token');
+      const res = await fetch('https://arabiyya-pro-backend.onrender.com/api/admin/cleanup-links', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert(data.message);
+        fetchLevels(); // Refresh UI
+      } else {
+        alert("Xatolik: " + data.message);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Server bilan aloqa xatosi");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSaveLevelSettings = async () => {
     if (!editingLevel) return;
     try {
@@ -4234,9 +4261,31 @@ const App = () => {
                             </button>
                           </div>
                         </div>
+
+                        {/* Section 4: Maintenance */}
+                        <div className="bg-red-500/5 p-6 rounded-2xl border border-red-500/10">
+                          <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+                            <Zap size={20} className="text-red-400" />
+                            Tizim Tozalash
+                          </h3>
+                          <p className="text-sm text-white/50 mb-6">
+                            Agar darsliklar (PDF) ochilmasa yoki "localhost" linklari qolib ketgan bo'lsa, ushbu tozalash amalidan foydalaning. Bu barcha dars va darajalardagi buzilgan linklarni o'chiradi. Shundan so'ng kitoblarni qayta yuklashingiz kerak bo'ladi.
+                          </p>
+                          <button
+                            onClick={handleCleanupLinks}
+                            className={`w-full py-4 bg-red-600 hover:bg-red-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-red-500/20 flex items-center justify-center gap-2 ${loading ? 'opacity-50 cursor-wait' : ''}`}
+                            disabled={loading}
+                          >
+                            <Trash2 size={20} />
+                            {loading ? 'Tozalanmoqda...' : 'Barcha Buzilgan Linklarni Tozalash'}
+                          </button>
+                        </div>
                       </div>
                     )}
 
+                    <div className="text-center pt-10 text-white/20 text-xs font-mono uppercase tracking-widest bg-white/5 py-4 rounded-xl border border-white/5">
+                      Arabiyya Pro v1.2.0 • Stable Release
+                    </div>
                   </>
                 ) : (
                   <div className="text-center py-24">
@@ -4244,14 +4293,11 @@ const App = () => {
                     <p className="text-white/40 font-bold">Ma'lumotlar yuklanmoqda...</p>
                   </div>
                 )}
-
               </div>
-
             </div>
           )
         }
-
-      </main >
+      </main>
 
       {/* ============================================ */}
       {/* 24/7 AI CHAT ASSISTANT */}

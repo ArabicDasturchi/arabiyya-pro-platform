@@ -1,6 +1,8 @@
 import express from 'express';
 import User from '../models/User.js';
 import Order from '../models/Order.js';
+import Level from '../models/Level.js';
+import Lesson from '../models/Lesson.js';
 import { authMiddleware, adminMiddleware } from '../middleware/auth.js';
 
 const router = express.Router();
@@ -211,58 +213,40 @@ router.put('/orders/:id/approve', [authMiddleware, adminMiddleware], async (req,
     }
 });
 
-// @route   POST /api/admin/grant-level
-// @desc    Grant free level access to user
+// @route   POST /api/admin/cleanup-links
+// @desc    Cleanup broken/legacy links in database
 // @access  Private/Admin
-router.post('/grant-level', [authMiddleware, adminMiddleware], async (req, res) => {
+router.post('/cleanup-links', [authMiddleware, adminMiddleware], async (req, res) => {
     try {
-        const { userId, levelId } = req.body;
-
-        if (!userId || !levelId) {
-            return res.status(400).json({
-                success: false,
-                message: 'userId va levelId kerak'
-            });
+        // 1. Fix Levels
+        const levels = await Level.find();
+        let levelsFixed = 0;
+        for (const level of levels) {
+            if (level.levelBookUrl && (level.levelBookUrl.includes('localhost') || level.levelBookUrl.includes('/book-'))) {
+                level.levelBookUrl = ''; // Clear broken link
+                await level.save();
+                levelsFixed++;
+            }
         }
 
-        const user = await User.findById(userId);
-
-        if (!user) {
-            return res.status(404).json({
-                success: false,
-                message: 'Foydalanuvchi topilmadi'
-            });
+        // 2. Fix Lessons
+        const lessons = await Lesson.find();
+        let lessonsFixed = 0;
+        for (const lesson of lessons) {
+            if (lesson.ebookUrl && (lesson.ebookUrl.includes('localhost') || lesson.ebookUrl.includes('/book-'))) {
+                lesson.ebookUrl = ''; // Clear broken link
+                await lesson.save();
+                lessonsFixed++;
+            }
         }
-
-        // Initialize purchasedLevels if undefined
-        if (!user.purchasedLevels) user.purchasedLevels = ['A1'];
-
-        // Add level if not already purchased
-        if (user.purchasedLevels.includes(levelId)) {
-            return res.status(400).json({
-                success: false,
-                message: 'Bu daraja allaqachon ochilgan'
-            });
-        }
-
-        user.purchasedLevels.push(levelId);
-        await user.save();
 
         res.json({
             success: true,
-            message: `${levelId} darajasi ${user.name} uchun ochildi`,
-            user: {
-                id: user._id,
-                name: user.name,
-                purchasedLevels: user.purchasedLevels
-            }
+            message: `Tozalash tugadi. ${levelsFixed} ta daraja va ${lessonsFixed} ta darsdagi eski linklar o'chirildi.`
         });
     } catch (error) {
-        console.error('Admin Grant Level Error:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Server xatosi'
-        });
+        console.error('Cleanup error:', error);
+        res.status(500).json({ success: false, message: 'Tozalashda xatolik yuz berdi' });
     }
 });
 
