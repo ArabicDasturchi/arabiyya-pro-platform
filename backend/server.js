@@ -24,6 +24,7 @@ import aiRoutes from './routes/ai.js';
 import adminRoutes from './routes/admin.js';
 import submissionRoutes from './routes/submissions.js';
 import uploadRoutes from './routes/upload.js';
+import downloadRoutes from './routes/download.js';
 
 // Load environment variables
 dotenv.config();
@@ -58,6 +59,7 @@ app.use('/api/ai', aiRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/submissions', submissionRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/download', downloadRoutes);
 
 // Root & Health
 app.get('/api/health', (req, res) => res.json({ status: 'OK' }));

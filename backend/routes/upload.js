@@ -10,26 +10,23 @@ const router = express.Router();
 // Backblaze B2 — S3-compatible client
 const s3 = new S3Client({
     endpoint: `https://${process.env.B2_ENDPOINT}`,
-    region: process.env.B2_BUCKET_REGION || 'us-west-004',
+    region: process.env.B2_BUCKET_REGION || 'us-east-005',
     credentials: {
         accessKeyId: process.env.B2_KEY_ID,
         secretAccessKey: process.env.B2_APPLICATION_KEY
     },
-    // B2 uchun kerakli sozlamalar
     forcePathStyle: false
 });
 
-// Multer + Backblaze B2 storage (ACL YO'Q — bucket allaqachon public)
-const upload = multer({
+// Multer + Backblaze B2 storage
+const uploadMiddleware = multer({
     storage: multerS3({
         s3: s3,
         bucket: process.env.B2_BUCKET_NAME,
         contentType: multerS3.AUTO_CONTENT_TYPE,
-        // ACL o'chirildi — B2 uni qo'llamaydi, bucket public qilingan
         key: function (req, file, cb) {
             const ext = path.extname(file.originalname).toLowerCase();
-            const filename = `books/kitob-${Date.now()}${ext}`;
-            cb(null, filename);
+            cb(null, `books/kitob-${Date.now()}${ext}`);
         }
     }),
     limits: { fileSize: 200 * 1024 * 1024 }, // 200MB
@@ -44,7 +41,7 @@ const upload = multer({
 
 // @route POST /api/upload
 router.post('/', [authMiddleware, adminMiddleware], (req, res) => {
-    upload(req, res, (err) => {
+    uploadMiddleware(req, res, (err) => {
         if (err instanceof multer.MulterError) {
             console.error('Multer Error:', err);
             return res.status(400).json({ success: false, message: `Fayl yuklashda xatolik: ${err.message}` });
@@ -57,25 +54,23 @@ router.post('/', [authMiddleware, adminMiddleware], (req, res) => {
             if (!req.file) {
                 return res.status(400).json({
                     success: false,
-                    message: 'Fayl serverga yetib kelmadi. Iltimos, qayta urinib ko\'ring.'
+                    message: 'Fayl serverga yetib kelmadi.'
                 });
             }
 
-            // Backblaze B2 public URL — bucket public bo'lganda ushbu format ishlaydi
-            // Format: https://{bucket}.s3.{region}.backblazeb2.com/{key}
-            const region = process.env.B2_BUCKET_REGION || 'us-west-004';
-            const bucket = process.env.B2_BUCKET_NAME;
-            const key = req.file.key; // multer-s3 bu fieldni to'ldiradi
-            const fileUrl = `https://${bucket}.s3.${region}.backblazeb2.com/${key}`;
+            // multer-s3 avtomatik location hosil qiladi
+            // Agar location bo'lmasa, qo'lda URL yasaymiz
+            const fileUrl = req.file.location
+                || `https://${process.env.B2_BUCKET_NAME}.s3.${process.env.B2_BUCKET_REGION}.backblazeb2.com/${req.file.key}`;
 
-            console.log('✅ Fayl Backblaze B2-ga yuklandi:', fileUrl);
-            res.json({
-                success: true,
-                fileUrl
-            });
+            console.log('✅ B2 Upload OK:', fileUrl);
+            console.log('   key:', req.file.key);
+            console.log('   location:', req.file.location);
+
+            res.json({ success: true, fileUrl });
         } catch (error) {
-            console.error('Server catch error:', error);
-            res.status(500).json({ success: false, message: 'Serverda ichki xatolik yuz berdi.' });
+            console.error('Server error:', error);
+            res.status(500).json({ success: false, message: 'Serverda xatolik: ' + error.message });
         }
     });
 });

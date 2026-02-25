@@ -375,7 +375,35 @@ const App = () => {
     }
   };
 
+  // Kitobni xavfsiz yuklab olish: backend dan vaqtinchalik havola olamiz
+  const handleDownloadBook = async (rawUrl) => {
+    if (!rawUrl) return;
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(
+        `https://arabiyya-pro-backend.onrender.com/api/download?key=${encodeURIComponent(rawUrl)}`,
+        { headers: { 'Authorization': `Bearer ${token}` } }
+      );
+      const data = await res.json();
+      if (data.success && data.url) {
+        const a = document.createElement('a');
+        a.href = data.url;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      } else {
+        alert('Yuklab olishda xatolik: ' + (data.message || 'Noma\'lum xato'));
+      }
+    } catch (err) {
+      console.error('Download xatosi:', err);
+      alert('Aloqa xatosi. Iltimos qayta urinib ko\'ring.');
+    }
+  };
+
   const handleCleanupLinks = async () => {
+
     if (!window.confirm("Barcha buzilgan (localhost va /book-) linklarni tozalashni xohlaysizmi? Bu darsliklarni qayta yuklashni talab qilishi mumkin.")) return;
 
     try {
@@ -2040,19 +2068,13 @@ const App = () => {
                             </button>
                           );
 
-                          const finalUrl = rawUrl.startsWith('http')
-                            ? rawUrl
-                            : `https://arabiyya-pro-backend.onrender.com${rawUrl.startsWith('/') ? '' : '/'}${rawUrl}`;
-
                           return (
-                            <a
-                              href={finalUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
+                            <button
+                              onClick={() => handleDownloadBook(rawUrl)}
                               className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-lg transition-all active:scale-95 shadow-xl shadow-blue-600/30"
                             >
                               <Download size={24} /> Yuklab Olish (PDF)
-                            </a>
+                            </button>
                           );
                         })()}
                       </div>
