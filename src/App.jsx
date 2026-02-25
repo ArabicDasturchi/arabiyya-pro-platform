@@ -1291,8 +1291,8 @@ const App = () => {
                   setMobileMenuOpen(false);
                 }}
                 className={`flex items-center gap-3 w-full text-left px-4 py-3.5 rounded-xl font-bold text-sm transition-all ${view === item.view
-                    ? 'bg-blue-500/20 text-blue-400 border border-blue-500/20'
-                    : 'text-white/70 hover:text-white hover:bg-white/10'
+                  ? 'bg-blue-500/20 text-blue-400 border border-blue-500/20'
+                  : 'text-white/70 hover:text-white hover:bg-white/10'
                   }`}
               >
                 <item.icon size={20} />
@@ -1987,21 +1987,21 @@ const App = () => {
               </div>
 
               {/* 5 Sahifa Tabs */}
-              <div className="bg-white/5 backdrop-blur-xl rounded-3xl p-2 border border-white/10">
-                <div className="flex overflow-x-auto gap-2 scrollbar-hide">
+              <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-1.5 border border-white/10">
+                <div className="flex overflow-x-auto gap-1 pb-0.5" style={{ scrollbarWidth: 'none' }}>
                   {[
                     { id: 'kitob', label: '📚 Kitob' },
-                    { id: 'amaliy', label: '📝 Amaliy (100b)' },
+                    { id: 'amaliy', label: '📝 Amaliy' },
                     { id: 'nazariy', label: '📖 Nazariy' },
-                    { id: 'uyga', label: '✍️ Uyga (100b)' },
-                    { id: 'test', label: '📊 Test (100b)' },
+                    { id: 'uyga', label: '✍️ Uyga' },
+                    { id: 'test', label: '📊 Test' },
                   ].map((tab) => (
                     <button
                       key={tab.id}
                       onClick={() => setLessonTab(tab.id)}
-                      className={`px-5 py-3 rounded-xl font-bold whitespace-nowrap transition-all ${lessonTab === tab.id
-                        ? 'bg-white text-black shadow-lg scale-105'
-                        : 'bg-white/5 text-white/60 hover:bg-white/10'
+                      className={`px-3 sm:px-5 py-2.5 rounded-xl font-bold whitespace-nowrap transition-all text-sm sm:text-base flex-shrink-0 ${lessonTab === tab.id
+                          ? 'bg-white text-black shadow-lg'
+                          : 'text-white/60 hover:bg-white/10'
                         }`}
                     >
                       {tab.label}
@@ -2011,52 +2011,52 @@ const App = () => {
               </div>
 
               {/* Content */}
-              <div className="bg-white/5 backdrop-blur-xl rounded-3xl p-8 border border-white/10 min-h-[500px]">
-                {/* Kitob & Ustoz Tab */}
+              <div className="bg-white/5 backdrop-blur-xl rounded-3xl p-4 sm:p-8 border border-white/10 min-h-[400px]">
+                {/* Kitob Tab */}
                 {lessonTab === 'kitob' && (
-                  <div className="space-y-8 animate-in fade-in duration-300">
+                  <div className="space-y-6 animate-in fade-in duration-300">
 
                     {/* KITOB SECTION */}
-                    <div className="bg-gradient-to-br from-indigo-500/20 to-blue-600/20 p-8 rounded-3xl border border-white/10 flex flex-col md:flex-row items-center gap-8">
-                      <div className="w-40 h-56 bg-white/10 rounded-xl shadow-2xl flex items-center justify-center border-4 border-white/5 relative overflow-hidden group">
-                        {/* Book Cover Placeholder */}
-                        <BookOpen size={64} className="text-white/40 group-hover:scale-110 transition-transform" />
+                    <div className="bg-gradient-to-br from-indigo-500/20 to-blue-600/20 p-5 sm:p-8 rounded-2xl border border-white/10 flex flex-col items-center gap-6 text-center">
+                      <div className="w-32 h-44 sm:w-40 sm:h-56 bg-white/10 rounded-xl shadow-2xl flex items-center justify-center border-4 border-white/5 relative overflow-hidden">
+                        <BookOpen size={52} className="text-white/40" />
                         <div className="absolute bottom-0 w-full bg-black/50 text-center text-xs py-2 text-white/80 font-bold">PDF</div>
                       </div>
-                      <div className="flex-1 text-center md:text-left space-y-4">
-                        <div>
-                          <h3 className="text-3xl font-black mb-2 flex items-center justify-center md:justify-start gap-3">
-                            <Download className="text-blue-400" /> Darslik (PDF)
-                          </h3>
-                          <p className="text-white/60 text-lg">Ushbu dars uchun maxsus tayyorlangan elektron kitobni yuklab oling.</p>
-                        </div>
+                      <div className="space-y-4 w-full">
+                        <h3 className="text-2xl sm:text-3xl font-black flex items-center justify-center gap-3">
+                          <Download className="text-blue-400" /> Darslik (PDF)
+                        </h3>
+                        <p className="text-white/60">Dars uchun maxsus tayyorlangan elektron kitobni yuklab oling.</p>
 
                         {(() => {
-                          const isValid = (url) => url && !url.includes('/book-');
+                          const isValid = (url) => url && !url.includes('/book-') && !url.includes('localhost');
                           const lessonBook = isValid(selectedLesson.ebookUrl) ? selectedLesson.ebookUrl : null;
                           const levelBook = isValid(selectedLevel.levelBookUrl) ? selectedLevel.levelBookUrl : null;
                           const rawUrl = lessonBook || levelBook;
 
                           if (!rawUrl) return (
-                            <button disabled className="inline-flex items-center gap-3 px-8 py-4 bg-white/5 text-white/40 rounded-xl font-bold text-lg cursor-not-allowed border border-white/10">
+                            <button disabled className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 bg-white/5 text-white/40 rounded-xl font-bold text-lg cursor-not-allowed border border-white/10">
                               <Lock size={24} /> Hozircha mavjud emas
                             </button>
                           );
 
-                          // Ensure URL is absolute
                           const finalUrl = rawUrl.startsWith('http')
                             ? rawUrl
                             : `https://arabiyya-pro-backend.onrender.com${rawUrl.startsWith('/') ? '' : '/'}${rawUrl}`;
 
                           return (
-                            <a href={finalUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3 px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-lg transition-all hover:scale-105 shadow-xl shadow-blue-600/30">
+                            <a
+                              href={finalUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-lg transition-all active:scale-95 shadow-xl shadow-blue-600/30"
+                            >
                               <Download size={24} /> Yuklab Olish (PDF)
                             </a>
                           );
                         })()}
                       </div>
                     </div>
-
 
                   </div>
                 )}

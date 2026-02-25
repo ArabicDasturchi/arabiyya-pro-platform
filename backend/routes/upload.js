@@ -14,19 +14,22 @@ const s3 = new S3Client({
     credentials: {
         accessKeyId: process.env.B2_KEY_ID,
         secretAccessKey: process.env.B2_APPLICATION_KEY
-    }
+    },
+    // B2 uchun kerakli sozlamalar
+    forcePathStyle: false
 });
 
-// Multer + Backblaze B2 storage
+// Multer + Backblaze B2 storage (ACL YO'Q — bucket allaqachon public)
 const upload = multer({
     storage: multerS3({
         s3: s3,
         bucket: process.env.B2_BUCKET_NAME,
         contentType: multerS3.AUTO_CONTENT_TYPE,
-        acl: 'public-read',
+        // ACL o'chirildi — B2 uni qo'llamaydi, bucket public qilingan
         key: function (req, file, cb) {
             const ext = path.extname(file.originalname).toLowerCase();
-            cb(null, `books/kitob-${Date.now()}${ext}`);
+            const filename = `books/kitob-${Date.now()}${ext}`;
+            cb(null, filename);
         }
     }),
     limits: { fileSize: 200 * 1024 * 1024 }, // 200MB
@@ -52,11 +55,18 @@ router.post('/', [authMiddleware, adminMiddleware], (req, res) => {
 
         try {
             if (!req.file) {
-                return res.status(400).json({ success: false, message: 'Fayl serverga yetib kelmadi. Iltimos, qayta urinib ko\'ring.' });
+                return res.status(400).json({
+                    success: false,
+                    message: 'Fayl serverga yetib kelmadi. Iltimos, qayta urinib ko\'ring.'
+                });
             }
 
-            // Backblaze B2 public URL
-            const fileUrl = req.file.location;
+            // Backblaze B2 public URL — bucket public bo'lganda ushbu format ishlaydi
+            // Format: https://{bucket}.s3.{region}.backblazeb2.com/{key}
+            const region = process.env.B2_BUCKET_REGION || 'us-west-004';
+            const bucket = process.env.B2_BUCKET_NAME;
+            const key = req.file.key; // multer-s3 bu fieldni to'ldiradi
+            const fileUrl = `https://${bucket}.s3.${region}.backblazeb2.com/${key}`;
 
             console.log('✅ Fayl Backblaze B2-ga yuklandi:', fileUrl);
             res.json({
