@@ -2000,8 +2000,8 @@ const App = () => {
                       key={tab.id}
                       onClick={() => setLessonTab(tab.id)}
                       className={`px-3 sm:px-5 py-2.5 rounded-xl font-bold whitespace-nowrap transition-all text-sm sm:text-base flex-shrink-0 ${lessonTab === tab.id
-                          ? 'bg-white text-black shadow-lg'
-                          : 'text-white/60 hover:bg-white/10'
+                        ? 'bg-white text-black shadow-lg'
+                        : 'text-white/60 hover:bg-white/10'
                         }`}
                     >
                       {tab.label}
@@ -3936,24 +3936,29 @@ const App = () => {
 
                                             const formData = new FormData();
                                             formData.append('file', file);
+                                            setUploadingLevelBook(true);
                                             try {
-                                              setUploadingLevelBook(true);
                                               const token = localStorage.getItem('token');
+                                              console.log('📤 Yuklash boshlandi:', file.name, file.size);
                                               const res = await fetch('https://arabiyya-pro-backend.onrender.com/api/upload', {
                                                 method: 'POST',
                                                 headers: { 'Authorization': `Bearer ${token}` },
                                                 body: formData
                                               });
 
+                                              console.log('📥 Server javobi status:', res.status);
                                               const data = await res.json();
-                                              if (data.success) {
+                                              console.log('📥 Server javobi:', data);
+
+                                              if (data.success && data.fileUrl) {
                                                 setEditingLevel({ ...editingLevel, levelBookUrl: data.fileUrl });
+                                                alert('✅ Kitob muvaffaqiyatli yuklandi! Endi "Saqlash" tugmasini bosing.');
                                               } else {
-                                                alert('Yuklashda xatolik: ' + (data.message || 'Noma\'lum xato'));
+                                                alert('❌ Yuklashda xatolik: ' + (data.message || 'Noma\'lum xato. Console-ni tekshiring.'));
                                               }
                                             } catch (err) {
-                                              console.error('Upload Error:', err);
-                                              alert('Aloqa xatosi!');
+                                              console.error('Upload xatosi:', err);
+                                              alert('❌ Aloqa xatosi! Internet yoki server muammosi bor.');
                                             } finally {
                                               setUploadingLevelBook(false);
                                             }
