@@ -119,6 +119,7 @@ app.get('/', (req, res) => res.json({ message: 'Arabiyya Pro API is running' }))
 
 // 404
 app.use((req, res) => {
+  console.log('⚠️ 404 - Topilmadi:', req.method, req.url, 'Token:', !!req.header('Authorization'));
   res.status(404).json({ success: false, message: 'Endpoint not found' });
 });
 

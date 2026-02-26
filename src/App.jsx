@@ -2132,6 +2132,8 @@ const App = () => {
                             : `https://arabiyya-pro-backend.onrender.com/${rawUrl.replace(/^\//, '')}`) +
                             (token ? `?token=${token}` : '');
 
+                          console.log('📖 Kitob linki:', finalUrl);
+
                           return (
                             <a
                               href={finalUrl}
@@ -2541,13 +2543,16 @@ const App = () => {
                     </div>
                   </div>
                   <a
-                    href={`${selectedLevel.levelBookUrl.startsWith('http') ? selectedLevel.levelBookUrl : 'https://arabiyya-pro-backend.onrender.com' + (selectedLevel.levelBookUrl.startsWith('/') ? '' : '/') + selectedLevel.levelBookUrl}${localStorage.getItem('token') ? `?token=${localStorage.getItem('token')}` : ''}`}
+                    href={(selectedLevel.levelBookUrl?.startsWith('http')
+                      ? selectedLevel.levelBookUrl
+                      : `https://arabiyya-pro-backend.onrender.com/${selectedLevel.levelBookUrl?.replace(/^\//, '')}`) +
+                      (localStorage.getItem('token') ? `?token=${localStorage.getItem('token')}` : '')}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-full md:w-auto px-10 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-black text-lg transition-all shadow-xl shadow-blue-600/30 flex items-center justify-center gap-3"
                   >
                     <Download size={24} />
-                    PDF Yuklab Olish
+                    PDF Yuklab Olish (Level)
                   </a>
                 </div>
               )}

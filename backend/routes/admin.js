@@ -225,10 +225,26 @@ router.post('/cleanup-links', [authMiddleware, adminMiddleware], async (req, res
         const levels = await Level.find();
         let levelsFixed = 0;
         for (const level of levels) {
-            if (level.levelBookUrl && (level.levelBookUrl.includes('localhost') || level.levelBookUrl.includes('/book-'))) {
-                level.levelBookUrl = ''; // Clear broken link
-                await level.save();
-                levelsFixed++;
+            let changed = false;
+            if (level.levelBookUrl) {
+                // Remove localhost or old placeholder links
+                if (level.levelBookUrl.includes('localhost') || level.levelBookUrl.includes('/book-')) {
+                    level.levelBookUrl = '';
+                    changed = true;
+                }
+                // Convert absolute Render URL back to relative if it exists
+                else if (level.levelBookUrl.includes('arabiyya-pro-backend.onrender.com')) {
+                    const parts = level.levelBookUrl.split('/uploads/');
+                    if (parts.length > 1) {
+                        level.levelBookUrl = '/uploads/' + parts[1];
+                        changed = true;
+                    }
+                }
+
+                if (changed) {
+                    await level.save();
+                    levelsFixed++;
+                }
             }
         }
 
