@@ -1230,25 +1230,7 @@ const App = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-950 via-indigo-900 to-purple-950 text-white font-sans relative overflow-x-hidden select-none">
-
-      {/* Watermark Protection */}
-      {user && (
-        <div className="fixed inset-0 pointer-events-none z-[9999] overflow-hidden opacity-[0.03] select-none">
-          {Array.from({ length: 20 }).map((_, i) => (
-            <div
-              key={i}
-              className="absolute text-sm font-bold rotate-[-30deg] whitespace-nowrap"
-              style={{
-                top: `${Math.random() * 100}%`,
-                left: `${Math.random() * 100}%`,
-              }}
-            >
-              {user.name} ({user.email}) - Arabiyya Pro
-            </div>
-          ))}
-        </div>
-      )}
+    <div className="min-h-screen bg-gradient-to-br from-blue-950 via-indigo-900 to-purple-950 text-white font-sans relative overflow-x-hidden">
 
       {/* Animated background elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
