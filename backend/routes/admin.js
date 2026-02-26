@@ -3,6 +3,9 @@ import User from '../models/User.js';
 import Order from '../models/Order.js';
 import Level from '../models/Level.js';
 import Lesson from '../models/Lesson.js';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
 import { authMiddleware, adminMiddleware } from '../middleware/auth.js';
 
 const router = express.Router();
@@ -251,58 +254,101 @@ router.post('/cleanup-links', [authMiddleware, adminMiddleware], async (req, res
 });
 
 // @route   POST /api/admin/grant-level
-// @desc    Manually grant a level to a user (Restricted to Super Admin)
+// @desc    Manually grant a level to a user
 // @access  Private/Admin
 router.post('/grant-level', [authMiddleware, adminMiddleware], async (req, res) => {
     try {
         const { userId, levelId } = req.body;
 
-        // Faqat asosiy adminlar daraja bera oladi
-        const adminUser = await User.findById(req.userId);
-        const allowedAdmins = ['humoyunanvarjonov466@gmail.com', 'humoyunanvarjonov52@gmail.com'];
-        if (!allowedAdmins.includes(adminUser.email)) {
+        // Xavfsizlik uchun: Faqat belgilangan adminlar
+        const currentAdmin = await User.findById(req.userId);
+        const superAdmins = ['humoyunanvarjonov466@gmail.com', 'humoyunanvarjonov52@gmail.com'];
+
+        if (!currentAdmin || !superAdmins.includes(currentAdmin.email)) {
             return res.status(403).json({
                 success: false,
-                message: 'Faqat asosiy admin daraja bera oladi!'
+                message: 'Kechirasiz, faqat super-admin daraja bera oladi!'
             });
         }
 
         if (!userId || !levelId) {
             return res.status(400).json({
                 success: false,
-                message: 'Foydalanuvchi ID va Daraja ID kiritilishi shart'
+                message: 'Foydalanuvchi va daraja ma\'lumotlari yetarli emas.'
             });
         }
 
-        const user = await User.findById(userId);
-        if (!user) {
+        const targetUser = await User.findById(userId);
+        if (!targetUser) {
             return res.status(404).json({
                 success: false,
-                message: 'Foydalanuvchi topilmadi'
+                message: 'Foydalanuvchi bazadan topilmadi'
             });
         }
 
-        // Initialize purchasedLevels if undefined
-        if (!user.purchasedLevels) user.purchasedLevels = ['A1'];
-
-        // Add level if not already purchased
-        if (!user.purchasedLevels.includes(levelId)) {
-            user.purchasedLevels.push(levelId);
-            // Save user
-            await user.save();
+        // Darajani ochish
+        if (!targetUser.purchasedLevels) targetUser.purchasedLevels = ['A1'];
+        if (!targetUser.purchasedLevels.includes(levelId)) {
+            targetUser.purchasedLevels.push(levelId);
+            await targetUser.save();
         }
+
+        console.log(`✅ Daraja ochildi: ${levelId} -> ${targetUser.email}`);
 
         res.json({
             success: true,
-            message: `${levelId} darajasi muvaffaqiyatli ochildi`
+            message: `${targetUser.name} uchun ${levelId} darajasi muvaffaqiyatli ochildi!`
         });
+
     } catch (error) {
-        console.error('Grant Level Error:', error);
+        console.error('Grant Level API Error:', error);
         res.status(500).json({
             success: false,
-            message: 'Server xatosi'
+            message: 'Tizimda xatolik: ' + error.message
         });
     }
+});
+
+// --- BOOK UPLOAD LOGIC ---
+const uploadsPath = path.join(process.cwd(), 'uploads');
+if (!fs.existsSync(uploadsPath)) {
+    fs.mkdirSync(uploadsPath, { recursive: true });
+}
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => cb(null, uploadsPath),
+    filename: (req, file, cb) => {
+        const ext = path.extname(file.originalname).toLowerCase();
+        const levelId = req.query.levelId || 'GENERAL';
+        cb(null, `${levelId}-${Date.now()}${ext}`);
+    }
+});
+
+const upload = multer({
+    storage,
+    limits: { fileSize: 200 * 1024 * 1024 }, // 200MB
+    fileFilter(req, file, cb) {
+        if (file.originalname.toLowerCase().endsWith('.pdf')) {
+            cb(null, true);
+        } else {
+            cb(new Error('Faqat PDF (.pdf) formatidagi fayllarni yuklash mumkin!'));
+        }
+    }
+}).single('file');
+
+// @route POST /api/admin/upload-book
+router.post('/upload-book', [authMiddleware, adminMiddleware], (req, res) => {
+    upload(req, res, (err) => {
+        if (err) {
+            return res.status(400).json({ success: false, message: err.message });
+        }
+        if (!req.file) {
+            return res.status(400).json({ success: false, message: 'Fayl tanlanmadi' });
+        }
+        const BACKEND = process.env.BACKEND_URL || 'https://arabiyya-pro-backend.onrender.com';
+        const fileUrl = `${BACKEND}/uploads/${req.file.filename}`;
+        res.json({ success: true, fileUrl });
+    });
 });
 
 export default router;

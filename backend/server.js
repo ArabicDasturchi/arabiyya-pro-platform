@@ -110,6 +110,11 @@ app.use('/api/purchase', purchaseRoutes);
 
 // Root & Health
 app.get('/api/health', (req, res) => res.json({ status: 'OK', time: new Date().toISOString() }));
+app.get('/api/test', (req, res) => res.json({
+  success: true,
+  message: 'Backend muvaffaqiyatli yangilandi (v2)',
+  timestamp: new Date().toISOString()
+}));
 app.get('/', (req, res) => res.json({ message: 'Arabiyya Pro API is running' }));
 
 // 404

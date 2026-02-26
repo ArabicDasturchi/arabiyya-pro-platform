@@ -4056,7 +4056,7 @@ const App = () => {
                                                 return;
                                               }
                                               console.log('📤 Yuklash boshlandi:', file.name, file.size);
-                                              const res = await fetch(`https://arabiyya-pro-backend.onrender.com/api/upload?levelId=${editingLevel.id}`, {
+                                              const res = await fetch(`https://arabiyya-pro-backend.onrender.com/api/admin/upload-book?levelId=${editingLevel.id}`, {
                                                 method: 'POST',
                                                 headers: { 'Authorization': `Bearer ${token}` },
                                                 body: formData
@@ -5078,7 +5078,7 @@ const App = () => {
                                             alert('❌ Token topilmadi. Iltimos, tizimga qaytadan kiring.');
                                             return;
                                           }
-                                          const res = await fetch(`https://arabiyya-pro-backend.onrender.com/api/upload?levelId=${editingLevel.id}`, {
+                                          const res = await fetch(`https://arabiyya-pro-backend.onrender.com/api/admin/upload-book?levelId=${editingLevel.id}`, {
                                             method: 'POST',
                                             headers: { 'Authorization': `Bearer ${token}` },
                                             body: formData
