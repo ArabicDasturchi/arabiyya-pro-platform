@@ -211,6 +211,19 @@ const App = () => {
     }
   };
 
+  // Avtomatik daraja ochilishini tekshirish (10 sekundda bir polling)
+  useEffect(() => {
+    let interval;
+    if (user && view !== 'home' && view !== 'auth') {
+      interval = setInterval(() => {
+        refreshUser();
+      }, 10000); // 10,000ms = 10s
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [user, view]);
+
   // Enhanced CEFR Levels with complete structure
   const [levels, setLevels] = useState([]);
 

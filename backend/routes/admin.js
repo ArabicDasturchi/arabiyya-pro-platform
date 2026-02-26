@@ -250,4 +250,58 @@ router.post('/cleanup-links', [authMiddleware, adminMiddleware], async (req, res
     }
 });
 
+// @route   POST /api/admin/grant-level
+// @desc    Manually grant a level to a user (Restricted to Super Admin)
+// @access  Private/Admin
+router.post('/grant-level', [authMiddleware, adminMiddleware], async (req, res) => {
+    try {
+        const { userId, levelId } = req.body;
+
+        // Faqat asosiy admin daraja bera oladi
+        const adminUser = await User.findById(req.userId);
+        if (adminUser.email !== 'humoyunanvarjonov466@gmail.com') {
+            return res.status(403).json({
+                success: false,
+                message: 'Faqat asosiy admin daraja bera oladi!'
+            });
+        }
+
+        if (!userId || !levelId) {
+            return res.status(400).json({
+                success: false,
+                message: 'Foydalanuvchi ID va Daraja ID kiritilishi shart'
+            });
+        }
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'Foydalanuvchi topilmadi'
+            });
+        }
+
+        // Initialize purchasedLevels if undefined
+        if (!user.purchasedLevels) user.purchasedLevels = ['A1'];
+
+        // Add level if not already purchased
+        if (!user.purchasedLevels.includes(levelId)) {
+            user.purchasedLevels.push(levelId);
+            // Save user
+            await user.save();
+        }
+
+        res.json({
+            success: true,
+            message: `${levelId} darajasi muvaffaqiyatli ochildi`
+        });
+    } catch (error) {
+        console.error('Grant Level Error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Server xatosi'
+        });
+    }
+});
+
 export default router;
