@@ -98,11 +98,14 @@ const App = () => {
 
         if (data.success) {
           setUser(data.user);
-          // If user was on a protected view, stay there, otherwise go to levels
-          // For simplicity, we can redirect to levels if currently on home/auth
           if (view === 'auth') setView('levels');
         } else {
+          if (data.code === 'CONCURRENT_SESSION') {
+            alert(data.message);
+          }
           localStorage.removeItem('token');
+          setUser(null);
+          setView('auth');
         }
       } catch (err) {
         console.error('Auth check failed', err);
@@ -111,6 +114,43 @@ const App = () => {
     };
 
     checkAuth();
+  }, []);
+
+  // Anti-Copy & Security Logic
+  useEffect(() => {
+    const handleContextMenu = (e) => {
+      e.preventDefault();
+      return false;
+    };
+
+    const handleKeyDown = (e) => {
+      // Disable F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
+      if (
+        e.keyCode === 123 ||
+        (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) ||
+        (e.ctrlKey && e.keyCode === 85) ||
+        (e.ctrlKey && e.keyCode === 67) || // Ctrl+C
+        (e.ctrlKey && e.keyCode === 83)    // Ctrl+S
+      ) {
+        e.preventDefault();
+        return false;
+      }
+    };
+
+    const handleSelectStart = (e) => {
+      e.preventDefault();
+      return false;
+    };
+
+    document.addEventListener('contextmenu', handleContextMenu);
+    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('selectstart', handleSelectStart);
+
+    return () => {
+      document.removeEventListener('contextmenu', handleContextMenu);
+      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('selectstart', handleSelectStart);
+    };
   }, []);
 
   // Sync certificates from user profile
@@ -160,6 +200,11 @@ const App = () => {
         fetchMySubmissions(); // Update submissions history too
 
         // Legacy chat history restore removed to support multi-chat system
+      } else if (data.code === 'CONCURRENT_SESSION') {
+        alert(data.message);
+        localStorage.removeItem('token');
+        setUser(null);
+        setView('auth');
       }
     } catch (err) {
       console.error('User refresh failed', err);
@@ -1185,7 +1230,25 @@ const App = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-950 via-indigo-900 to-purple-950 text-white font-sans relative overflow-x-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-blue-950 via-indigo-900 to-purple-950 text-white font-sans relative overflow-x-hidden select-none">
+
+      {/* Watermark Protection */}
+      {user && (
+        <div className="fixed inset-0 pointer-events-none z-[9999] overflow-hidden opacity-[0.03] select-none">
+          {Array.from({ length: 20 }).map((_, i) => (
+            <div
+              key={i}
+              className="absolute text-sm font-bold rotate-[-30deg] whitespace-nowrap"
+              style={{
+                top: `${Math.random() * 100}%`,
+                left: `${Math.random() * 100}%`,
+              }}
+            >
+              {user.name} ({user.email}) - Arabiyya Pro
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Animated background elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">

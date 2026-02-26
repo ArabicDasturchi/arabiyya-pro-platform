@@ -14,6 +14,7 @@ dotenv.config();
 // Import models
 import User from './models/User.js';
 import Order from './models/Order.js';
+import { authMiddleware } from './middleware/auth.js';
 import jwt from 'jsonwebtoken';
 
 // Import routes
@@ -57,7 +58,35 @@ app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({ limit: '100mb', extended: true }));
 
 // Static fayllar — PDF kitoblar (smartfon va noutbukda ishlaydi)
-app.use('/uploads', cors(corsOptions), express.static(uploadsPath));
+// MUHIM: Fayllarni himoya qilish uchun middleware qo'shamiz
+app.use('/uploads', authMiddleware, async (req, res, next) => {
+  try {
+    const user = await User.findById(req.userId);
+    if (!user) return res.status(401).json({ success: false, message: 'Tizimga kiring' });
+
+    // Admin barchasini ko'ra oladi
+    if (user.role === 'admin') return next();
+
+    // Fayl nomidan levelId ni aniqlashga harakat qilamiz (agar fayl nomi daraja bilan boshlansa)
+    // Masalan: "A1_lesson1.pdf" yoki "ALPHABET_guide.pdf"
+    const fileName = path.basename(req.path);
+    const levels = ['ALPHABET', 'A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+    const fileLevel = levels.find(l => fileName.startsWith(l));
+
+    if (fileLevel) {
+      if (fileLevel === 'ALPHABET' || (user.purchasedLevels && user.purchasedLevels.includes(fileLevel))) {
+        return next();
+      } else {
+        return res.status(403).json({ success: false, message: 'Bu darajani sotib olmagansiz' });
+      }
+    }
+
+    // Agar daraja aniqlanmasa, default ruxsat beramiz (masalan, user avatar yoki umumiy fayllar)
+    next();
+  } catch (error) {
+    next();
+  }
+}, express.static(uploadsPath));
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGODB_URI)

@@ -1,16 +1,33 @@
 import express from 'express';
 import Lesson from '../models/Lesson.js';
+import User from '../models/User.js';
+import { authMiddleware } from '../middleware/auth.js';
 
 const router = express.Router();
 
+// Helper to check if user has access to level
+const hasAccess = (user, levelId) => {
+  if (user.role === 'admin') return true;
+  if (levelId === 'ALPHABET') return true; // Alphabet is always free
+  return user.purchasedLevels && user.purchasedLevels.includes(levelId);
+};
+
 // @route   GET /api/lessons/:levelId
 // @desc    Get all lessons for a level
-// @access  Public
-router.get('/:levelId', async (req, res) => {
+// @access  Private
+router.get('/:levelId', authMiddleware, async (req, res) => {
   try {
-    const lessons = await Lesson.find({ 
+    const user = await User.findById(req.userId);
+    if (!user || !hasAccess(user, req.params.levelId)) {
+      return res.status(403).json({
+        success: false,
+        message: 'Ushbu darslarni ko\'rish uchun ruxsat yo\'q. Iltimos, darajani sotib oling.'
+      });
+    }
+
+    const lessons = await Lesson.find({
       levelId: req.params.levelId,
-      isActive: true 
+      isActive: true
     }).sort({ lessonNumber: 1 });
 
     res.json({
@@ -29,13 +46,21 @@ router.get('/:levelId', async (req, res) => {
 
 // @route   GET /api/lessons/:levelId/:lessonNumber
 // @desc    Get single lesson
-// @access  Public
-router.get('/:levelId/:lessonNumber', async (req, res) => {
+// @access  Private
+router.get('/:levelId/:lessonNumber', authMiddleware, async (req, res) => {
   try {
-    const lesson = await Lesson.findOne({ 
+    const user = await User.findById(req.userId);
+    if (!user || !hasAccess(user, req.params.levelId)) {
+      return res.status(403).json({
+        success: false,
+        message: 'Ushbu darsni ko\'rish uchun ruxsat yo\'q. Iltimos, darajani sotib oling.'
+      });
+    }
+
+    const lesson = await Lesson.findOne({
       levelId: req.params.levelId,
       lessonNumber: parseInt(req.params.lessonNumber),
-      isActive: true 
+      isActive: true
     });
 
     if (!lesson) {

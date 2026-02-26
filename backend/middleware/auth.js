@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 
-export const authMiddleware = (req, res, next) => {
+export const authMiddleware = async (req, res, next) => {
   try {
     // Get token from header
     const token = req.header('Authorization')?.replace('Bearer ', '');
@@ -16,6 +16,25 @@ export const authMiddleware = (req, res, next) => {
     // Verify token
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+      // Check for concurrent session
+      const user = await User.findById(decoded.userId).select('activeSessionId');
+
+      if (!user) {
+        return res.status(401).json({
+          success: false,
+          message: 'Foydalanuvchi topilmadi'
+        });
+      }
+
+      if (decoded.sessionId && user.activeSessionId !== decoded.sessionId) {
+        return res.status(401).json({
+          success: false,
+          message: 'Siz boshqa qurilmadan kirdingiz. Iltimos, qaytadan kiring.',
+          code: 'CONCURRENT_SESSION'
+        });
+      }
+
       req.userId = decoded.userId;
       next();
     } catch (error) {

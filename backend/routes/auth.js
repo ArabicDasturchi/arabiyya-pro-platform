@@ -8,8 +8,8 @@ import { authMiddleware } from '../middleware/auth.js';
 const router = express.Router();
 
 // Generate JWT Token
-const generateToken = (userId) => {
-  return jwt.sign({ userId }, process.env.JWT_SECRET, {
+const generateToken = (userId, sessionId) => {
+  return jwt.sign({ userId, sessionId }, process.env.JWT_SECRET, {
     expiresIn: '30d'
   });
 };
@@ -34,9 +34,10 @@ router.post('/register', [
     if (existingUser) {
       return res.status(400).json({ success: false, message: 'Bu email allaqachon ro\'yxatdan o\'tgan' });
     }
-    const user = new User({ name, email, password });
+    const sessionId = Math.random().toString(36).substring(2, 15);
+    const user = new User({ name, email, password, activeSessionId: sessionId });
     await user.save();
-    const token = generateToken(user._id);
+    const token = generateToken(user._id, sessionId);
     res.status(201).json({
       success: true,
       message: 'Muvaffaqiyatli ro\'yxatdan o\'tdingiz',
@@ -70,8 +71,10 @@ router.post('/login', [
     if (!isPasswordValid) {
       return res.status(401).json({ success: false, message: 'Email yoki parol noto\'g\'ri' });
     }
+    const sessionId = Math.random().toString(36).substring(2, 15);
+    user.activeSessionId = sessionId;
     await user.updateLastActive();
-    const token = generateToken(user._id);
+    const token = generateToken(user._id, sessionId);
     res.json({
       success: true,
       message: 'Muvaffaqiyatli kirdingiz',
@@ -107,9 +110,10 @@ router.post('/quick-register', [
     const { name } = req.body;
     const tempEmail = `${name.toLowerCase().replace(/\s+/g, '_')}_${Date.now()}@temp.arabiyya.pro`;
     const tempPassword = Math.random().toString(36).slice(-8);
-    const user = new User({ name, email: tempEmail, password: tempPassword });
+    const sessionId = Math.random().toString(36).substring(2, 15);
+    const user = new User({ name, email: tempEmail, password: tempPassword, activeSessionId: sessionId });
     await user.save();
-    const token = generateToken(user._id);
+    const token = generateToken(user._id, sessionId);
     res.status(201).json({
       success: true,
       message: 'Muvaffaqiyatli ro\'yxatdan o\'tdingiz',
@@ -138,8 +142,7 @@ router.post('/google', async (req, res) => {
     const payload = ticket.getPayload();
     const { name, email } = payload;
 
-    let user = await User.findOne({ email });
-
+    const sessionId = Math.random().toString(36).substring(2, 15);
     if (!user) {
       // Create new user if doesn't exist
       // Generate a random secure password since they use Google
@@ -148,14 +151,16 @@ router.post('/google', async (req, res) => {
       user = new User({
         name,
         email,
-        password: randomPassword
+        password: randomPassword,
+        activeSessionId: sessionId
       });
       await user.save();
     } else {
+      user.activeSessionId = sessionId;
       await user.updateLastActive();
     }
 
-    const jwtToken = generateToken(user._id);
+    const jwtToken = generateToken(user._id, sessionId);
 
     res.json({
       success: true,
