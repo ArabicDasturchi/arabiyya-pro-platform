@@ -257,9 +257,10 @@ router.post('/grant-level', [authMiddleware, adminMiddleware], async (req, res) 
     try {
         const { userId, levelId } = req.body;
 
-        // Faqat asosiy admin daraja bera oladi
+        // Faqat asosiy adminlar daraja bera oladi
         const adminUser = await User.findById(req.userId);
-        if (adminUser.email !== 'humoyunanvarjonov466@gmail.com') {
+        const allowedAdmins = ['humoyunanvarjonov466@gmail.com', 'humoyunanvarjonov52@gmail.com'];
+        if (!allowedAdmins.includes(adminUser.email)) {
             return res.status(403).json({
                 success: false,
                 message: 'Faqat asosiy admin daraja bera oladi!'

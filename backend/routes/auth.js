@@ -141,23 +141,37 @@ router.post('/google', async (req, res) => {
     });
     const payload = ticket.getPayload();
     const { name, email } = payload;
-
     const sessionId = Math.random().toString(36).substring(2, 15);
+
+    let user = await User.findOne({ email });
+
     if (!user) {
       // Create new user if doesn't exist
       // Generate a random secure password since they use Google
       const randomPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8);
 
+      const superAdmins = ['humoyunanvarjonov466@gmail.com', 'humoyunanvarjonov52@gmail.com'];
+
       user = new User({
         name,
         email,
         password: randomPassword,
-        activeSessionId: sessionId
+        activeSessionId: sessionId,
+        role: superAdmins.includes(email) ? 'admin' : 'user'
       });
       await user.save();
     } else {
       user.activeSessionId = sessionId;
       await user.updateLastActive();
+
+      // Upgrade existing core admin emails if not already admin
+      const superAdmins = ['humoyunanvarjonov466@gmail.com', 'humoyunanvarjonov52@gmail.com'];
+      if (superAdmins.includes(email) && user.role !== 'admin') {
+        user.role = 'admin';
+      }
+
+      // Ensure user is saved with new session ID (and potentially new role)
+      await user.save();
     }
 
     const jwtToken = generateToken(user._id, sessionId);
