@@ -13,7 +13,7 @@ dotenv.config();
 
 // Import models
 import User from './models/User.js';
-import Order from './models/Order.js';
+// Order routes ga ko'chirildi
 import { authMiddleware } from './middleware/auth.js';
 import jwt from 'jsonwebtoken';
 
@@ -29,6 +29,7 @@ import adminRoutes from './routes/admin.js';
 import submissionRoutes from './routes/submissions.js';
 import uploadRoutes from './routes/upload.js';
 import downloadRoutes from './routes/download.js';
+import purchaseRoutes from './routes/purchase.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -105,6 +106,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/submissions', submissionRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/download', downloadRoutes);
+app.use('/api/purchase', purchaseRoutes);
 
 // Root & Health
 app.get('/api/health', (req, res) => res.json({ status: 'OK', time: new Date().toISOString() }));
