@@ -252,16 +252,29 @@ router.post('/cleanup-links', [authMiddleware, adminMiddleware], async (req, res
         const lessons = await Lesson.find();
         let lessonsFixed = 0;
         for (const lesson of lessons) {
-            if (lesson.ebookUrl && (lesson.ebookUrl.includes('localhost') || lesson.ebookUrl.includes('/book-'))) {
-                lesson.ebookUrl = ''; // Clear broken link
-                await lesson.save();
-                lessonsFixed++;
+            let changed = false;
+            if (lesson.ebookUrl) {
+                if (lesson.ebookUrl.includes('localhost') || lesson.ebookUrl.includes('/book-')) {
+                    lesson.ebookUrl = '';
+                    changed = true;
+                } else if (lesson.ebookUrl.includes('arabiyya-pro-backend.onrender.com')) {
+                    const parts = lesson.ebookUrl.split('/uploads/');
+                    if (parts.length > 1) {
+                        lesson.ebookUrl = '/uploads/' + parts[1];
+                        changed = true;
+                    }
+                }
+
+                if (changed) {
+                    await lesson.save();
+                    lessonsFixed++;
+                }
             }
         }
 
         res.json({
             success: true,
-            message: `Tozalash tugadi. ${levelsFixed} ta daraja va ${lessonsFixed} ta darsdagi eski linklar o'chirildi.`
+            message: `Tizim tozalandi! ${levelsFixed} ta daraja va ${lessonsFixed} ta dars linklari muvaffaqiyatli tuzatildi.`
         });
     } catch (error) {
         console.error('Cleanup error:', error);
