@@ -2126,10 +2126,11 @@ const App = () => {
                             </button>
                           );
 
-                          // URL doim absolyut — mobilda ham ishlaydi
-                          const finalUrl = rawUrl.startsWith('http')
+                          const token = localStorage.getItem('token');
+                          const finalUrl = (rawUrl.startsWith('http')
                             ? rawUrl
-                            : `https://arabiyya-pro-backend.onrender.com/${rawUrl.replace(/^\//, '')}`;
+                            : `https://arabiyya-pro-backend.onrender.com/${rawUrl.replace(/^\//, '')}`) +
+                            (token ? `?token=${token}` : '');
 
                           return (
                             <a
@@ -2526,6 +2527,30 @@ const App = () => {
                   </div>
                 </div>
               </div>
+
+              {/* Level Book Download Section */}
+              {selectedLevel.levelBookUrl && (
+                <div className="bg-gradient-to-r from-blue-600/20 to-indigo-600/20 p-8 rounded-3xl border border-blue-500/20 flex flex-col md:flex-row items-center justify-between gap-6">
+                  <div className="flex items-center gap-6">
+                    <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-600/30">
+                      <BookOpen size={32} className="text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-2xl font-black mb-1">{selectedLevel.id} Daraja Kitobi</h3>
+                      <p className="text-white/60">Ushbu darajaning barcha darslari uchun tayyorlangan to'liq PDF kitobni yuklab oling.</p>
+                    </div>
+                  </div>
+                  <a
+                    href={`${selectedLevel.levelBookUrl.startsWith('http') ? selectedLevel.levelBookUrl : 'https://arabiyya-pro-backend.onrender.com' + (selectedLevel.levelBookUrl.startsWith('/') ? '' : '/') + selectedLevel.levelBookUrl}${localStorage.getItem('token') ? `?token=${localStorage.getItem('token')}` : ''}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full md:w-auto px-10 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-black text-lg transition-all shadow-xl shadow-blue-600/30 flex items-center justify-center gap-3"
+                  >
+                    <Download size={24} />
+                    PDF Yuklab Olish
+                  </a>
+                </div>
+              )}
 
               {/* Modules Grid - 5 ta darsdan 1 modul */}
               <div className="grid md:grid-cols-2 gap-6">
@@ -3681,7 +3706,7 @@ const App = () => {
                                           <span className="font-bold text-lg">{sub.score} ball</span>
                                         ) : (
                                           sub.fileUrl ? (
-                                            <a href={`https://arabiyya-pro-backend.onrender.com${sub.fileUrl}`} target="_blank" rel="noreferrer" className="text-blue-400 hover:underline flex items-center gap-1">
+                                            <a href={`https://arabiyya-pro-backend.onrender.com${sub.fileUrl}${localStorage.getItem('token') ? `?token=${localStorage.getItem('token')}` : ''}`} target="_blank" rel="noreferrer" className="text-blue-400 hover:underline flex items-center gap-1">
                                               <Download size={14} /> Fayl
                                             </a>
                                           ) : <span className="text-white/40">Fayl yo'q</span>
@@ -3743,7 +3768,7 @@ const App = () => {
                                 {editingSubmission.type === 'homework' && editingSubmission.fileUrl && (
                                   <div>
                                     <label className="text-xs font-bold text-white/40 uppercase mb-1 block">YUKLANGAN FAYL</label>
-                                    <a href={`https://arabiyya-pro-backend.onrender.com${editingSubmission.fileUrl}`} target="_blank" rel="noreferrer" className="w-full bg-blue-600/20 text-blue-400 px-4 py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-blue-600/30 transition-colors border border-blue-500/20 font-bold">
+                                    <a href={`https://arabiyya-pro-backend.onrender.com${editingSubmission.fileUrl}${localStorage.getItem('token') ? `?token=${localStorage.getItem('token')}` : ''}`} target="_blank" rel="noreferrer" className="w-full bg-blue-600/20 text-blue-400 px-4 py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-blue-600/30 transition-colors border border-blue-500/20 font-bold">
                                       <Download size={18} /> Yuklab olish / Ko'rish
                                     </a>
                                   </div>
@@ -4026,8 +4051,12 @@ const App = () => {
                                             setUploadingLevelBook(true);
                                             try {
                                               const token = localStorage.getItem('token');
+                                              if (!token) {
+                                                alert('❌ Token topilmadi. Iltimos, tizimga qaytadan kiring.');
+                                                return;
+                                              }
                                               console.log('📤 Yuklash boshlandi:', file.name, file.size);
-                                              const res = await fetch('https://arabiyya-pro-backend.onrender.com/api/upload', {
+                                              const res = await fetch(`https://arabiyya-pro-backend.onrender.com/api/upload?levelId=${editingLevel.id}`, {
                                                 method: 'POST',
                                                 headers: { 'Authorization': `Bearer ${token}` },
                                                 body: formData
@@ -5045,7 +5074,11 @@ const App = () => {
                                         try {
                                           setUploadingLessonBook(true);
                                           const token = localStorage.getItem('token');
-                                          const res = await fetch('https://arabiyya-pro-backend.onrender.com/api/upload', {
+                                          if (!token) {
+                                            alert('❌ Token topilmadi. Iltimos, tizimga qaytadan kiring.');
+                                            return;
+                                          }
+                                          const res = await fetch(`https://arabiyya-pro-backend.onrender.com/api/upload?levelId=${editingLevel.id}`, {
                                             method: 'POST',
                                             headers: { 'Authorization': `Bearer ${token}` },
                                             body: formData

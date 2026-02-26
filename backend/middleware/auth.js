@@ -3,13 +3,19 @@ import User from '../models/User.js';
 
 export const authMiddleware = async (req, res, next) => {
   try {
-    // Get token from header
-    const token = req.header('Authorization')?.replace('Bearer ', '');
+    // Get token from header or query
+    let token = req.header('Authorization')?.replace('Bearer ', '');
+
+    // If no header token, check query string (useful for direct PDF links)
+    if (!token && req.query.token) {
+      token = req.query.token;
+    }
 
     if (!token) {
+      console.log('❌ Token topilmadi: ', req.method, req.path);
       return res.status(401).json({
         success: false,
-        message: 'Token topilmadi. Iltimos, tizimga kiring'
+        message: 'Token topilmadi. Iltimos, tizimga kiring (Token not found)'
       });
     }
 

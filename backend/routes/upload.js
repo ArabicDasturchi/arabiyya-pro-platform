@@ -17,7 +17,9 @@ const storage = multer.diskStorage({
     destination: (req, file, cb) => cb(null, uploadsPath),
     filename: (req, file, cb) => {
         const ext = path.extname(file.originalname).toLowerCase();
-        cb(null, `kitob-${Date.now()}${ext}`);
+        // levelId ni query'dan olamiz, masalan: /api/upload?levelId=A1
+        const levelId = req.query.levelId || 'GENERAL';
+        cb(null, `${levelId}-${Date.now()}${ext}`);
     }
 });
 
