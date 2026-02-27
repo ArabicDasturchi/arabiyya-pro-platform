@@ -1292,7 +1292,7 @@ const App = () => {
   }, []);
 
   return (
-    <div className={`min-h-screen transition-all duration-700 ${theme === 'dark' ? 'bg-[#0a0c10] text-white' : 'bg-gradient-to-br from-blue-950 via-indigo-900 to-purple-950 text-white'} font-sans relative overflow-x-hidden`}>
+    <div className={`min-h-screen transition-all duration-700 ${theme === 'dark' ? 'bg-[#111827] text-white' : 'bg-gradient-to-br from-blue-950 via-indigo-900 to-purple-950 text-white'} font-sans relative overflow-x-hidden`}>
 
       {/* Animated background elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
@@ -1301,7 +1301,7 @@ const App = () => {
       </div>
 
       {/* NAVIGATION BAR */}
-      <nav className={`fixed top-0 w-full z-50 backdrop-blur-2xl ${theme === 'dark' ? 'bg-black/40 border-white/5' : 'bg-white/5 border-white/10'} border-b shadow-2xl transition-all duration-500`}>
+      <nav className={`fixed top-0 w-full z-50 backdrop-blur-2xl ${theme === 'dark' ? 'bg-black/20 border-white/5' : 'bg-white/5 border-white/10'} border-b shadow-2xl transition-all duration-500`}>
         <div className="max-w-7xl mx-auto px-3 sm:px-6 py-3 sm:py-4">
           <div className="flex justify-between items-center">
 
@@ -1692,14 +1692,14 @@ const App = () => {
                                 <div className={`px-3 py-1 rounded-lg text-xs font-bold flex items-center gap-1 ${isUnlocked ? 'bg-green-500/20 text-green-400' : 'bg-white/10 text-white/40'
                                   }`}>
                                   {isUnlocked ? (
-                                    <><CheckCircle2 size={12} /> Ochiq</>
+                                    <><CheckCircle2 size={12} /> {t('unlocked')}</>
                                   ) : (
-                                    <><Lock size={12} /> Yopiq</>
+                                    <><Lock size={12} /> {t('locked')}</>
                                   )}
                                 </div>
                               )}
                               <div className={`px-4 py-2 rounded-xl font-bold text-sm bg-gradient-to-r ${level.color} text-white shadow-lg`}>
-                                {level.lessons.length} Dars
+                                {level.lessons.length} {t('lessons')}
                               </div>
                             </div>
                           </div>
@@ -1711,7 +1711,7 @@ const App = () => {
                             <div className="flex items-center gap-2">
                               {/* Duration removed as it's not in level object currently, or replace with generic */}
                               <Play size={16} />
-                              <span>Video Darslar</span>
+                              <span>{t('video_lessons')}</span>
                             </div>
                           </div>
                         </div>
@@ -2123,11 +2123,11 @@ const App = () => {
 
                       {/* 5 Sahifa Icons */}
                       <div className="flex gap-2 flex-wrap pt-2 border-t border-white/10">
-                        <span className="px-2 py-1 bg-white/10 rounded-lg text-xs">📹 Video</span>
-                        <span className="px-2 py-1 bg-white/10 rounded-lg text-xs">📝 Amaliy</span>
-                        <span className="px-2 py-1 bg-white/10 rounded-lg text-xs">📖 Nazariy</span>
-                        <span className="px-2 py-1 bg-white/10 rounded-lg text-xs">✍️ Uyga</span>
-                        <span className="px-2 py-1 bg-white/10 rounded-lg text-xs">📊 Test</span>
+                        <span className="px-2 py-1 bg-white/10 rounded-lg text-xs">📹 {t('tab_book')}</span>
+                        <span className="px-2 py-1 bg-white/10 rounded-lg text-xs">📝 {t('tab_practice')}</span>
+                        <span className="px-2 py-1 bg-white/10 rounded-lg text-xs">📖 {t('tab_theory')}</span>
+                        <span className="px-2 py-1 bg-white/10 rounded-lg text-xs">✍️ {t('tab_homework')}</span>
+                        <span className="px-2 py-1 bg-white/10 rounded-lg text-xs">📊 {t('tab_test')}</span>
                       </div>
                     </div>
                   </div>
@@ -2156,7 +2156,7 @@ const App = () => {
                     {selectedLevel.icon} {selectedLevel.id}
                   </div>
                   <h2 className="text-3xl font-black">{selectedLesson.title}</h2>
-                  <p className="text-white/60 text-sm">5 sahifa • Professional kontent</p>
+                  <p className="text-white/60 text-sm">5 {t('tab_test').toLowerCase()} • {t('prof_content')}</p>
                 </div>
               </div>
 
@@ -2164,11 +2164,11 @@ const App = () => {
               <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-1.5 border border-white/10">
                 <div className="flex overflow-x-auto gap-1 pb-0.5" style={{ scrollbarWidth: 'none' }}>
                   {[
-                    { id: 'kitob', label: '📚 Kitob' },
-                    { id: 'amaliy', label: '📝 Amaliy' },
-                    { id: 'nazariy', label: '📖 Nazariy' },
-                    { id: 'uyga', label: '✍️ Uyga' },
-                    { id: 'test', label: '📊 Test' },
+                    { id: 'kitob', label: `📚 ${t('tab_book')}` },
+                    { id: 'amaliy', label: `📝 ${t('tab_practice')}` },
+                    { id: 'nazariy', label: `📖 ${t('tab_theory')}` },
+                    { id: 'uyga', label: `✍️ ${t('tab_homework')}` },
+                    { id: 'test', label: `📊 ${t('tab_test')}` },
                   ].map((tab) => (
                     <button
                       key={tab.id}
@@ -2198,9 +2198,9 @@ const App = () => {
                       </div>
                       <div className="space-y-4 w-full">
                         <h3 className="text-2xl sm:text-3xl font-black flex items-center justify-center gap-3">
-                          <Download className="text-blue-400" /> Darslik (PDF)
+                          <Download className="text-blue-400" /> {t('tab_book')} (PDF)
                         </h3>
-                        <p className="text-white/60">Dars uchun maxsus tayyorlangan elektron kitobni yuklab oling.</p>
+                        <p className="text-white/60">{t('hero_subtitle')}</p>
 
                         {(() => {
                           const isValid = (url) => url && !url.includes('/book-') && !url.includes('localhost');
@@ -2210,7 +2210,7 @@ const App = () => {
 
                           if (!rawUrl) return (
                             <button disabled className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 bg-white/5 text-white/40 rounded-xl font-bold text-lg cursor-not-allowed border border-white/10">
-                              <Lock size={24} /> Hozircha mavjud emas
+                              <Lock size={24} /> {t('pdf_not_available')}
                             </button>
                           );
 
@@ -2229,7 +2229,7 @@ const App = () => {
                               rel="noopener noreferrer"
                               className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-lg transition-all active:scale-95 shadow-xl shadow-blue-600/30"
                             >
-                              <Download size={24} /> Yuklab Olish (PDF)
+                              <Download size={24} /> {t('download_pdf')}
                             </a>
                           );
                         })()}
@@ -2244,7 +2244,7 @@ const App = () => {
                   <div className="space-y-6 animate-in fade-in duration-300">
                     <div className="bg-white/5 p-8 rounded-3xl border border-white/10 leading-relaxed space-y-4">
                       <h3 className="text-2xl font-bold mb-4 flex items-center gap-2">
-                        <BookOpen className="text-blue-400" /> Nazariy Ma'lumot
+                        <BookOpen className="text-blue-400" /> {t('tab_theory')}
                       </h3>
                       {selectedLesson.theory ? (
                         <div className="whitespace-pre-wrap text-white/90 font-serif leading-loose text-lg">{selectedLesson.theory}</div>
@@ -2252,7 +2252,7 @@ const App = () => {
                         <div className="whitespace-pre-wrap text-white/90">
                           {typeof selectedLesson.content === 'string'
                             ? selectedLesson.content
-                            : selectedLesson.content?.mainContent || "Nazariy ma'lumotlar kiritilmagan."}
+                            : selectedLesson.content?.mainContent || t('no_theory')}
                         </div>
                       )}
                     </div>
@@ -2264,10 +2264,10 @@ const App = () => {
                   <div className="space-y-6 animate-in fade-in duration-300">
                     <div className="bg-white/5 p-8 rounded-3xl border border-white/10 leading-relaxed">
                       <h3 className="text-2xl font-bold mb-4 flex items-center gap-2">
-                        <PenTool className="text-yellow-400" /> Amaliy Mashg'ulot
+                        <PenTool className="text-yellow-400" /> {t('tab_practice')}
                       </h3>
                       <div className="whitespace-pre-wrap text-white/90 font-serif leading-loose text-lg">
-                        {selectedLesson.practice || "Amaliy mashg'ulotlar kiritilmagan."}
+                        {selectedLesson.practice || t('no_practice')}
                       </div>
                     </div>
                   </div>
@@ -2278,10 +2278,10 @@ const App = () => {
                   <div className="space-y-8 animate-in fade-in duration-300">
                     <div className="bg-white/5 p-8 rounded-3xl border border-white/10 text-left">
                       <h3 className="text-2xl font-bold mb-6 flex items-center gap-2 border-b border-white/10 pb-4">
-                        <Home className="text-emerald-400" /> Uyga Vazifa
+                        <Home className="text-emerald-400" /> {t('tab_homework')}
                       </h3>
                       <div className="whitespace-pre-wrap text-white/90 font-serif leading-loose text-lg min-h-[100px]">
-                        {selectedLesson.homework || "Uyga vazifa kiritilmagan."}
+                        {selectedLesson.homework || t('no_homework')}
                       </div>
                     </div>
 
@@ -2409,7 +2409,7 @@ const App = () => {
                                   });
                                   const data = await res.json();
                                   if (data.success) {
-                                    alert("✅ Vazifa muvaffaqiyatli yuklandi!");
+                                    alert(`✅ ${t('tab_homework')} ${t('completed').toLowerCase()}!`);
                                     fetchMySubmissions(); // Update UI instantly
                                   }
                                   else alert("Xatolik: " + data.message);
@@ -2420,7 +2420,7 @@ const App = () => {
                               }} />
                             </label>
                           </div>
-                          <p className="text-white/40 text-xs mt-4">Fayl hajmi 10MB dan oshmasligi kerak (JPG, PNG, MP3)</p>
+                          <p className="text-white/40 text-xs mt-4">Max 10MB (JPG, PNG, MP3)</p>
                         </div>
                       );
                     })()}
@@ -2436,15 +2436,15 @@ const App = () => {
                           <Brain size={48} className="text-white" />
                         </div>
                         <div>
-                          <h3 className="text-3xl font-black text-white mb-2">📊 Test (100 ball)</h3>
+                          <h3 className="text-3xl font-black text-white mb-2">📊 {t('tab_test')} (100 {t('points').toLowerCase()})</h3>
                           <p className="text-white/60 max-w-md mx-auto text-lg">
-                            Mavzu bo'yicha {selectedLesson.quiz?.length || 0} ta savol. Bilimingizni sinab ko'ring!
+                            {t('quiz_count_desc')}
                           </p>
                         </div>
 
                         {(!selectedLesson.quiz || selectedLesson.quiz.length === 0) ? (
                           <div className="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-xl inline-block text-yellow-200">
-                            ⚠️ Bu dars uchun testlar hali kiritilmagan.
+                            ⚠️ {t('quiz_not_added')}
                           </div>
                         ) : (
                           <button
@@ -2455,7 +2455,7 @@ const App = () => {
                             }}
                             className="bg-white text-black px-10 py-4 rounded-xl font-black text-lg hover:scale-105 transition-transform shadow-xl shadow-white/10"
                           >
-                            Testni Boshlash 🚀
+                            {t('start_test_btn')} 🚀
                           </button>
                         )}
                       </div>
@@ -2473,7 +2473,7 @@ const App = () => {
                           <div className="space-y-8 mt-4 animate-in slide-in-from-right-8 duration-300">
                             <div className="flex justify-between items-center text-sm font-bold text-white/50 border-b border-white/10 pb-4">
                               <span>Savol {lessonTestStep + 1} / {selectedLesson.quiz.length}</span>
-                              <span className="bg-blue-500/10 text-blue-400 px-3 py-1 rounded-lg border border-blue-500/20">Test Jarayoni</span>
+                              <span className="bg-blue-500/10 text-blue-400 px-3 py-1 rounded-lg border border-blue-500/20">{t('tab_test')}</span>
                             </div>
 
                             <h3 className="text-2xl font-bold leading-relaxed">{selectedLesson.quiz[lessonTestStep].question}</h3>
@@ -2535,8 +2535,8 @@ const App = () => {
                             </div>
 
                             <div>
-                              <h3 className="text-4xl font-black mb-2">Test Yakunlandi!</h3>
-                              <p className="text-white/60 text-lg">Sizning natijangiz:</p>
+                              <h3 className="text-4xl font-black mb-2">{t('test_finished')}</h3>
+                              <p className="text-white/60 text-lg">{t('your_score')}:</p>
                             </div>
 
                             <div className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500">
@@ -2554,17 +2554,15 @@ const App = () => {
                                 }}
                                 className="px-8 py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl font-bold transition-colors"
                               >
-                                Qayta topshirish
+                                {t('retake_test')}
                               </button>
                               <button
                                 onClick={() => {
-                                  // Keyingi darsga o'tish logikasi (agar kerak bo'lsa)
-                                  // Yoki shunchaki modalni yopish/boshqa joyga o'tish
                                   setView('level-lessons');
                                 }}
                                 className="px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition-colors shadow-lg shadow-blue-500/20"
                               >
-                                Darslarni davom ettirish
+                                {t('course_continue')}
                               </button>
                             </div>
                           </div>
@@ -2603,7 +2601,7 @@ const App = () => {
               {/* Progress Bar */}
               <div className="bg-white/10 backdrop-blur-xl p-8 rounded-3xl border border-white/20">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-xl font-black">Sizning jarayoningiz</h3>
+                  <h3 className="text-xl font-black">{t('progress')}</h3>
                   <span className="text-2xl font-black">
                     {completedLessons.filter(l => l.startsWith(selectedLevel.id)).length} / {selectedLevel.lessons.length}
                   </span>
@@ -2626,8 +2624,8 @@ const App = () => {
                       <BookOpen size={32} className="text-white" />
                     </div>
                     <div>
-                      <h3 className="text-2xl font-black mb-1">{selectedLevel.id} Daraja Kitobi</h3>
-                      <p className="text-white/60">Ushbu darajaning barcha darslari uchun tayyorlangan to'liq PDF kitobni yuklab oling.</p>
+                      <h3 className="text-2xl font-black mb-1">{selectedLevel.id} {t('level_book')}</h3>
+                      <p className="text-white/60">{t('hero_subtitle')}</p>
                     </div>
                   </div>
                   <a
@@ -2640,7 +2638,7 @@ const App = () => {
                     className="w-full md:w-auto px-10 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-black text-lg transition-all shadow-xl shadow-blue-600/30 flex items-center justify-center gap-3"
                   >
                     <Download size={24} />
-                    PDF Yuklab Olish (Level)
+                    {t('download_level_pdf')}
                   </a>
                 </div>
               )}
@@ -2680,12 +2678,12 @@ const App = () => {
                               <div className="flex items-center gap-3 text-xs text-white/60">
                                 <div className="flex items-center gap-1">
                                   <BookOpen size={14} />
-                                  <span>{moduleLessons.length} ta dars</span>
+                                  <span>{moduleLessons.length} {t('lessons')}</span>
                                 </div>
                                 {isCompleted && (
                                   <div className="flex items-center gap-1 text-green-400">
                                     <CheckCircle size={14} />
-                                    <span>Tugatilgan</span>
+                                    <span>{t('completed')}</span>
                                   </div>
                                 )}
                               </div>
@@ -2699,7 +2697,7 @@ const App = () => {
                         {completedCount > 0 && (
                           <div className="space-y-2">
                             <div className="flex justify-between text-xs text-white/60">
-                              <span>Jarayon</span>
+                              <span>{t('progress')}</span>
                               <span>{completedCount}/{moduleLessons.length}</span>
                             </div>
                             <div className="h-2 bg-white/10 rounded-full overflow-hidden">
@@ -2744,11 +2742,11 @@ const App = () => {
                       <div className="flex items-center gap-3">
                         <Trophy size={40} className="text-yellow-400" />
                         <h3 className="text-3xl font-black text-white">
-                          {selectedLevel.id} Daraja Yakuniy Imtihon
+                          {selectedLevel.id} {t('final_exam')}
                         </h3>
                       </div>
                       <p className="text-white/90 text-lg">
-                        15 ta savol • Kamida 13 ta to'g'ri javob kerak • AI professional tahlil
+                        {t('exam_info')} • AI {t('usage_stats').toLowerCase()}
                       </p>
                       <div className="flex items-center gap-4 text-sm text-white/80">
                         <div className="flex items-center gap-2">
@@ -2769,7 +2767,7 @@ const App = () => {
                       <div className="absolute inset-0 bg-white rounded-2xl blur group-hover:blur-lg transition-all"></div>
                       <div className="relative px-8 py-4 bg-white text-purple-600 rounded-2xl font-black text-lg hover:scale-110 transition-all shadow-xl flex items-center gap-3">
                         <Trophy size={24} />
-                        Imtihon Topshirish
+                        {t('take_exam')}
                         <ArrowRight className="group-hover:translate-x-1 transition-transform" />
                       </div>
                     </button>
@@ -2792,8 +2790,8 @@ const App = () => {
           view === 'certificates' && user && (
             <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500">
               <div className="text-center space-y-4">
-                <h2 className="text-4xl md:text-5xl font-black">Mening Sertifikatlarim</h2>
-                <p className="text-xl text-white/60">Sizning yutuqlaringiz va muvaffaqiyatlaringiz</p>
+                <h2 className="text-4xl md:text-5xl font-black">{t('my_certificates')}</h2>
+                <p className="text-xl text-white/60">{t('features_subtitle')}</p>
               </div>
 
               {certificates.length === 0 ? (
@@ -2801,15 +2799,15 @@ const App = () => {
                   <div className="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-6">
                     <Award size={48} className="text-white/40" />
                   </div>
-                  <h3 className="text-2xl font-bold text-white">Hali sertifikat yo'q</h3>
+                  <h3 className="text-2xl font-bold text-white">{t('no_certificates')}</h3>
                   <p className="text-white/60 max-w-lg mx-auto">
-                    Barcha darajalarni muvaffaqiyatli tugatib professional sertifikat oling
+                    {t('welcome_subtitle')}
                   </p>
                   <button
                     onClick={() => setView('levels')}
                     className="px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition-all"
                   >
-                    Kursga Qaytish
+                    {t('view_courses')}
                   </button>
 
                 </div>
