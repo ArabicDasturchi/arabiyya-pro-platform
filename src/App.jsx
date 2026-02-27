@@ -4043,34 +4043,63 @@ const App = () => {
                                             </button>
 
                                             {/* Hamma darajani berish */}
-                                             <button
-                                               onClick={async (e) => {
-                                                 e.stopPropagation();
-                                                 if (!window.confirm(t('grant_all_confirm').replace('{name}', u.name))) return;
-                                                 try {
-                                                   const token = localStorage.getItem('token');
-                                                   const allLevelIds = levels.map(l => l.id);
-                                                   for (const levelId of allLevelIds) {
-                                                     if (!u.purchasedLevels?.includes(levelId)) {
-                                                       await fetch('https://arabiyya-pro-backend.onrender.com/api/admin/grant-level', {
-                                                         method: 'POST',
-                                                         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                                                         body: JSON.stringify({ userId: u._id, levelId })
-                                                       });
-                                                     }
-                                                   }
-                                                   alert(`Barcha darajalar ochildi!`);
-                                                   fetchAdminStats();
-                                                 } catch (err) {
-                                                   console.error(err);
-                                                   alert(t('system_error'));
-                                                 }
-                                               }}
-                                               className="px-3 py-1.5 rounded-lg text-xs font-bold bg-yellow-500/20 text-yellow-300 hover:bg-yellow-500/30 border border-yellow-500/20 transition-all flex items-center gap-1"
-                                             >
-                                               <Zap size={14} />
-                                               Hamma daraja
-                                             </button>
+                                            <button
+                                              onClick={async (e) => {
+                                                e.stopPropagation();
+                                                if (!window.confirm(t('grant_all_confirm').replace('{name}', u.name))) return;
+                                                try {
+                                                  const token = localStorage.getItem('token');
+                                                  const allLevelIds = levels.map(l => l.id);
+                                                  for (const levelId of allLevelIds) {
+                                                    if (!u.purchasedLevels?.includes(levelId)) {
+                                                      await fetch('https://arabiyya-pro-backend.onrender.com/api/admin/grant-level', {
+                                                        method: 'POST',
+                                                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                                                        body: JSON.stringify({ userId: u._id, levelId })
+                                                      });
+                                                    }
+                                                  }
+                                                  alert(t('grant_all_success').replace('{name}', u.name));
+                                                  fetchAdminStats();
+                                                } catch (err) {
+                                                  console.error(err);
+                                                  alert(t('system_error'));
+                                                }
+                                              }}
+                                              className="px-3 py-1.5 rounded-lg text-xs font-bold bg-yellow-500/20 text-yellow-300 hover:bg-yellow-500/30 border border-yellow-500/20 transition-all flex items-center gap-1"
+                                            >
+                                              <Zap size={14} />
+                                              {t('grant_all_levels')}
+                                            </button>
+
+                                            {/* Hamma darajani qaytarib olish */}
+                                            <button
+                                              onClick={async (e) => {
+                                                e.stopPropagation();
+                                                if (!window.confirm(t('revoke_all_confirm').replace('{name}', u.name))) return;
+                                                const token = localStorage.getItem('token');
+                                                try {
+                                                  const res = await fetch('https://arabiyya-pro-backend.onrender.com/api/admin/revoke-all-levels', {
+                                                    method: 'POST',
+                                                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                                                    body: JSON.stringify({ userId: u._id })
+                                                  });
+                                                  const data = await res.json();
+                                                  if (data.success) {
+                                                    alert(t('revoke_all_success').replace('{name}', u.name));
+                                                    fetchAdminStats();
+                                                  } else {
+                                                    alert(t('error_prefix') + data.message);
+                                                  }
+                                                } catch (err) {
+                                                  alert(t('system_error'));
+                                                }
+                                              }}
+                                              className="px-3 py-1.5 rounded-lg text-xs font-bold bg-red-500/20 text-red-500 hover:bg-red-500/30 border border-red-500/20 transition-all flex items-center gap-1"
+                                            >
+                                              <ShieldOff size={14} />
+                                              {t('revoke_all_levels')}
+                                            </button>
 
                                             <button
                                               onClick={(e) => { e.stopPropagation(); handleRoleUpdate(u._id, u.role === 'admin' ? 'user' : 'admin'); }}
@@ -4753,8 +4782,8 @@ const App = () => {
         {showChat && (
           <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-300">
             <div className={`w-full h-full max-w-7xl rounded-3xl border shadow-2xl flex overflow-hidden relative ${theme === 'dark'
-                ? 'bg-[#0f172a] border-white/10'
-                : 'bg-gradient-to-br from-[#0d1b3e] via-[#1a1060] to-[#2d0a5e] border-indigo-500/30 shadow-indigo-900'
+              ? 'bg-[#0f172a] border-white/10'
+              : 'bg-gradient-to-br from-[#0d1b3e] via-[#1a1060] to-[#2d0a5e] border-indigo-500/30 shadow-indigo-900'
               }`}>
 
               {/* SIDEBAR */}
@@ -4781,10 +4810,10 @@ const App = () => {
                         key={chat._id}
                         onClick={() => { loadChat(chat._id); if (window.innerWidth < 768) setChatView('messages'); }}
                         className={`group flex justify-between items-center p-3 rounded-xl cursor-pointer border transition-all ${activeChatId === chat._id
-                            ? 'bg-blue-500/20 border-blue-500/50'
-                            : theme === 'dark'
-                              ? 'bg-white/5 border-white/10 hover:bg-white/10'
-                              : 'bg-white/5 border-indigo-500/20 hover:bg-indigo-500/20 hover:border-indigo-400/40'
+                          ? 'bg-blue-500/20 border-blue-500/50'
+                          : theme === 'dark'
+                            ? 'bg-white/5 border-white/10 hover:bg-white/10'
+                            : 'bg-white/5 border-indigo-500/20 hover:bg-indigo-500/20 hover:border-indigo-400/40'
                           }`}
                       >
                         <div className="truncate pr-2 overflow-hidden flex-1">
@@ -4842,8 +4871,8 @@ const App = () => {
                       <div className="grid grid-cols-2 gap-4 max-w-lg mx-auto">
                         {["Grammatika", "So'zlashuv", "Tarjima", "Mashqlar"].map(category => (
                           <button key={category} onClick={() => setChatInput(category)} className={`p-4 border rounded-xl text-sm font-bold transition-all ${theme === 'dark'
-                              ? 'bg-white/5 hover:bg-white/10 border-white/10 text-white'
-                              : 'bg-indigo-500/20 hover:bg-indigo-500/30 border-indigo-400/30 text-white hover:border-indigo-400'
+                            ? 'bg-white/5 hover:bg-white/10 border-white/10 text-white'
+                            : 'bg-indigo-500/20 hover:bg-indigo-500/30 border-indigo-400/30 text-white hover:border-indigo-400'
                             }`}>
                             {t(`ai_starter_${category.toLowerCase().replace(/[' ]/g, '')}`)}
                           </button>
@@ -4861,10 +4890,10 @@ const App = () => {
                         </div>
                       )}
                       <div className={`max-w-[85%] md:max-w-[70%] p-5 rounded-2xl ${msg.role === 'user'
-                          ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg'
-                          : theme === 'dark'
-                            ? 'bg-white/10 border border-white/10 text-white'
-                            : 'bg-indigo-800/60 border border-indigo-500/30 text-white'
+                        ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg'
+                        : theme === 'dark'
+                          ? 'bg-white/10 border border-white/10 text-white'
+                          : 'bg-indigo-800/60 border border-indigo-500/30 text-white'
                         }`}>
                         {msg.role === 'ai' && (
                           <div className={`flex justify-between items-center mb-2 text-xs font-bold uppercase tracking-wider ${theme === 'dark' ? 'text-blue-400' : 'text-indigo-300'
@@ -4897,8 +4926,8 @@ const App = () => {
                       placeholder={t('ai_placeholder')}
                       disabled={isChatLoading}
                       className={`flex-1 border rounded-xl px-5 py-4 focus:outline-none focus:border-blue-500 transition-all ${theme === 'dark'
-                          ? 'bg-white/5 border-white/10 text-white placeholder:text-white/20'
-                          : 'bg-indigo-800/40 border-indigo-500/30 text-white placeholder:text-indigo-300/40'
+                        ? 'bg-white/5 border-white/10 text-white placeholder:text-white/20'
+                        : 'bg-indigo-800/40 border-indigo-500/30 text-white placeholder:text-indigo-300/40'
                         }`}
                     />
                     <button onClick={sendChatMessage} disabled={!chatInput.trim() || isChatLoading} className="bg-gradient-to-r from-blue-600 to-purple-600 p-4 rounded-xl text-white hover:scale-105 transition-all shadow-lg disabled:opacity-50 disabled:hover:scale-100">
@@ -5191,11 +5220,10 @@ const App = () => {
                   <div className="text-[10px] font-black text-white/40 uppercase tracking-wider mb-2">Darajalar holati</div>
                   <div className="grid grid-cols-6 gap-2">
                     {['A1', 'A2', 'B1', 'B2', 'C1', 'C2'].map(lvl => (
-                      <div key={lvl} className={`text-center py-2 rounded-xl border font-black text-xs ${
-                        grantingLevelTo.purchasedLevels?.includes(lvl)
+                      <div key={lvl} className={`text-center py-2 rounded-xl border font-black text-xs ${grantingLevelTo.purchasedLevels?.includes(lvl)
                           ? 'bg-green-500/20 text-green-400 border-green-500/30'
                           : 'bg-white/5 text-white/20 border-white/10'
-                      }`}>
+                        }`}>
                         {lvl}
                         <div className="text-[8px] mt-0.5">{grantingLevelTo.purchasedLevels?.includes(lvl) ? '?' : '?'}</div>
                       </div>
@@ -5215,7 +5243,7 @@ const App = () => {
                       className="w-full px-4 py-2.5 bg-black/30 rounded-xl border border-white/10 outline-none focus:border-green-500 transition-colors text-white font-bold text-sm"
                     >
                       <option value="" className="bg-slate-900">{t('select_level')}</option>
-                      {['A1','A2','B1','B2','C1','C2'].filter(l => !grantingLevelTo.purchasedLevels?.includes(l)).map(lvl => (
+                      {['A1', 'A2', 'B1', 'B2', 'C1', 'C2'].filter(l => !grantingLevelTo.purchasedLevels?.includes(l)).map(lvl => (
                         <option key={lvl} value={lvl} className="bg-slate-900">{lvl}</option>
                       ))}
                     </select>
@@ -5251,7 +5279,7 @@ const App = () => {
                       if (!window.confirm(t('grant_all_confirm').replace('{name}', grantingLevelTo.name))) return;
                       const token = localStorage.getItem('token');
                       try {
-                        for (const lvl of ['A1','A2','B1','B2','C1','C2']) {
+                        for (const lvl of ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']) {
                           if (!grantingLevelTo.purchasedLevels?.includes(lvl)) {
                             await fetch('https://arabiyya-pro-backend.onrender.com/api/admin/grant-level', {
                               method: 'POST',
@@ -5288,7 +5316,7 @@ const App = () => {
                     {(!grantingLevelTo.purchasedLevels || grantingLevelTo.purchasedLevels.filter(l => l !== 'A1').length === 0) ? (
                       <div className="text-center text-white/30 text-sm py-2">A1 dan boshqa daraja yo'q</div>
                     ) : (
-                      ['A2','B1','B2','C1','C2'].filter(lvl => grantingLevelTo.purchasedLevels?.includes(lvl)).map(lvl => (
+                      ['A2', 'B1', 'B2', 'C1', 'C2'].filter(lvl => grantingLevelTo.purchasedLevels?.includes(lvl)).map(lvl => (
                         <div key={lvl} className="flex items-center justify-between bg-white/5 rounded-xl px-4 py-2 border border-white/10">
                           <div className="flex items-center gap-2">
                             <span className="font-black text-white text-sm">{lvl}</span>
