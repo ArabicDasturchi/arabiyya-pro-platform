@@ -19,6 +19,7 @@ import { translations } from './translations';
 const App = () => {
   const [language, setLanguage] = useState(localStorage.getItem('language') || 'uz');
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
+  const [langDropdownOpen, setLangDropdownOpen] = useState(false);
 
   const t = (key) => {
     return translations[language]?.[key] || translations['uz'][key] || key;
@@ -1291,32 +1292,31 @@ const App = () => {
   }, []);
 
   return (
-    <div className={`min-h-screen transition-all duration-500 ${theme === 'dark' ? 'bg-black text-white' : 'bg-gradient-to-br from-blue-950 via-indigo-900 to-purple-950 text-white'} font-sans relative overflow-x-hidden`}>
+    <div className={`min-h-screen transition-all duration-700 ${theme === 'dark' ? 'bg-[#0a0c10] text-white' : 'bg-gradient-to-br from-blue-950 via-indigo-900 to-purple-950 text-white'} font-sans relative overflow-x-hidden`}>
 
       {/* Animated background elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className={`absolute top-20 left-10 w-72 h-72 ${theme === 'dark' ? 'bg-indigo-500/10' : 'bg-blue-500/20'} rounded-full blur-3xl animate-pulse`}></div>
-        <div className={`absolute bottom-20 right-10 w-96 h-96 ${theme === 'dark' ? 'bg-purple-500/10' : 'bg-purple-500/20'} rounded-full blur-3xl animate-pulse`} style={{ animationDelay: '1s' }}></div>
+        <div className={`absolute top-20 left-10 w-72 h-72 ${theme === 'dark' ? 'bg-blue-600/5' : 'bg-blue-500/20'} rounded-full blur-3xl animate-pulse`}></div>
+        <div className={`absolute bottom-20 right-10 w-96 h-96 ${theme === 'dark' ? 'bg-purple-600/5' : 'bg-purple-500/20'} rounded-full blur-3xl animate-pulse`} style={{ animationDelay: '1s' }}></div>
       </div>
 
       {/* NAVIGATION BAR */}
-      <nav className={`fixed top-0 w-full z-50 backdrop-blur-2xl ${theme === 'dark' ? 'bg-black/60 border-white/5' : 'bg-white/5 border-white/10'} border-b shadow-2xl transition-all duration-500`}>
+      <nav className={`fixed top-0 w-full z-50 backdrop-blur-2xl ${theme === 'dark' ? 'bg-black/40 border-white/5' : 'bg-white/5 border-white/10'} border-b shadow-2xl transition-all duration-500`}>
         <div className="max-w-7xl mx-auto px-3 sm:px-6 py-3 sm:py-4">
           <div className="flex justify-between items-center">
 
-            {/* Logo */}
             <div onClick={() => setView('home')} className="flex items-center gap-2 sm:gap-3 cursor-pointer group">
               <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl sm:rounded-2xl blur group-hover:blur-xl transition-all duration-300"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl sm:rounded-2xl blur group-hover:blur-lg transition-all duration-300"></div>
                 <div className="relative w-10 h-10 sm:w-14 sm:h-14 bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-600 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-2xl group-hover:scale-110 transition-all duration-300">
                   <BookOpen size={20} className="text-white sm:w-7 sm:h-7" strokeWidth={2.5} />
                 </div>
               </div>
               <div className="flex flex-col">
-                <span className="text-xl sm:text-2xl font-black tracking-tighter transition-colors text-white">
-                  ARABIYYA<span className="text-blue-500">PRO</span>
+                <span className="text-lg sm:text-2xl font-black bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent">
+                  Arabiyya Pro
                 </span>
-                <span className={`hidden sm:block text-[10px] font-bold ${theme === 'dark' ? 'text-white/40' : 'text-white/50'} -mt-1 tracking-wider`}>AI-POWERED PLATFORM</span>
+                <span className="hidden sm:block text-[10px] font-bold text-white/40 -mt-1 tracking-wider">AI-POWERED PLATFORM</span>
               </div>
             </div>
 
@@ -1348,22 +1348,33 @@ const App = () => {
                 {/* Theme & Language Toggles */}
                 <div className="flex items-center gap-1 sm:gap-2 mr-2">
                   {/* Language Selector */}
-                  <div className="relative group/lang">
-                    <button className="p-2 hover:bg-white/10 rounded-xl transition-all border border-transparent hover:border-white/10 flex items-center gap-1">
+                  <div className="relative">
+                    <button
+                      onClick={() => setLangDropdownOpen(!langDropdownOpen)}
+                      className="p-2 hover:bg-white/10 rounded-xl transition-all border border-transparent hover:border-white/10 flex items-center gap-1"
+                    >
                       <Globe size={18} className="text-white/60" />
                       <span className="text-xs font-bold uppercase text-white/60">{language}</span>
                     </button>
-                    <div className="absolute right-0 top-full mt-2 w-32 bg-slate-900/95 backdrop-blur-xl border border-white/10 rounded-xl overflow-hidden shadow-2xl opacity-0 translate-y-2 pointer-events-none group-hover/lang:opacity-100 group-hover/lang:translate-y-0 group-hover/lang:pointer-events-auto transition-all z-[100]">
-                      {['uz', 'en', 'ru'].map(lang => (
-                        <button
-                          key={lang}
-                          onClick={() => setLanguage(lang)}
-                          className={`w-full px-4 py-2.5 text-left text-xs font-bold hover:bg-white/10 transition-colors uppercase ${language === lang ? 'text-blue-400 bg-blue-500/10' : 'text-white/60'}`}
-                        >
-                          {lang === 'uz' ? 'O\'zbekcha' : lang === 'ru' ? 'Русский' : 'English'}
-                        </button>
-                      ))}
-                    </div>
+                    {langDropdownOpen && (
+                      <>
+                        <div className="fixed inset-0 z-[90]" onClick={() => setLangDropdownOpen(false)}></div>
+                        <div className="absolute right-0 top-full mt-2 w-32 bg-slate-900/95 backdrop-blur-3xl border border-white/10 rounded-xl overflow-hidden shadow-2xl z-[100] animate-fadeIn">
+                          {['uz', 'en', 'ru'].map(lang => (
+                            <button
+                              key={lang}
+                              onClick={() => {
+                                setLanguage(lang);
+                                setLangDropdownOpen(false);
+                              }}
+                              className={`w-full px-4 py-2.5 text-left text-xs font-bold hover:bg-white/10 transition-colors uppercase ${language === lang ? 'text-blue-400 bg-blue-500/10' : 'text-white/60'}`}
+                            >
+                              {lang === 'uz' ? 'O\'zbekcha' : lang === 'ru' ? 'Русский' : 'English'}
+                            </button>
+                          ))}
+                        </div>
+                      </>
+                    )}
                   </div>
 
                   {/* Theme Toggle */}
