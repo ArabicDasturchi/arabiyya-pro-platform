@@ -112,6 +112,10 @@ const userSchema = new mongoose.Schema({
   activeSessionId: {
     type: String,
     default: null
+  },
+  totalTimeSpent: {
+    type: Number, // in minutes
+    default: 0
   }
 }, {
   timestamps: true

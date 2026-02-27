@@ -58,7 +58,7 @@ router.put('/placement-test', authMiddleware, async (req, res) => {
     // Update user
     user.placementTestScore = score;
     user.currentLevel = level;
-    
+
     // Save test result
     user.testResults.push({
       type: 'placement',
@@ -207,6 +207,26 @@ router.post('/save-test-result', authMiddleware, async (req, res) => {
       success: false,
       message: 'Server xatosi'
     });
+  }
+});
+
+// @route   POST /api/users/update-time
+// @desc    Update user time spent
+// @access  Private
+router.post('/update-time', authMiddleware, async (req, res) => {
+  try {
+    const { minutes } = req.body;
+    const user = await User.findById(req.userId);
+    if (!user) return res.status(404).json({ success: false, message: 'Foydalanuvchi topilmadi' });
+
+    user.totalTimeSpent = (user.totalTimeSpent || 0) + (minutes || 1);
+    user.lastActive = Date.now();
+    await user.save();
+
+    res.json({ success: true, totalTimeSpent: user.totalTimeSpent });
+  } catch (error) {
+    console.error('Update time error:', error);
+    res.status(500).json({ success: false, message: 'Server xatosi' });
   }
 });
 

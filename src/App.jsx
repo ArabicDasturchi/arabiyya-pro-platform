@@ -14,8 +14,15 @@ import {
 import ArabiyyaCertificateFinal from './components/ArabiyyaCertificateFinal';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
+import { translations } from './translations';
 
 const App = () => {
+  const [language, setLanguage] = useState(localStorage.getItem('language') || 'uz');
+  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
+
+  const t = (key) => {
+    return translations[language]?.[key] || translations['uz'][key] || key;
+  };
   const [view, setView] = useState('home');
   const [user, setUser] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -67,6 +74,7 @@ const App = () => {
   const [adminOrders, setAdminOrders] = useState([]);
   const [uploadingLevelBook, setUploadingLevelBook] = useState(false);
   const [uploadingLessonBook, setUploadingLessonBook] = useState(false);
+  const [selectedAdminUser, setSelectedAdminUser] = useState(null);
   const [loading, setLoading] = useState(false);
 
   // Alphabet Learning State
@@ -115,6 +123,46 @@ const App = () => {
 
     checkAuth();
   }, []);
+
+  // Theme Applying Logic
+  useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  // Language Saving Logic
+  useEffect(() => {
+    localStorage.setItem('language', language);
+  }, [language]);
+
+  // Time Tracking Logic: Send heartbeat every minute if user is logged in
+  useEffect(() => {
+    if (!user) return;
+
+    const interval = setInterval(async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        await fetch('https://arabiyya-pro-backend.onrender.com/api/users/update-time', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ minutes: 1 })
+        });
+      } catch (err) {
+        console.error('Failed to update time:', err);
+      }
+    }, 60000); // Every 60 seconds
+
+    return () => clearInterval(interval);
+  }, [user]);
 
   // Anti-Copy & Security Logic
   useEffect(() => {
@@ -1243,17 +1291,16 @@ const App = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-950 via-indigo-900 to-purple-950 text-white font-sans relative overflow-x-hidden">
+    <div className={`min-h-screen transition-all duration-500 ${theme === 'dark' ? 'bg-[#0f172a] text-white' : 'bg-slate-50 text-slate-900'} font-sans relative overflow-x-hidden`}>
 
       {/* Animated background elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-blue-500/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-        <div className="absolute top-1/2 left-1/2 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+        <div className={`absolute top-20 left-10 w-72 h-72 ${theme === 'dark' ? 'bg-blue-500/10' : 'bg-blue-400/20'} rounded-full blur-3xl animate-pulse`}></div>
+        <div className={`absolute bottom-20 right-10 w-96 h-96 ${theme === 'dark' ? 'bg-purple-500/10' : 'bg-purple-400/20'} rounded-full blur-3xl animate-pulse`} style={{ animationDelay: '1s' }}></div>
       </div>
 
       {/* NAVIGATION BAR */}
-      <nav className="fixed top-0 w-full z-50 backdrop-blur-2xl bg-white/5 border-b border-white/10 shadow-2xl">
+      <nav className={`fixed top-0 w-full z-50 backdrop-blur-2xl ${theme === 'dark' ? 'bg-white/5 border-white/10' : 'bg-white/80 border-slate-200'} border-b shadow-2xl transition-all duration-500`}>
         <div className="max-w-7xl mx-auto px-3 sm:px-6 py-3 sm:py-4">
           <div className="flex justify-between items-center">
 
@@ -1266,10 +1313,10 @@ const App = () => {
                 </div>
               </div>
               <div className="flex flex-col">
-                <span className="text-lg sm:text-2xl font-black bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent">
-                  Arabiyya Pro
+                <span className={`text-xl sm:text-2xl font-black tracking-tighter transition-colors ${theme === 'dark' ? 'text-white' : 'text-slate-800'}`}>
+                  ARABIYYA<span className="text-blue-500">PRO</span>
                 </span>
-                <span className="hidden sm:block text-[10px] font-bold text-white/40 -mt-1 tracking-wider">AI-POWERED PLATFORM</span>
+                <span className={`hidden sm:block text-[10px] font-bold ${theme === 'dark' ? 'text-white/40' : 'text-slate-400'} -mt-1 tracking-wider`}>AI-POWERED PLATFORM</span>
               </div>
             </div>
 
@@ -1284,8 +1331,8 @@ const App = () => {
                   key={item.view}
                   onClick={() => setView(item.view)}
                   className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-300 ${view === item.view
-                    ? 'bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-white border border-white/20'
-                    : 'text-white/60 hover:text-white hover:bg-white/10'
+                    ? (theme === 'dark' ? 'bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-white border-white/20' : 'bg-blue-600 text-white shadow-lg shadow-blue-500/20')
+                    : (theme === 'dark' ? 'text-white/60 hover:text-white hover:bg-white/10' : 'text-slate-600 hover:bg-slate-200/50')
                     }`}
                 >
                   <item.icon size={18} />
@@ -1298,6 +1345,37 @@ const App = () => {
             <div className="flex items-center gap-4">
               {/* User Section */}
               <div className="flex items-center gap-2">
+                {/* Theme & Language Toggles */}
+                <div className="flex items-center gap-1 sm:gap-2 mr-2">
+                  {/* Language Selector */}
+                  <div className="relative group/lang">
+                    <button className="p-2 hover:bg-white/10 rounded-xl transition-all border border-transparent hover:border-white/10 flex items-center gap-1">
+                      <Globe size={18} className="text-white/60" />
+                      <span className="text-xs font-bold uppercase text-white/60">{language}</span>
+                    </button>
+                    <div className="absolute right-0 top-full mt-2 w-32 bg-slate-900/95 backdrop-blur-xl border border-white/10 rounded-xl overflow-hidden shadow-2xl opacity-0 translate-y-2 pointer-events-none group-hover/lang:opacity-100 group-hover/lang:translate-y-0 group-hover/lang:pointer-events-auto transition-all z-[100]">
+                      {['uz', 'en', 'ru'].map(lang => (
+                        <button
+                          key={lang}
+                          onClick={() => setLanguage(lang)}
+                          className={`w-full px-4 py-2.5 text-left text-xs font-bold hover:bg-white/10 transition-colors uppercase ${language === lang ? 'text-blue-400 bg-blue-500/10' : 'text-white/60'}`}
+                        >
+                          {lang === 'uz' ? 'O\'zbekcha' : lang === 'ru' ? 'Русский' : 'English'}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Theme Toggle */}
+                  <button
+                    onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                    className="p-2 hover:bg-white/10 rounded-xl transition-all border border-transparent hover:border-white/10"
+                    title={theme === 'dark' ? t('light_mode') : t('dark_mode')}
+                  >
+                    {theme === 'dark' ? <Sun size={18} className="text-yellow-400" /> : <Moon size={18} className="text-blue-400" />}
+                  </button>
+                </div>
+
                 {!user ? (
                   <button
                     onClick={() => setView('auth')}
@@ -1306,7 +1384,7 @@ const App = () => {
                     <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl blur group-hover:blur-lg transition-all duration-300"></div>
                     <div className="relative bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 sm:px-6 py-2.5 rounded-xl font-bold text-sm hover:scale-105 transition-all duration-300 shadow-xl flex items-center gap-2">
                       <Rocket size={16} />
-                      <span className="hidden xs:inline sm:inline">Boshlash</span>
+                      <span className="hidden xs:inline sm:inline">{t('login')}</span>
                     </div>
                   </button>
                 ) : (
@@ -1320,14 +1398,14 @@ const App = () => {
                       </div>
                       <div className="hidden sm:block">
                         <div className="text-sm font-bold">{user.name}</div>
-                        <div className="text-[10px] text-white/50">{user.level || 'Yangi'}</div>
+                        <div className="text-[10px] text-white/50">{user.level || 'A1'}</div>
                       </div>
                     </div>
                     {user.role === 'admin' && (
                       <button
                         onClick={() => { setView('admin'); setMobileMenuOpen(false); }}
                         className="p-2 bg-red-500/20 text-red-400 hover:bg-red-500/30 rounded-xl transition-all border border-red-500/20"
-                        title="Admin Panel"
+                        title={t('admin_panel')}
                       >
                         <Shield size={18} />
                       </button>
@@ -1342,7 +1420,7 @@ const App = () => {
                         setCertificates([]);
                       }}
                       className="hidden sm:flex p-2 hover:bg-white/10 rounded-xl transition-all"
-                      title="Chiqish"
+                      title={t('logout')}
                     >
                       <LogOut size={18} />
                     </button>
@@ -3442,6 +3520,7 @@ const App = () => {
                     { id: 'orders', label: 'Buyurtmalar', icon: ClipboardCheck },
                     { id: 'submissions', label: 'Topshiriqlar', icon: CheckCircle2 },
                     { id: 'users', label: 'Foydalanuvchilar', icon: Users },
+                    { id: 'certificates', label: 'Sertifikatlar', icon: Award },
                     { id: 'courses', label: 'Kurslar', icon: BookOpen },
                     { id: 'settings', label: 'Sozlamalar', icon: Settings },
                   ].map((item) => (
@@ -3468,6 +3547,7 @@ const App = () => {
                     { id: 'orders', label: 'Buyurtmalar', icon: ClipboardCheck },
                     { id: 'submissions', label: 'Topshiriqlar', icon: CheckCircle2 },
                     { id: 'users', label: 'Users', icon: Users },
+                    { id: 'certificates', label: 'Sertifikatlar', icon: Award },
                     { id: 'courses', label: 'Kurslar', icon: BookOpen },
                     { id: 'settings', label: 'Sozlamalar', icon: Settings },
                   ].map((item) => (
@@ -3496,20 +3576,23 @@ const App = () => {
                       {adminTab === 'orders' && <ClipboardCheck className="text-blue-400" size={32} />}
                       {adminTab === 'submissions' && <CheckCircle2 className="text-blue-400" size={32} />}
                       {adminTab === 'users' && <Users className="text-blue-400" size={32} />}
+                      {adminTab === 'certificates' && <Award className="text-blue-400" size={32} />}
                       {adminTab === 'courses' && <BookOpen className="text-blue-400" size={32} />}
                       {adminTab === 'settings' && <Settings className="text-blue-400" size={32} />}
                       {adminTab === 'dashboard' ? 'Boshqaruv Paneli' :
                         adminTab === 'orders' ? 'Buyurtmalar' :
                           adminTab === 'submissions' ? 'Topshiriqlar' :
                             adminTab === 'users' ? 'Foydalanuvchilar' :
-                              adminTab === 'courses' ? 'Kurslar' : 'Sozlamalar'}
+                              adminTab === 'certificates' ? 'Sertifikatlar' :
+                                adminTab === 'courses' ? 'Kurslar' : 'Sozlamalar'}
                     </h2>
                     <p className="text-white/60">
                       {adminTab === 'dashboard' ? 'Platforma statistikasi va umumiy ko\'rsatkichlar' :
                         adminTab === 'orders' ? 'Yangi kelib tushgan to\'lovlar va buyurtmalar' :
                           adminTab === 'submissions' ? 'O\'quvchilarning uyga vazifalari va test natijalari' :
                             adminTab === 'users' ? 'Foydalanuvchilarni boshqarish va nazorat qilish' :
-                              adminTab === 'courses' ? 'O\'quv dasturlari va darslar ro\'yxati' : 'Tizim sozlamalari'}
+                              adminTab === 'certificates' ? 'Foydalanuvchilarning natijalari va sertifikatlari' :
+                                adminTab === 'courses' ? 'O\'quv dasturlari va darslar ro\'yxati' : 'Tizim sozlamalari'}
                     </p>
                   </div>
                   <button
@@ -3820,6 +3903,80 @@ const App = () => {
                       </div>
                     )}
 
+                    {/* CERTIFICATES TAB */}
+                    {adminTab === 'certificates' && (
+                      <div className="space-y-6">
+                        <div className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 p-6">
+                          <h3 className="text-xl font-bold mb-6 flex items-center gap-3">
+                            <Award className="text-yellow-400" />
+                            O'quvchi Sertifikatlari va Progressi
+                          </h3>
+                          <div className="overflow-x-auto">
+                            <table className="w-full text-left">
+                              <thead className="bg-white/5 border-b border-white/10 text-white/40 uppercase text-xs font-black">
+                                <tr>
+                                  <th className="p-4">Foydalanuvchi</th>
+                                  <th className="p-4">Tugatilgan Darajalar</th>
+                                  <th className="p-4">Eng yuqori ball</th>
+                                  <th className="p-4">Sertifikatlar soni</th>
+                                  <th className="p-4 text-right">Progress</th>
+                                </tr>
+                              </thead>
+                              <tbody className="divide-y divide-white/5">
+                                {adminUsers.map((u, i) => {
+                                  const completedCount = u.completedLevels?.length || 0;
+                                  const maxScore = u.completedLevels?.length > 0
+                                    ? Math.max(...u.completedLevels.map(cl => cl.examScore))
+                                    : 0;
+
+                                  return (
+                                    <tr key={i} className="hover:bg-white/5 transition-colors group cursor-pointer" onClick={() => setSelectedAdminUser(u)}>
+                                      <td className="p-4">
+                                        <div className="flex items-center gap-3">
+                                          <div className="w-10 h-10 bg-gradient-to-br from-yellow-500/20 to-orange-500/20 rounded-xl flex items-center justify-center font-black text-yellow-500 border border-yellow-500/20">
+                                            {u.name?.charAt(0)}
+                                          </div>
+                                          <div>
+                                            <div className="font-bold text-white group-hover:text-yellow-400 transition-colors">{u.name}</div>
+                                            <div className="text-[10px] text-white/40 font-mono">{u.email}</div>
+                                          </div>
+                                        </div>
+                                      </td>
+                                      <td className="p-4">
+                                        <div className="flex flex-wrap gap-1">
+                                          {u.completedLevels?.map(cl => (
+                                            <span key={cl.levelId} className="px-2 py-0.5 bg-green-500/10 text-green-400 text-[10px] font-black rounded border border-green-500/20">
+                                              {cl.levelId}
+                                            </span>
+                                          )) || <span className="text-white/20 text-xs">-</span>}
+                                        </div>
+                                      </td>
+                                      <td className="p-4 font-black text-white/80">{maxScore}%</td>
+                                      <td className="p-4">
+                                        <div className="flex items-center gap-2">
+                                          <Award size={14} className="text-yellow-500" />
+                                          <span className="font-bold">{u.certificates?.length || 0}</span>
+                                        </div>
+                                      </td>
+                                      <td className="p-4 text-right">
+                                        <div className="w-24 bg-white/5 rounded-full h-1.5 ml-auto overflow-hidden">
+                                          <div
+                                            className="bg-gradient-to-r from-yellow-500 to-orange-500 h-full transition-all duration-1000"
+                                            style={{ width: `${(completedCount / 6) * 100}%` }}
+                                          ></div>
+                                        </div>
+                                        <div className="text-[10px] text-white/40 mt-1 font-bold">{completedCount}/6 Daraja</div>
+                                      </td>
+                                    </tr>
+                                  );
+                                })}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
                     {/* USERS TAB */}
                     {adminTab === 'users' && (
                       <div className="space-y-6">
@@ -3860,14 +4017,18 @@ const App = () => {
                                     (u.email && u.email.toLowerCase().includes(searchTerm.toLowerCase()))
                                   )
                                   .map((u, i) => (
-                                    <tr key={i} className="hover:bg-white/5 transition-colors group">
+                                    <tr
+                                      key={i}
+                                      onClick={() => setSelectedAdminUser(u)}
+                                      className="hover:bg-white/5 transition-colors group cursor-pointer"
+                                    >
                                       <td className="p-4">
                                         <div className="flex items-center gap-3">
                                           <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center font-black text-sm shadow-lg group-hover:scale-110 transition-transform">
                                             {u.name.charAt(0)}
                                           </div>
                                           <div>
-                                            <div className="font-bold text-white">{u.name}</div>
+                                            <div className="font-bold text-white group-hover:text-blue-400 transition-colors">{u.name}</div>
                                             <div className="text-[10px] text-white/40 font-mono">ID: {u._id.slice(-6).toUpperCase()}</div>
                                           </div>
                                         </div>
@@ -4313,30 +4474,32 @@ const App = () => {
                         <div className="bg-white/5 p-6 rounded-2xl border border-white/10">
                           <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
                             <Globe size={20} className="text-blue-400" />
-                            Umumiy Sozlamalar
+                            {t('select_language')}
                           </h3>
                           <div className="grid md:grid-cols-2 gap-6">
                             <div className="space-y-2">
-                              <label className="text-sm text-white/60">Tizim Tili</label>
-                              <select className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500/50">
-                                <option value="uz">O'zbekcha</option>
-                                <option value="ru">Русский</option>
-                                <option value="en">English</option>
+                              <label className="text-sm text-white/60">{t('language')}</label>
+                              <select
+                                value={language}
+                                onChange={(e) => setLanguage(e.target.value)}
+                                className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500/50"
+                              >
+                                <option value="uz">{t('uzbek')}</option>
+                                <option value="ru">{t('russian')}</option>
+                                <option value="en">{t('english')}</option>
                               </select>
                             </div>
                             <div className="space-y-2">
-                              <label className="text-sm text-white/60">Mavzu (Theme)</label>
-                              <select className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500/50">
-                                <option value="dark">Qorong'u (Dark)</option>
-                                <option value="light">Yorug' (Light)</option>
-                                <option value="system">Tizim moslashuvi</option>
+                              <label className="text-sm text-white/60">{t('light_mode')} / {t('dark_mode')}</label>
+                              <select
+                                value={theme}
+                                onChange={(e) => setTheme(e.target.value)}
+                                className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500/50"
+                              >
+                                <option value="dark">{t('dark_mode')}</option>
+                                <option value="light">{t('light_mode')}</option>
                               </select>
                             </div>
-                          </div>
-                          <div className="mt-4 flex justify-end">
-                            <button className="bg-blue-600 hover:bg-blue-500 px-6 py-2 rounded-xl text-sm font-bold transition-all">
-                              Saqlash
-                            </button>
                           </div>
                         </div>
 
@@ -4942,6 +5105,120 @@ const App = () => {
                     <Gift size={20} />
                     Bepul Berish
                   </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )
+      }
+
+      {/* User Details Modal (Admin) */}
+      {
+        selectedAdminUser && (
+          <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-in fade-in duration-300">
+            <div className="bg-[#0f172a] w-full max-w-4xl max-h-[90vh] rounded-3xl border border-white/20 shadow-2xl relative overflow-hidden flex flex-col">
+              {/* Header */}
+              <div className="p-8 bg-gradient-to-r from-blue-600/20 to-purple-600/20 border-b border-white/10 flex justify-between items-center">
+                <div className="flex items-center gap-6">
+                  <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center text-3xl font-black text-white shadow-xl">
+                    {selectedAdminUser.name.charAt(0)}
+                  </div>
+                  <div>
+                    <h3 className="text-3xl font-black text-white">{selectedAdminUser.name}</h3>
+                    <p className="text-white/60 font-bold">{selectedAdminUser.email}</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setSelectedAdminUser(null)}
+                  className="p-3 bg-white/5 rounded-2xl hover:bg-white/10 transition-all text-white/60 hover:text-white"
+                >
+                  <X size={28} />
+                </button>
+              </div>
+
+              {/* Content */}
+              <div className="flex-1 overflow-y-auto p-8 space-y-8 custom-scrollbar">
+                {/* Stats Grid */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="bg-white/5 p-6 rounded-2xl border border-white/10 text-center space-y-1">
+                    <div className="text-white/40 text-xs font-bold uppercase tracking-wider">{t('current_level')}</div>
+                    <div className="text-2xl font-black text-blue-400">{selectedAdminUser.currentLevel || 'A1'}</div>
+                  </div>
+                  <div className="bg-white/5 p-6 rounded-2xl border border-white/10 text-center space-y-1">
+                    <div className="text-white/40 text-xs font-bold uppercase tracking-wider">{t('time_spent')}</div>
+                    <div className="text-2xl font-black text-purple-400">{selectedAdminUser.totalTimeSpent || 0} min</div>
+                  </div>
+                  <div className="bg-white/5 p-6 rounded-2xl border border-white/10 text-center space-y-1">
+                    <div className="text-white/40 text-xs font-bold uppercase tracking-wider">Mavzular</div>
+                    <div className="text-2xl font-black text-green-400">{selectedAdminUser.completedLessons?.length || 0}</div>
+                  </div>
+                  <div className="bg-white/5 p-6 rounded-2xl border border-white/10 text-center space-y-1">
+                    <div className="text-white/40 text-xs font-bold uppercase tracking-wider">Sertifikatlar</div>
+                    <div className="text-2xl font-black text-yellow-400">{selectedAdminUser.certificates?.length || 0}</div>
+                  </div>
+                </div>
+
+                {/* Progress Details */}
+                <div className="grid md:grid-cols-2 gap-8">
+                  {/* Purchased Levels */}
+                  <div className="bg-white/5 p-6 rounded-3xl border border-white/10 space-y-4">
+                    <h4 className="font-black text-lg flex items-center gap-2">
+                      <Lock size={18} className="text-blue-400" />
+                      Ochilgan Darajalar
+                    </h4>
+                    <div className="flex flex-wrap gap-2">
+                      {['A1', 'A2', 'B1', 'B2', 'C1', 'C2'].map(lvl => {
+                        const isUnlocked = selectedAdminUser.purchasedLevels?.includes(lvl) || lvl === 'A1';
+                        return (
+                          <div key={lvl} className={`px-4 py-2 rounded-xl text-sm font-black border ${isUnlocked
+                            ? 'bg-blue-500/20 text-blue-400 border-blue-500/20'
+                            : 'bg-white/5 text-white/20 border-white/10'
+                            }`}>
+                            {lvl}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Completed Levels */}
+                  <div className="bg-white/5 p-6 rounded-3xl border border-white/10 space-y-4">
+                    <h4 className="font-black text-lg flex items-center gap-2">
+                      <Trophy size={18} className="text-yellow-400" />
+                      Tugatilgan Darajalar
+                    </h4>
+                    <div className="space-y-2">
+                      {(selectedAdminUser.completedLevels && selectedAdminUser.completedLevels.length > 0) ? (
+                        selectedAdminUser.completedLevels.map((cl, idx) => (
+                          <div key={idx} className="flex justify-between items-center p-3 bg-white/5 rounded-xl border border-white/5">
+                            <span className="font-black">{cl.levelId}</span>
+                            <span className="text-green-400 font-bold">{cl.examScore}%</span>
+                            <span className="text-xs text-white/40">{new Date(cl.completedAt).toLocaleDateString()}</span>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="text-white/20 text-sm font-bold py-2">Hali darajalar tugatilmagan</div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Last Activity Section */}
+                <div className="bg-white/5 p-6 rounded-3xl border border-white/10 space-y-4">
+                  <h4 className="font-black text-lg flex items-center gap-2">
+                    <Clock size={18} className="text-indigo-400" />
+                    {t('usage_stats')}
+                  </h4>
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div className="flex justify-between items-center p-4 bg-black/20 rounded-2xl border border-white/5">
+                      <span className="text-white/60 font-bold">{t('last_active')}:</span>
+                      <span className="text-white font-black">{selectedAdminUser.lastActive ? new Date(selectedAdminUser.lastActive).toLocaleString() : 'Noma\'lum'}</span>
+                    </div>
+                    <div className="flex justify-between items-center p-4 bg-black/20 rounded-2xl border border-white/5">
+                      <span className="text-white/60 font-bold">Ro'yxatdan o'tgan:</span>
+                      <span className="text-white font-black">{new Date(selectedAdminUser.createdAt).toLocaleDateString()}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
