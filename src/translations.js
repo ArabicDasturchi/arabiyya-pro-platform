@@ -223,6 +223,10 @@ export const translations = {
         admin_menu_settings: "Sozlamalar",
         admin_stats_desc: "Platforma statistikasi va umumiy ko'rsatkichlar",
         grant_all_levels: "Hamma darajani berish",
+        grant_all_confirm: "{name} ga BARCHA darajalarni berishni tasdiqlaysizmi?",
+        grant_all_success: "✅ {name} uchun barcha darajalar ochildi!",
+        or: "yoki",
+        select_level: "Darajani tanlash...",
         admin_orders_desc: "Yangi kelib tushgan to'lovlar va buyurtmalar",
         admin_subs_desc: "O'quvchilarning uyga vazifalari va test natijalari",
         admin_users_desc: "Foydalanuvchilarni boshqarish va nazorat qilish",
@@ -1107,6 +1111,10 @@ export const translations = {
         admin_menu_courses: "Courses",
         admin_menu_settings: "Settings",
         grant_all_levels: "Grant All Levels",
+        grant_all_confirm: "Grant ALL levels to {name}? Are you sure?",
+        grant_all_success: "✅ All levels granted to {name}!",
+        or: "or",
+        select_level: "Select a level...",
     },
     ru: {
         home: "Главная",
@@ -1659,5 +1667,9 @@ export const translations = {
         admin_menu_courses: "Курсы",
         admin_menu_settings: "Настройки",
         grant_all_levels: "Выдать все уровни",
+        grant_all_confirm: "Выдать ВСЕ уровни пользователю {name}? Вы уверены?",
+        grant_all_success: "✅ Все уровни выданы пользователю {name}!",
+        or: "или",
+        select_level: "Выбрать уровень...",
     }
 };

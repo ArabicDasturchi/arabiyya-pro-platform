@@ -4046,7 +4046,7 @@ const App = () => {
                                              <button
                                                onClick={async (e) => {
                                                  e.stopPropagation();
-                                                 if (!window.confirm(`Han foydalanuvchiga BARCHA darajalarni berishni tasdiqlaysizmi?`)) return;
+                                                 if (!window.confirm(t('grant_all_confirm').replace('{name}', u.name))) return;
                                                  try {
                                                    const token = localStorage.getItem('token');
                                                    const allLevelIds = levels.map(l => l.id);
@@ -5248,14 +5248,14 @@ const App = () => {
                   {/* Divider */}
                   <div className="flex items-center gap-3">
                     <div className="flex-1 h-px bg-white/10" />
-                    <span className="text-white/30 text-xs font-bold uppercase tracking-widest">yoki</span>
+                    <span className="text-white/30 text-xs font-bold uppercase tracking-widest">{t('or')}</span>
                     <div className="flex-1 h-px bg-white/10" />
                   </div>
 
                   {/* Grant ALL levels */}
                   <button
                     onClick={async () => {
-                      if (!window.confirm(`${grantingLevelTo.name} ga BARCHA darajalarni berishni tasdiqlaysizmi?`)) return;
+                      if (!window.confirm(t('grant_all_confirm').replace('{name}', grantingLevelTo.name))) return;
                       try {
                         const token = localStorage.getItem('token');
                         const allLevelIds = levels.map(l => l.id);
