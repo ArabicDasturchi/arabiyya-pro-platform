@@ -4042,6 +4042,36 @@ const App = () => {
                                               {t('grant_level')}
                                             </button>
 
+                                            {/* Hamma darajani berish */}
+                                             <button
+                                               onClick={async (e) => {
+                                                 e.stopPropagation();
+                                                 if (!window.confirm(`Han foydalanuvchiga BARCHA darajalarni berishni tasdiqlaysizmi?`)) return;
+                                                 try {
+                                                   const token = localStorage.getItem('token');
+                                                   const allLevelIds = levels.map(l => l.id);
+                                                   for (const levelId of allLevelIds) {
+                                                     if (!u.purchasedLevels?.includes(levelId)) {
+                                                       await fetch('https://arabiyya-pro-backend.onrender.com/api/admin/grant-level', {
+                                                         method: 'POST',
+                                                         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                                                         body: JSON.stringify({ userId: u._id, levelId })
+                                                       });
+                                                     }
+                                                   }
+                                                   alert(`Barcha darajalar ochildi!`);
+                                                   fetchAdminStats();
+                                                 } catch (err) {
+                                                   console.error(err);
+                                                   alert(t('system_error'));
+                                                 }
+                                               }}
+                                               className="px-3 py-1.5 rounded-lg text-xs font-bold bg-yellow-500/20 text-yellow-300 hover:bg-yellow-500/30 border border-yellow-500/20 transition-all flex items-center gap-1"
+                                             >
+                                               <Zap size={14} />
+                                               Hamma daraja
+                                             </button>
+
                                             <button
                                               onClick={(e) => { e.stopPropagation(); handleRoleUpdate(u._id, u.role === 'admin' ? 'user' : 'admin'); }}
                                               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${u.role === 'admin'
@@ -4722,12 +4752,18 @@ const App = () => {
         {/* FULL SCREEN MODAL CHAT */}
         {showChat && (
           <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-300">
-            <div className="w-full h-full max-w-7xl bg-[#0f172a] rounded-3xl border border-white/10 shadow-2xl flex overflow-hidden relative">
+            <div className={`w-full h-full max-w-7xl rounded-3xl border shadow-2xl flex overflow-hidden relative ${theme === 'dark'
+                ? 'bg-[#0f172a] border-white/10'
+                : 'bg-white border-blue-100 shadow-blue-200'
+              }`}>
 
-              {/* SIDEBAR (Desktop: Visible, Mobile: Hidden unless in list view) */}
-              <div className={`${chatView === 'list' ? 'flex' : 'hidden'} md:flex flex-col w-full md:w-80 border-r border-white/10 bg-black/20`}>
-                <div className="p-5 border-b border-white/10 flex justify-between items-center bg-white/5">
-                  <h3 className="font-black text-white text-lg flex items-center gap-2">
+              {/* SIDEBAR */}
+              <div className={`${chatView === 'list' ? 'flex' : 'hidden'} md:flex flex-col w-full md:w-80 border-r ${theme === 'dark' ? 'border-white/10 bg-black/20' : 'border-gray-200 bg-gray-50'
+                }`}>
+                <div className={`p-5 border-b flex justify-between items-center ${theme === 'dark' ? 'border-white/10 bg-white/5' : 'border-gray-200 bg-white'
+                  }`}>
+                  <h3 className={`font-black text-lg flex items-center gap-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'
+                    }`}>
                     <Brain className="text-blue-500" /> {t('ai_assistant')}
                   </h3>
                   <button onClick={startNewChat} className="bg-blue-600 p-2 rounded-lg hover:bg-blue-500 text-white transition-colors" title={t('new_chat')}>
@@ -4737,19 +4773,27 @@ const App = () => {
 
                 <div className="flex-1 overflow-y-auto p-3 space-y-2 custom-scrollbar">
                   {chats.length === 0 ? (
-                    <div className="text-center text-white/40 py-10 text-sm">{t('ai_chat_history')}</div>
+                    <div className={`text-center py-10 text-sm ${theme === 'dark' ? 'text-white/40' : 'text-gray-400'
+                      }`}>{t('ai_chat_history')}</div>
                   ) : (
                     chats.map(chat => (
                       <div
                         key={chat._id}
                         onClick={() => { loadChat(chat._id); if (window.innerWidth < 768) setChatView('messages'); }}
-                        className={`group flex justify-between items-center p-3 rounded-xl cursor-pointer border transition-all ${activeChatId === chat._id ? 'bg-blue-500/20 border-blue-500/50' : 'bg-white/5 border-white/10 hover:bg-white/10'}`}
+                        className={`group flex justify-between items-center p-3 rounded-xl cursor-pointer border transition-all ${activeChatId === chat._id
+                            ? 'bg-blue-500/20 border-blue-500/50'
+                            : theme === 'dark'
+                              ? 'bg-white/5 border-white/10 hover:bg-white/10'
+                              : 'bg-white border-gray-200 hover:bg-blue-50 hover:border-blue-200'
+                          }`}
                       >
                         <div className="truncate pr-2 overflow-hidden flex-1">
-                          <div className="font-bold text-white truncate text-sm mb-1 group-hover:text-blue-400">{chat.title}</div>
-                          <span className="text-xs text-white/40">{new Date(chat.createdAt).toLocaleDateString()}</span>
+                          <div className={`font-bold truncate text-sm mb-1 group-hover:text-blue-500 ${activeChatId === chat._id ? 'text-blue-400' : theme === 'dark' ? 'text-white' : 'text-gray-800'
+                            }`}>{chat.title}</div>
+                          <span className={`text-xs ${theme === 'dark' ? 'text-white/40' : 'text-gray-400'
+                            }`}>{new Date(chat.createdAt).toLocaleDateString()}</span>
                         </div>
-                        <button onClick={(e) => deleteChat(chat._id, e)} className="p-2 text-white/60 hover:text-red-400 hover:bg-red-500/20 rounded-lg transition-all" title={t('delete_user')}>
+                        <button onClick={(e) => deleteChat(chat._id, e)} className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/20 rounded-lg transition-all">
                           <Trash2 size={18} />
                         </button>
                       </div>
@@ -4758,7 +4802,7 @@ const App = () => {
                 </div>
 
                 {chats.length > 0 && (
-                  <div className="p-4 border-t border-white/10">
+                  <div className={`p-4 border-t ${theme === 'dark' ? 'border-white/10' : 'border-gray-200'}`}>
                     <button onClick={clearAllChats} className="w-full py-3 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all">
                       <Trash2 size={16} /> {t('delete_all_chats')}
                     </button>
@@ -4767,19 +4811,23 @@ const App = () => {
               </div>
 
               {/* MAIN CHAT AREA */}
-              <div className={`${chatView === 'messages' ? 'flex' : 'hidden'} md:flex flex-1 flex-col bg-slate-900/50 relative`}>
+              <div className={`${chatView === 'messages' ? 'flex' : 'hidden'} md:flex flex-1 flex-col relative ${theme === 'dark' ? 'bg-slate-900/50' : 'bg-gray-50'
+                }`}>
                 {/* Header */}
-                <div className="p-4 border-b border-white/10 flex justify-between items-center bg-white/5 backdrop-blur-md">
+                <div className={`p-4 border-b flex justify-between items-center backdrop-blur-md ${theme === 'dark' ? 'border-white/10 bg-white/5' : 'border-gray-200 bg-white shadow-sm'
+                  }`}>
                   <div className="flex items-center gap-3">
-                    <button className="md:hidden p-2 hover:bg-white/10 rounded-lg text-white" onClick={() => setChatView('list')}>
+                    <button className={`md:hidden p-2 hover:bg-white/10 rounded-lg transition-colors ${theme === 'dark' ? 'text-white' : 'text-gray-700 hover:bg-gray-100'
+                      }`} onClick={() => setChatView('list')}>
                       <ChevronLeft size={24} />
                     </button>
                     <div>
-                      <h3 className="font-bold text-white text-lg">{t('ai_assistant')}</h3>
-                      <p className="text-xs text-green-400 flex items-center gap-1"><span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span> {status === 'typing' ? t('ai_typing') : 'Online'}</p>
+                      <h3 className={`font-bold text-lg ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{t('ai_assistant')}</h3>
+                      <p className="text-xs text-green-500 flex items-center gap-1"><span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> {status === 'typing' ? t('ai_typing') : 'Online'}</p>
                     </div>
                   </div>
-                  <button onClick={() => setShowChat(false)} className="p-2 hover:bg-red-500/20 hover:text-red-400 rounded-xl transition-all text-white/60">
+                  <button onClick={() => setShowChat(false)} className={`p-2 rounded-xl transition-all ${theme === 'dark' ? 'hover:bg-red-500/20 hover:text-red-400 text-white/60' : 'hover:bg-red-50 hover:text-red-500 text-gray-400'
+                    }`}>
                     <X size={24} />
                   </button>
                 </div>
@@ -4789,11 +4837,14 @@ const App = () => {
                   {chatMessages.length === 0 && (
                     <div className="text-center py-20 space-y-6">
                       <Brain size={64} className="mx-auto text-blue-500/50 animate-pulse" />
-                      <h3 className="text-2xl font-bold text-white">{t('ai_greeting')}</h3>
-                      <p className="text-white/60">{t('ai_help_text')}</p>
+                      <h3 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>{t('ai_greeting')}</h3>
+                      <p className={theme === 'dark' ? 'text-white/60' : 'text-gray-500'}>{t('ai_help_text')}</p>
                       <div className="grid grid-cols-2 gap-4 max-w-lg mx-auto">
                         {["Grammatika", "So'zlashuv", "Tarjima", "Mashqlar"].map(category => (
-                          <button key={category} onClick={() => setChatInput(category)} className="p-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-sm font-bold text-white transition-all">
+                          <button key={category} onClick={() => setChatInput(category)} className={`p-4 border rounded-xl text-sm font-bold transition-all ${theme === 'dark'
+                              ? 'bg-white/5 hover:bg-white/10 border-white/10 text-white'
+                              : 'bg-white hover:bg-blue-50 border-gray-200 text-gray-700 hover:border-blue-300 shadow-sm'
+                            }`}>
                             {t(`ai_starter_${category.toLowerCase().replace(/[' ]/g, '')}`)}
                           </button>
                         ))}
@@ -4809,22 +4860,34 @@ const App = () => {
                           <button onClick={() => deleteMessage(msg._id)} className="p-1.5 hover:text-red-400 text-white/60"><Trash2 size={14} /></button>
                         </div>
                       )}
-                      <div className={`max-w-[85%] md:max-w-[70%] p-5 rounded-2xl ${msg.role === 'user' ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg' : 'bg-white/10 border border-white/10 text-white'}`}>
+                      <div className={`max-w-[85%] md:max-w-[70%] p-5 rounded-2xl ${msg.role === 'user'
+                          ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg'
+                          : theme === 'dark'
+                            ? 'bg-white/10 border border-white/10 text-white'
+                            : 'bg-white border border-gray-200 text-gray-800 shadow-sm'
+                        }`}>
                         {msg.role === 'ai' && (
-                          <div className="flex justify-between items-center mb-2 text-blue-400 text-xs font-bold uppercase tracking-wider">
+                          <div className={`flex justify-between items-center mb-2 text-xs font-bold uppercase tracking-wider ${theme === 'dark' ? 'text-blue-400' : 'text-blue-600'
+                            }`}>
                             <span className="flex items-center gap-2"><Brain size={14} /> AI</span>
-                            <button onClick={() => navigator.clipboard.writeText(msg.content)} className="hover:text-white opacity-0 group-hover:opacity-100 transition-opacity"><ClipboardCheck size={14} /></button>
+                            <button onClick={() => navigator.clipboard.writeText(msg.content)} className="hover:text-blue-500 opacity-0 group-hover:opacity-100 transition-opacity"><ClipboardCheck size={14} /></button>
                           </div>
                         )}
                         <p className="leading-relaxed whitespace-pre-wrap">{msg.content}</p>
                       </div>
                     </div>
                   ))}
-                  {isChatLoading && <div className="flex items-center gap-2 text-white/50 bg-white/5 p-4 rounded-xl w-fit"><Loader2 className="animate-spin" size={18} /> {t('ai_typing')}</div>}
+                  {isChatLoading && (
+                    <div className={`flex items-center gap-2 p-4 rounded-xl w-fit ${theme === 'dark' ? 'text-white/50 bg-white/5' : 'text-gray-500 bg-white border border-gray-200 shadow-sm'
+                      }`}>
+                      <Loader2 className="animate-spin" size={18} /> {t('ai_typing')}
+                    </div>
+                  )}
                 </div>
 
                 {/* Input Area */}
-                <div className="p-5 border-t border-white/10 bg-black/20 backdrop-blur-md">
+                <div className={`p-5 border-t backdrop-blur-md ${theme === 'dark' ? 'border-white/10 bg-black/20' : 'border-gray-200 bg-white shadow-inner'
+                  }`}>
                   <div className="flex gap-3 max-w-4xl mx-auto w-full">
                     <input
                       type="text"
@@ -4833,7 +4896,10 @@ const App = () => {
                       onKeyPress={e => e.key === 'Enter' && !isChatLoading && sendChatMessage()}
                       placeholder={t('ai_placeholder')}
                       disabled={isChatLoading}
-                      className="flex-1 bg-white/5 border border-white/10 rounded-xl px-5 py-4 text-white focus:outline-none focus:border-blue-500 transition-all placeholder:text-white/20"
+                      className={`flex-1 border rounded-xl px-5 py-4 focus:outline-none focus:border-blue-500 transition-all ${theme === 'dark'
+                          ? 'bg-white/5 border-white/10 text-white placeholder:text-white/20'
+                          : 'bg-gray-50 border-gray-300 text-gray-900 placeholder:text-gray-400'
+                        }`}
                     />
                     <button onClick={sendChatMessage} disabled={!chatInput.trim() || isChatLoading} className="bg-gradient-to-r from-blue-600 to-purple-600 p-4 rounded-xl text-white hover:scale-105 transition-all shadow-lg disabled:opacity-50 disabled:hover:scale-100">
                       <Send size={24} />
@@ -5109,79 +5175,115 @@ const App = () => {
               </button>
 
               <div className="text-center space-y-6">
-                <div className="w-20 h-20 mx-auto bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg">
-                  <Gift size={40} className="text-white" />
+                {/* User info */}
+                <div className="flex items-center gap-4 bg-white/5 rounded-2xl p-4 text-left border border-white/10">
+                  <div className="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center font-black text-2xl text-white shadow-lg">
+                    {grantingLevelTo.name?.charAt(0)}
+                  </div>
+                  <div>
+                    <div className="font-black text-white text-lg">{grantingLevelTo.name}</div>
+                    <div className="text-white/40 text-xs font-mono">{grantingLevelTo.email}</div>
+                    <div className="flex gap-1 mt-1 flex-wrap">
+                      {['A1', 'A2', 'B1', 'B2', 'C1', 'C2'].map(lvl => (
+                        <span key={lvl} className={`text-[10px] font-black px-1.5 py-0.5 rounded border ${grantingLevelTo.purchasedLevels?.includes(lvl)
+                            ? 'bg-green-500/20 text-green-400 border-green-500/30'
+                            : 'bg-white/5 text-white/20 border-white/10'
+                          }`}>{lvl}</span>
+                      ))}
+                    </div>
+                  </div>
                 </div>
 
-                <div>
-                  <h3 className="text-2xl font-black">Bepul Daraja Berish</h3>
-                  <p className="text-white/60 mt-2">
-                    <span className="font-bold text-white">{grantingLevelTo.name}</span> ga daraja bering
-                  </p>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="space-y-2 text-left">
-                    <label className="text-sm font-bold text-white/80 ml-1">Darajani tanlang</label>
+                <div className="space-y-3">
+                  {/* Single level grant */}
+                  <div className="bg-white/5 rounded-2xl p-4 border border-white/10 space-y-3">
+                    <div className="flex items-center gap-2 text-sm font-black text-white/60 uppercase tracking-wider">
+                      <Gift size={14} />
+                      {t('grant_level')}
+                    </div>
                     <select
                       value={selectedGrantLevel}
                       onChange={(e) => setSelectedGrantLevel(e.target.value)}
-                      className="w-full px-4 py-3 bg-white/5 rounded-xl border border-white/10 outline-none focus:border-green-500 transition-colors text-white font-bold"
+                      className="w-full px-4 py-3 bg-black/30 rounded-xl border border-white/10 outline-none focus:border-green-500 transition-colors text-white font-bold text-sm"
                     >
-                      <option value="" className="bg-slate-900">Darajani tanlash...</option>
+                      <option value="" className="bg-slate-900">{t('select_level')}</option>
                       {levels.filter(l => !grantingLevelTo.purchasedLevels?.includes(l.id)).map(lvl => (
                         <option key={lvl.id} value={lvl.id} className="bg-slate-900">
                           {lvl.icon} {lvl.id} - {lvl.title}
                         </option>
                       ))}
                     </select>
+                    <button
+                      onClick={async () => {
+                        if (!selectedGrantLevel) return alert(t('fill_all_fields'));
+                        try {
+                          const token = localStorage.getItem('token');
+                          const res = await fetch('https://arabiyya-pro-backend.onrender.com/api/admin/grant-level', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                            body: JSON.stringify({ userId: grantingLevelTo._id, levelId: selectedGrantLevel })
+                          });
+                          const data = await res.json();
+                          if (data.success) {
+                            alert(`✅ ${grantingLevelTo.name} uchun ${selectedGrantLevel} darajasi ochildi!`);
+                            setShowGrantLevelModal(false);
+                            setGrantingLevelTo(null);
+                            setSelectedGrantLevel('');
+                            fetchAdminStats();
+                          } else {
+                            alert(t('error_prefix') + data.message);
+                          }
+                        } catch (err) {
+                          console.error(err);
+                          alert(t('system_error'));
+                        }
+                      }}
+                      className="w-full py-3.5 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl font-black text-base hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-green-500/20 flex items-center justify-center gap-2 text-white"
+                    >
+                      <Gift size={18} />
+                      {t('grant_level')}
+                    </button>
                   </div>
 
+                  {/* Divider */}
+                  <div className="flex items-center gap-3">
+                    <div className="flex-1 h-px bg-white/10" />
+                    <span className="text-white/30 text-xs font-bold uppercase tracking-widest">yoki</span>
+                    <div className="flex-1 h-px bg-white/10" />
+                  </div>
+
+                  {/* Grant ALL levels */}
                   <button
                     onClick={async () => {
-                      if (!selectedGrantLevel) return alert('Iltimos, daraja tanlang!');
-
+                      if (!window.confirm(`${grantingLevelTo.name} ga BARCHA darajalarni berishni tasdiqlaysizmi?`)) return;
                       try {
                         const token = localStorage.getItem('token');
-                        const res = await fetch(`https://arabiyya-pro-backend.onrender.com/api/admin/grant-level`, {
-                          method: 'POST',
-                          headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`
-                          },
-                          body: JSON.stringify({
-                            userId: grantingLevelTo._id,
-                            levelId: selectedGrantLevel
-                          })
-                        });
-
-                        const data = await res.json();
-                        if (data.success) {
-                          alert(`✅ ${grantingLevelTo.name} uchun ${selectedGrantLevel} darajasi ochildi!`);
-                          setShowGrantLevelModal(false);
-                          setGrantingLevelTo(null);
-                          setSelectedGrantLevel('');
-                          // Refresh users list
-                          if (view === 'admin' && adminTab === 'users') {
-                            const token2 = localStorage.getItem('token');
-                            const usersRes = await fetch('https://arabiyya-pro-backend.onrender.com/api/admin/users', {
-                              headers: { 'Authorization': `Bearer ${token2}` }
+                        const allLevelIds = levels.map(l => l.id);
+                        let granted = 0;
+                        for (const levelId of allLevelIds) {
+                          if (!grantingLevelTo.purchasedLevels?.includes(levelId)) {
+                            await fetch('https://arabiyya-pro-backend.onrender.com/api/admin/grant-level', {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                              body: JSON.stringify({ userId: grantingLevelTo._id, levelId })
                             });
-                            const usersData = await usersRes.json();
-                            if (usersData.success) setAdminUsers(usersData.users);
+                            granted++;
                           }
-                        } else {
-                          alert('Xatolik: ' + data.message);
                         }
+                        alert(`✅ ${grantingLevelTo.name} uchun barcha ${granted > 0 ? granted + ' ta' : ''} daraja ochildi!`);
+                        setShowGrantLevelModal(false);
+                        setGrantingLevelTo(null);
+                        setSelectedGrantLevel('');
+                        fetchAdminStats();
                       } catch (err) {
                         console.error(err);
-                        alert('Server xatosi');
+                        alert(t('system_error'));
                       }
                     }}
-                    className="w-full py-4 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl font-black text-lg hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl flex items-center justify-center gap-2 text-white"
+                    className="w-full py-3.5 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-xl font-black text-base hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-yellow-500/20 flex items-center justify-center gap-2 text-white"
                   >
-                    <Gift size={20} />
-                    Bepul Berish
+                    <Zap size={18} />
+                    {t('grant_all_levels')}
                   </button>
                 </div>
               </div>
