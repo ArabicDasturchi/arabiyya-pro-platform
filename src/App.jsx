@@ -1292,7 +1292,7 @@ const App = () => {
   }, []);
 
   return (
-    <div className={`min-h-screen transition-all duration-700 ${theme === 'dark' ? 'bg-[#111827] text-white' : 'bg-gradient-to-br from-blue-950 via-indigo-900 to-purple-950 text-white'} font-sans relative overflow-x-hidden`}>
+    <div className={`min-h-screen transition-all duration-700 ${theme === 'dark' ? 'bg-[#030712] text-white' : 'bg-gradient-to-br from-blue-950 via-indigo-900 to-purple-950 text-white'} font-sans relative overflow-x-hidden`}>
 
       {/* Animated background elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
@@ -1301,7 +1301,7 @@ const App = () => {
       </div>
 
       {/* NAVIGATION BAR */}
-      <nav className={`fixed top-0 w-full z-50 backdrop-blur-2xl ${theme === 'dark' ? 'bg-black/20 border-white/5' : 'bg-white/5 border-white/10'} border-b shadow-2xl transition-all duration-500`}>
+      <nav className={`fixed top-0 w-full z-50 backdrop-blur-2xl ${theme === 'dark' ? 'bg-[#030712]/60 border-white/5' : 'bg-white/5 border-white/10'} border-b shadow-2xl transition-all duration-500`}>
         <div className="max-w-7xl mx-auto px-3 sm:px-6 py-3 sm:py-4">
           <div className="flex justify-between items-center">
 
@@ -1369,7 +1369,7 @@ const App = () => {
                               }}
                               className={`w-full px-4 py-2.5 text-left text-xs font-bold hover:bg-white/10 transition-colors uppercase ${language === lang ? 'text-blue-400 bg-blue-500/10' : 'text-white/60'}`}
                             >
-                              {lang === 'uz' ? 'O\'zbekcha' : lang === 'ru' ? 'Русский' : 'English'}
+                              {lang === 'uz' ? t('uzbek') : lang === 'ru' ? t('russian') : t('english')}
                             </button>
                           ))}
                         </div>
@@ -1788,7 +1788,7 @@ const App = () => {
                       </div>
 
                       <div className="text-center text-sm text-white/50 mt-8">
-                        Google orqali kirish bilan siz <a href="#" className="text-blue-400 hover:underline">Foydalanish shartlari</a>ga rozilik bildirasiz
+                        {t('google_terms')} <a href="#" className="text-blue-400 hover:underline">{t('terms_link')}</a>{t('terms_suffix')}
                       </div>
                     </div>
                   ) : !placementResult ? (
@@ -1817,8 +1817,8 @@ const App = () => {
                         </div>
 
                         <div className="flex justify-between text-sm font-bold text-white/60">
-                          <span>Boshlash</span>
-                          <span>Tugash</span>
+                          <span>{t('start')}</span>
+                          <span>{t('finish')}</span>
                         </div>
                       </div>
 
@@ -1829,8 +1829,8 @@ const App = () => {
                             <Loader2 size={80} className="relative animate-spin text-blue-400" strokeWidth={3} />
                           </div>
                           <div className="space-y-3">
-                            <p className="text-3xl font-black">AI tahlil qilmoqda...</p>
-                            <p className="text-lg text-white/60">Sizning javoblaringiz professional tahlil qilinmoqda</p>
+                            <p className="text-3xl font-black">{t('ai_analyzing')}</p>
+                            <p className="text-lg text-white/60">{t('ai_analyzing_sub')}</p>
                           </div>
                         </div>
                       ) : (
@@ -1843,7 +1843,7 @@ const App = () => {
                               </div>
                               <div>
                                 <div className="text-sm font-bold text-white/60 mb-3">
-                                  Savol {testStep + 1} / 12 • {placementQuestions[testStep].level} Daraja
+                                  {t('question')} {testStep + 1} / 12 • {placementQuestions[testStep].level} {t('level_label')}
                                 </div>
                                 <p className="text-2xl font-bold leading-relaxed">{placementQuestions[testStep].q}</p>
                               </div>
@@ -1882,7 +1882,7 @@ const App = () => {
                       </div>
 
                       <div className="space-y-4">
-                        <h2 className="text-5xl font-black">Sizning darajangiz</h2>
+                        <h2 className="text-5xl font-black">{t('your_level')}</h2>
                         <div className="text-8xl font-black bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent animate-gradient">
                           {placementResult.level}
                         </div>
@@ -1891,7 +1891,7 @@ const App = () => {
                       <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl p-10 rounded-3xl text-left border border-white/20 space-y-5 shadow-xl">
                         <div className="flex items-center gap-3 text-blue-400 font-bold text-lg">
                           <Brain size={24} />
-                          <span>AI Professional Tahlil</span>
+                          <span>{t('ai_prof_analysis')}</span>
                         </div>
                         <p className="text-white/90 leading-relaxed text-lg whitespace-pre-line">{placementResult.feedback}</p>
                       </div>
@@ -1903,7 +1903,7 @@ const App = () => {
                         <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-300"></div>
                         <div className="relative px-12 py-6 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-2xl font-black text-xl hover:scale-105 transition-all duration-300 shadow-2xl flex items-center gap-4">
                           <Rocket size={28} />
-                          O'qishni Boshlash
+                          {t('start_learning_btn')}
                           <ArrowRight className="group-hover:translate-x-2 transition-transform" size={28} />
                         </div>
                       </button>
@@ -1924,17 +1924,17 @@ const App = () => {
               <div className="text-center space-y-6">
                 <div className="relative inline-block">
                   <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-3xl blur-3xl animate-pulse"></div>
-                  <h2 className="relative text-5xl md:text-6xl font-black">CEFR Darajalari</h2>
+                  <h2 className="relative text-5xl md:text-6xl font-black">{t('cefr_levels')}</h2>
                 </div>
-                <p className="text-2xl text-white/70">Boshlang'ichdan professional darajagacha sayohat</p>
+                <p className="text-2xl text-white/70">{t('cefr_subtitle')}</p>
               </div>
 
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {levels.filter(l => l.id !== 'INTRO').map((lvl, index) => {
                   // Quick Fix Override for ALPHABET display
                   if (lvl.id === 'ALPHABET' || lvl.title.includes('Arab Harflari')) {
-                    lvl.title = "Arab Alifbosi";
-                    lvl.description = "Harflar, talaffuz va yozish qoidalarini mukammal o'rganing.";
+                    lvl.title = t('alphabet_title');
+                    lvl.description = t('alphabet_desc');
                     lvl.icon = "ا";
                   }
                   const isCompleted = completedLevels.includes(lvl.id);
@@ -3799,13 +3799,13 @@ const App = () => {
                                       </td>
                                       <td className="p-4">
                                         {sub.type === 'quiz' ? (
-                                          <span className="font-bold text-lg">{sub.score} ball</span>
+                                          <span className="font-bold text-lg">{sub.score} {t('points').toLowerCase()}</span>
                                         ) : (
                                           sub.fileUrl ? (
                                             <a href={`https://arabiyya-pro-backend.onrender.com${sub.fileUrl}${localStorage.getItem('token') ? `?token=${localStorage.getItem('token')}` : ''}`} target="_blank" rel="noreferrer" className="text-blue-400 hover:underline flex items-center gap-1">
-                                              <Download size={14} /> Fayl
+                                              <Download size={14} /> {t('file')}
                                             </a>
-                                          ) : <span className="text-white/40">Fayl yo'q</span>
+                                          ) : <span className="text-white/40">{t('no_file')}</span>
                                         )}
                                       </td>
                                       <td className="p-4">
@@ -3824,7 +3824,7 @@ const App = () => {
                                           }}
                                           className="bg-white/10 hover:bg-white/20 text-white px-3 py-1 rounded-lg text-sm font-bold transition-colors"
                                         >
-                                          Baholash
+                                          {t('grading')}
                                         </button>
                                       </td>
                                     </tr>
@@ -3841,37 +3841,37 @@ const App = () => {
                             <div className="bg-[#0f172a] border border-white/20 rounded-3xl p-8 max-w-lg w-full space-y-6 relative shadow-2xl">
                               <button onClick={() => setShowGradeModal(false)} className="absolute top-4 right-4 text-white/40 hover:text-white"><X size={24} /></button>
 
-                              <h3 className="text-2xl font-black mb-4 border-b border-white/10 pb-4">Topshiriqni Baholash</h3>
+                              <h3 className="text-2xl font-black mb-4 border-b border-white/10 pb-4">{t('grade_submission')}</h3>
 
                               <div className="space-y-4">
                                 <div className="bg-white/5 p-4 rounded-xl">
-                                  <div className="text-xs font-bold text-white/40 uppercase mb-1">O'quvchi</div>
+                                  <div className="text-xs font-bold text-white/40 uppercase mb-1">{t('student')}</div>
                                   <div className="text-lg font-bold">{editingSubmission.user?.name}</div>
                                   <div className="text-white/60 text-xs">{editingSubmission.user?.email}</div>
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-4">
                                   <div className="bg-white/5 p-4 rounded-xl">
-                                    <div className="text-xs font-bold text-white/40 uppercase mb-1">Turi</div>
-                                    <div className="font-mono text-blue-300">{editingSubmission.type}</div>
+                                    <div className="text-xs font-bold text-white/40 uppercase mb-1">{t('type')}</div>
+                                    <div className="font-mono text-blue-300 capitalize">{editingSubmission.type}</div>
                                   </div>
                                   <div className="bg-white/5 p-4 rounded-xl">
-                                    <div className="text-xs font-bold text-white/40 uppercase mb-1">Status</div>
+                                    <div className="text-xs font-bold text-white/40 uppercase mb-1">{t('status')}</div>
                                     <div className="font-bold uppercase">{editingSubmission.status}</div>
                                   </div>
                                 </div>
 
                                 {editingSubmission.type === 'homework' && editingSubmission.fileUrl && (
                                   <div>
-                                    <label className="text-xs font-bold text-white/40 uppercase mb-1 block">YUKLANGAN FAYL</label>
+                                    <label className="text-xs font-bold text-white/40 uppercase mb-1 block uppercase">{t('file')}</label>
                                     <a href={`https://arabiyya-pro-backend.onrender.com${editingSubmission.fileUrl}${localStorage.getItem('token') ? `?token=${localStorage.getItem('token')}` : ''}`} target="_blank" rel="noreferrer" className="w-full bg-blue-600/20 text-blue-400 px-4 py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-blue-600/30 transition-colors border border-blue-500/20 font-bold">
-                                      <Download size={18} /> Yuklab olish / Ko'rish
+                                      <Download size={18} /> {t('download_pdf')} / {t('view_courses').split(' ')[0]}
                                     </a>
                                   </div>
                                 )}
 
                                 <div>
-                                  <label className="text-xs font-bold text-white/40 uppercase mb-1 block">Baho (Ball)</label>
+                                  <label className="text-xs font-bold text-white/40 uppercase mb-1 block">{t('grade_label')}</label>
                                   <input
                                     type="number"
                                     value={editingSubmission.score || 0}
@@ -3881,11 +3881,11 @@ const App = () => {
                                 </div>
 
                                 <div>
-                                  <label className="text-xs font-bold text-white/40 uppercase mb-1 block">Ustoz Izohi</label>
+                                  <label className="text-xs font-bold text-white/40 uppercase mb-1 block">{t('teacher_comment')}</label>
                                   <textarea
                                     value={editingSubmission.comment || ''}
                                     onChange={(e) => setEditingSubmission({ ...editingSubmission, comment: e.target.value })}
-                                    placeholder="O'quvchiga izoh qoldiring..."
+                                    placeholder={t('comment_placeholder')}
                                     className="w-full h-24 bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white resize-none focus:border-blue-500 transition-colors"
                                   ></textarea>
                                 </div>
@@ -3895,13 +3895,13 @@ const App = () => {
                                     onClick={() => handleGrade('rejected')}
                                     className="bg-red-500/10 hover:bg-red-500/20 text-red-400 font-bold py-3 rounded-xl transition-colors border border-red-500/20"
                                   >
-                                    Rad etish ❌
+                                    {t('reject')} ❌
                                   </button>
                                   <button
                                     onClick={() => handleGrade('approved')}
                                     className="bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-xl transition-colors shadow-lg shadow-green-500/20"
                                   >
-                                    Tasdiqlash ✅
+                                    {t('approve')} ✅
                                   </button>
                                 </div>
                               </div>
@@ -3917,17 +3917,17 @@ const App = () => {
                         <div className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 p-6">
                           <h3 className="text-xl font-bold mb-6 flex items-center gap-3">
                             <Award className="text-yellow-400" />
-                            O'quvchi Sertifikatlari va Progressi
+                            {t('student_progress')}
                           </h3>
                           <div className="overflow-x-auto">
                             <table className="w-full text-left">
                               <thead className="bg-white/5 border-b border-white/10 text-white/40 uppercase text-xs font-black">
                                 <tr>
-                                  <th className="p-4">Foydalanuvchi</th>
-                                  <th className="p-4">Tugatilgan Darajalar</th>
-                                  <th className="p-4">Eng yuqori ball</th>
-                                  <th className="p-4">Sertifikatlar soni</th>
-                                  <th className="p-4 text-right">Progress</th>
+                                  <th className="p-4">{t('user')}</th>
+                                  <th className="p-4">{t('completed_levels')}</th>
+                                  <th className="p-4">{t('max_score')}</th>
+                                  <th className="p-4">{t('certs_count')}</th>
+                                  <th className="p-4 text-right">{t('progress')}</th>
                                 </tr>
                               </thead>
                               <tbody className="divide-y divide-white/5">
@@ -3973,7 +3973,7 @@ const App = () => {
                                             style={{ width: `${(completedCount / 6) * 100}%` }}
                                           ></div>
                                         </div>
-                                        <div className="text-[10px] text-white/40 mt-1 font-bold">{completedCount}/6 Daraja</div>
+                                        <div className="text-[10px] text-white/40 mt-1 font-bold">{completedCount}/6 {t('level_label')}</div>
                                       </td>
                                     </tr>
                                   );
@@ -3996,14 +3996,14 @@ const App = () => {
                               </div>
                               <input
                                 type="text"
-                                placeholder="Ism yoki email bo'yicha qidirish..."
+                                placeholder={t('search_placeholder')}
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 className="block w-full pl-10 pr-3 py-3 border border-white/10 rounded-xl leading-5 bg-black/20 text-white placeholder-white/40 focus:outline-none focus:bg-black/40 focus:ring-1 focus:ring-blue-500 transition-all font-medium"
                               />
                             </div>
                             <div className="text-sm text-white/40 font-bold">
-                              Jami: {adminUsers.length} ta
+                              {t('total')}: {adminUsers.length}
                             </div>
                           </div>
 
@@ -4011,11 +4011,11 @@ const App = () => {
                             <table className="w-full text-left">
                               <thead className="bg-white/5 border-b border-white/10">
                                 <tr>
-                                  <th className="p-4 font-bold text-white/60 text-sm uppercase tracking-wider">Foydalanuvchi</th>
-                                  <th className="p-4 font-bold text-white/60 text-sm uppercase tracking-wider">Email</th>
-                                  <th className="p-4 font-bold text-white/60 text-sm uppercase tracking-wider">Daraja</th>
-                                  <th className="p-4 font-bold text-white/60 text-sm uppercase tracking-wider">Rol</th>
-                                  <th className="p-4 font-bold text-white/60 text-sm uppercase tracking-wider text-right">Amallar</th>
+                                  <th className="p-4 font-bold text-white/60 text-sm uppercase tracking-wider">{t('user')}</th>
+                                  <th className="p-4 font-bold text-white/60 text-sm uppercase tracking-wider">{t('email')}</th>
+                                  <th className="p-4 font-bold text-white/60 text-sm uppercase tracking-wider">{t('level_label')}</th>
+                                  <th className="p-4 font-bold text-white/60 text-sm uppercase tracking-wider">{t('role')}</th>
+                                  <th className="p-4 font-bold text-white/60 text-sm uppercase tracking-wider text-right">{t('actions')}</th>
                                 </tr>
                               </thead>
                               <tbody className="divide-y divide-white/5">
@@ -4061,30 +4061,31 @@ const App = () => {
                                           <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                             {/* Daraja berish tugmasi */}
                                             <button
-                                              onClick={() => {
+                                              onClick={(e) => {
+                                                e.stopPropagation();
                                                 setGrantingLevelTo(u);
                                                 setShowGrantLevelModal(true);
                                               }}
                                               className="px-3 py-1.5 rounded-lg text-xs font-bold bg-green-500/20 text-green-300 hover:bg-green-500/30 border border-green-500/20 transition-all flex items-center gap-1"
-                                              title="Bepul daraja berish"
+                                              title={t('grant_level')}
                                             >
                                               <Gift size={14} />
-                                              Daraja berish
+                                              {t('grant_level')}
                                             </button>
 
                                             <button
-                                              onClick={() => handleRoleUpdate(u._id, u.role === 'admin' ? 'user' : 'admin')}
+                                              onClick={(e) => { e.stopPropagation(); handleRoleUpdate(u._id, u.role === 'admin' ? 'user' : 'admin'); }}
                                               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${u.role === 'admin'
                                                 ? 'bg-white/10 text-white hover:bg-white/20'
                                                 : 'bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30 border border-indigo-500/20'
                                                 }`}
                                             >
-                                              {u.role === 'admin' ? 'User qilish' : 'Admin qilish'}
+                                              {u.role === 'admin' ? t('make_user') : t('make_admin')}
                                             </button>
                                             <button
-                                              onClick={() => handleDeleteUser(u._id, u.name)}
+                                              onClick={(e) => { e.stopPropagation(); handleDeleteUser(u._id, u.name); }}
                                               className="p-1.5 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20 transition-all"
-                                              title="O'chirish"
+                                              title={t('delete_user')}
                                             >
                                               <Trash2 size={16} />
                                             </button>
@@ -4163,11 +4164,11 @@ const App = () => {
                                     <span className="text-3xl">{editingLevel.icon}</span>
                                     {editingLevel.title}
                                   </h3>
-                                  <p className="text-white/60 text-sm">Darslarni boshqarish</p>
+                                  <p className="text-white/60 text-sm font-bold">{t('manage_lessons')}</p>
                                 </div>
                               </div>
                               <div className={`px-4 py-2 rounded-xl text-xs font-bold border bg-white/5 border-white/10`}>
-                                {editingLevel.lessons.length} ta dars
+                                {editingLevel.lessons.length} {t('lesson_label')}
                               </div>
                             </div>
 
@@ -4186,7 +4187,7 @@ const App = () => {
                                     }}
                                     className="text-red-400 text-xs hover:text-red-300 font-bold"
                                   >
-                                    O'chirish
+                                    {t('delete_user')}
                                   </button>
                                 )}
                               </div>
@@ -4205,7 +4206,7 @@ const App = () => {
                                       ) : (
                                         <Upload size={18} className="text-blue-400" />
                                       )}
-                                      <span className="text-sm">{uploadingLevelBook ? 'Yuklanmoqda...' : 'PDF Yuklash'}</span>
+                                      <span className="text-sm">{uploadingLevelBook ? t('uploading') : t('upload_pdf')}</span>
                                       {!uploadingLevelBook && (
                                         <input
                                           type="file"
@@ -4271,7 +4272,7 @@ const App = () => {
                                   className="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20"
                                 >
                                   <Save size={18} />
-                                  Saqlash
+                                  {t('save')}
                                 </button>
                               </div>
                               <p className="text-xs text-white/40">
@@ -4613,6 +4614,104 @@ const App = () => {
                       </div>
                     )}
 
+                    {/* USER DETAIL MODAL */}
+                    {selectedAdminUser && (
+                      <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-in fade-in duration-300">
+                        <div className="bg-[#030712] border border-white/10 rounded-[2.5rem] w-full max-w-2xl overflow-hidden shadow-2xl relative animate-in zoom-in-95 duration-300">
+                          {/* Header */}
+                          <div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 p-8 border-b border-white/5">
+                            <button
+                              onClick={() => setSelectedAdminUser(null)}
+                              className="absolute top-6 right-6 p-2 hover:bg-white/10 rounded-xl transition-all text-white/40 hover:text-white"
+                            >
+                              <X size={24} />
+                            </button>
+
+                            <div className="flex items-center gap-6">
+                              <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-3xl flex items-center justify-center font-black text-3xl shadow-2xl">
+                                {selectedAdminUser.name?.charAt(0)}
+                              </div>
+                              <div>
+                                <h3 className="text-3xl font-black mb-1">{selectedAdminUser.name}</h3>
+                                <p className="text-white/40 font-mono text-sm">{selectedAdminUser.email}</p>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="p-8 space-y-8 max-h-[70vh] overflow-y-auto custom-scrollbar">
+                            {/* Stats Grid */}
+                            <div className="grid grid-cols-2 gap-4">
+                              <div className="bg-white/5 p-6 rounded-3xl border border-white/5">
+                                <div className="text-white/40 text-xs font-bold uppercase mb-2 tracking-widest">{t('current_course')}</div>
+                                <div className="text-xl font-black text-blue-400">{selectedAdminUser.currentLevel || 'N/A'}</div>
+                              </div>
+                              <div className="bg-white/5 p-6 rounded-3xl border border-white/5">
+                                <div className="text-white/40 text-xs font-bold uppercase mb-2 tracking-widest">{t('joined_at')}</div>
+                                <div className="text-xl font-black text-purple-400">
+                                  {new Date(selectedAdminUser.createdAt).toLocaleDateString()}
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Progress Section */}
+                            <div className="space-y-4">
+                              <h4 className="text-sm font-bold uppercase tracking-widest text-white/40 flex items-center gap-2">
+                                <Target size={16} /> {t('progress_stats')}
+                              </h4>
+
+                              <div className="bg-white/5 p-6 rounded-3xl border border-white/5 space-y-6">
+                                {selectedAdminUser.completedLevels?.length > 0 ? (
+                                  selectedAdminUser.completedLevels.map((cl, i) => (
+                                    <div key={i} className="flex items-center justify-between group">
+                                      <div className="flex items-center gap-3">
+                                        <div className="w-8 h-8 rounded-lg bg-green-500/20 text-green-400 flex items-center justify-center font-bold text-xs border border-green-500/20">
+                                          {cl.levelId}
+                                        </div>
+                                        <div>
+                                          <div className="font-bold text-sm">Level {cl.levelId} Completed</div>
+                                          <div className="text-[10px] text-white/40">{new Date(cl.completedAt).toLocaleDateString()}</div>
+                                        </div>
+                                      </div>
+                                      <div className="text-lg font-black text-green-400">{cl.examScore}%</div>
+                                    </div>
+                                  ))
+                                ) : (
+                                  <div className="text-center py-4 text-white/20 italic">{t('no_progress')}</div>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Time Stats (Mock) */}
+                            <div className="bg-gradient-to-br from-blue-500/10 to-purple-500/10 p-6 rounded-3xl border border-blue-500/10">
+                              <div className="flex items-center gap-4 text-sm font-bold text-white/80">
+                                <Clock className="text-blue-400" />
+                                <span>{t('time_spent')}:</span>
+                                <span className="text-blue-400 font-black">
+                                  {(selectedAdminUser.completedLevels?.length * 4.5 || 0.5).toFixed(1)} soat
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Footer Actions */}
+                          <div className="p-8 border-t border-white/5 flex gap-4 bg-white/5">
+                            <button
+                              onClick={() => setSelectedAdminUser(null)}
+                              className="flex-1 py-4 rounded-2xl bg-white/10 hover:bg-white/20 font-bold transition-all border border-white/10"
+                            >
+                              Yopish
+                            </button>
+                            <button
+                              onClick={() => { setView('admin'); setAdminTab('certificates'); setSelectedAdminUser(null); }}
+                              className="flex-1 py-4 rounded-2xl bg-blue-600 hover:bg-blue-500 font-bold transition-all shadow-lg shadow-blue-500/20"
+                            >
+                              Sertifikatlarni ko'rish
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
                     <div className="text-center pt-10 text-white/20 text-xs font-mono uppercase tracking-widest bg-white/5 py-4 rounded-xl border border-white/5">
                       Arabiyya Pro v1.2.0 • Stable Release
                     </div>
@@ -4660,16 +4759,16 @@ const App = () => {
               <div className={`${chatView === 'list' ? 'flex' : 'hidden'} md:flex flex-col w-full md:w-80 border-r border-white/10 bg-black/20`}>
                 <div className="p-5 border-b border-white/10 flex justify-between items-center bg-white/5">
                   <h3 className="font-black text-white text-lg flex items-center gap-2">
-                    <Brain className="text-blue-500" /> Arabiyya AI
+                    <Brain className="text-blue-500" /> {t('ai_assistant')}
                   </h3>
-                  <button onClick={startNewChat} className="bg-blue-600 p-2 rounded-lg hover:bg-blue-500 text-white transition-colors" title="Yangi Chat">
+                  <button onClick={startNewChat} className="bg-blue-600 p-2 rounded-lg hover:bg-blue-500 text-white transition-colors" title={t('new_chat')}>
                     <Plus size={20} />
                   </button>
                 </div>
 
                 <div className="flex-1 overflow-y-auto p-3 space-y-2 custom-scrollbar">
                   {chats.length === 0 ? (
-                    <div className="text-center text-white/40 py-10 text-sm">Suhbatlar tarixi bo'sh</div>
+                    <div className="text-center text-white/40 py-10 text-sm">{t('ai_chat_history')}</div>
                   ) : (
                     chats.map(chat => (
                       <div
@@ -4681,7 +4780,7 @@ const App = () => {
                           <div className="font-bold text-white truncate text-sm mb-1 group-hover:text-blue-400">{chat.title}</div>
                           <span className="text-xs text-white/40">{new Date(chat.createdAt).toLocaleDateString()}</span>
                         </div>
-                        <button onClick={(e) => deleteChat(chat._id, e)} className="p-2 text-white/60 hover:text-red-400 hover:bg-red-500/20 rounded-lg transition-all" title="O'chirish">
+                        <button onClick={(e) => deleteChat(chat._id, e)} className="p-2 text-white/60 hover:text-red-400 hover:bg-red-500/20 rounded-lg transition-all" title={t('delete_user')}>
                           <Trash2 size={18} />
                         </button>
                       </div>
@@ -4692,7 +4791,7 @@ const App = () => {
                 {chats.length > 0 && (
                   <div className="p-4 border-t border-white/10">
                     <button onClick={clearAllChats} className="w-full py-3 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all">
-                      <Trash2 size={16} /> Barcha suhbatlarni o'chirish
+                      <Trash2 size={16} /> {t('delete_all_chats')}
                     </button>
                   </div>
                 )}
@@ -4707,8 +4806,8 @@ const App = () => {
                       <ChevronLeft size={24} />
                     </button>
                     <div>
-                      <h3 className="font-bold text-white text-lg">AI Yordamchi</h3>
-                      <p className="text-xs text-green-400 flex items-center gap-1"><span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span> Onlayn</p>
+                      <h3 className="font-bold text-white text-lg">{t('ai_assistant')}</h3>
+                      <p className="text-xs text-green-400 flex items-center gap-1"><span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span> {status === 'typing' ? t('ai_typing') : 'Online'}</p>
                     </div>
                   </div>
                   <button onClick={() => setShowChat(false)} className="p-2 hover:bg-red-500/20 hover:text-red-400 rounded-xl transition-all text-white/60">
@@ -4721,8 +4820,8 @@ const App = () => {
                   {chatMessages.length === 0 && (
                     <div className="text-center py-20 space-y-6">
                       <Brain size={64} className="mx-auto text-blue-500/50 animate-pulse" />
-                      <h3 className="text-2xl font-bold text-white">Assalomu alaykum!</h3>
-                      <p className="text-white/60">Sizga qanday yordam bera olaman?</p>
+                      <h3 className="text-2xl font-bold text-white">{t('ai_greeting')}</h3>
+                      <p className="text-white/60">{t('ai_help_text')}</p>
                       <div className="grid grid-cols-2 gap-4 max-w-lg mx-auto">
                         {["Grammatika", "So'zlashuv", "Tarjima", "Mashqlar"].map(t => (
                           <button key={t} onClick={() => setChatInput(t)} className="p-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-sm font-bold text-white transition-all">{t}</button>
@@ -4750,7 +4849,7 @@ const App = () => {
                       </div>
                     </div>
                   ))}
-                  {isChatLoading && <div className="flex items-center gap-2 text-white/50 bg-white/5 p-4 rounded-xl w-fit"><Loader2 className="animate-spin" size={18} /> Javob yozilmoqda...</div>}
+                  {isChatLoading && <div className="flex items-center gap-2 text-white/50 bg-white/5 p-4 rounded-xl w-fit"><Loader2 className="animate-spin" size={18} /> {t('ai_typing')}</div>}
                 </div>
 
                 {/* Input Area */}
@@ -4761,7 +4860,7 @@ const App = () => {
                       value={chatInput}
                       onChange={e => setChatInput(e.target.value)}
                       onKeyPress={e => e.key === 'Enter' && !isChatLoading && sendChatMessage()}
-                      placeholder="Xabar yozing..."
+                      placeholder={t('ai_placeholder')}
                       disabled={isChatLoading}
                       className="flex-1 bg-white/5 border border-white/10 rounded-xl px-5 py-4 text-white focus:outline-none focus:border-blue-500 transition-all placeholder:text-white/20"
                     />
@@ -4795,7 +4894,7 @@ const App = () => {
                 <span className="text-2xl font-black">Arabiyya Pro</span>
               </div>
               <p className="text-white/60 leading-relaxed">
-                AI texnologiyasi bilan professional arab tili ta'limi platformasi.
+                {t('footer_desc')}
               </p>
               <div className="flex gap-3">
                 {[
@@ -4818,19 +4917,19 @@ const App = () => {
               </div>
             </div>
 
-            {/* Kurslar */}
+            {/* KURSLAR */}
             <div className="space-y-5">
-              <h4 className="font-black text-blue-400 text-sm tracking-wider">KURSLAR</h4>
+              <h4 className="font-black text-blue-400 text-sm tracking-wider uppercase">{t('courses_title')}</h4>
               <div className="space-y-3">
                 {[
-                  { label: 'Barcha darajalar', view: 'levels' },
-                  { label: 'A1 - Boshlang\'ich', level: 'A1' },
-                  { label: 'B1 - O\'rta', level: 'B1' },
-                  { label: 'C1 - Ilg\'or', level: 'C1' }
+                  { label: t('all_levels'), view: 'levels' },
+                  { label: 'A1 - ' + (language === 'uz' ? 'Boshlang\'ich' : language === 'ru' ? 'Начальный' : 'Beginner'), level: 'A1' },
+                  { label: 'B1 - ' + (language === 'uz' ? 'O\'rta' : language === 'ru' ? 'Средний' : 'Intermediate'), level: 'B1' },
+                  { label: 'C1 - ' + (language === 'uz' ? 'Ilg\'or' : language === 'ru' ? 'Продвинутый' : 'Advanced'), level: 'C1' }
                 ].map((item, i) => (
                   <button
                     key={i}
-                    onClick={() => setView(item.view || 'levels')}
+                    onClick={() => { setView('levels'); }}
                     className="block text-white/60 hover:text-white text-sm font-bold transition-all duration-300 hover:translate-x-2"
                   >
                     {item.label}
@@ -4839,15 +4938,15 @@ const App = () => {
               </div>
             </div>
 
-            {/* Platforma */}
+            {/* PLATFORMA */}
             <div className="space-y-5">
-              <h4 className="font-black text-purple-400 text-sm tracking-wider">PLATFORMA</h4>
+              <h4 className="font-black text-purple-400 text-sm tracking-wider uppercase">{t('platform_title')}</h4>
               <div className="space-y-3">
                 {[
-                  { label: 'Yordam markazi', view: 'help' },
-                  { label: 'Sertifikatlar', view: 'certificates' },
-                  { label: 'Ro\'yxatdan o\'tish', view: 'auth' },
-                  { label: 'Maxfiylik siyosati', view: 'home' }
+                  { label: t('help_center'), view: 'help' },
+                  { label: t('certificates'), view: 'certificates' },
+                  { label: t('registration'), view: 'auth' },
+                  { label: t('privacy_policy'), view: 'home' }
                 ].map((item, i) => (
                   <button
                     key={i}
@@ -4860,14 +4959,14 @@ const App = () => {
               </div>
             </div>
 
-            {/* Aloqa */}
+            {/* ALOQA */}
             <div className="space-y-5">
-              <h4 className="font-black text-pink-400 text-sm tracking-wider">ALOQA</h4>
+              <h4 className="font-black text-pink-400 text-sm tracking-wider uppercase">{t('contact_title')}</h4>
               <div className="space-y-4">
                 {[
                   { icon: Mail, text: 'humoyunanvarjonov466@gmail.com', link: 'mailto:humoyunanvarjonov466@gmail.com' },
                   { icon: Phone, text: '+998 97 632 63 64', link: 'tel:+998976326364' },
-                  { icon: MapPin, text: 'Toshkent, O\'zbekiston', link: '#' }
+                  { icon: MapPin, text: t('location'), link: '#' }
                 ].map((contact, i) => (
                   <a
                     key={i}
