@@ -1291,16 +1291,16 @@ const App = () => {
   }, []);
 
   return (
-    <div className={`min-h-screen transition-all duration-500 ${theme === 'dark' ? 'bg-[#0f172a] text-white' : 'bg-slate-50 text-slate-900'} font-sans relative overflow-x-hidden`}>
+    <div className={`min-h-screen transition-all duration-500 ${theme === 'dark' ? 'bg-black text-white' : 'bg-gradient-to-br from-blue-950 via-indigo-900 to-purple-950 text-white'} font-sans relative overflow-x-hidden`}>
 
       {/* Animated background elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className={`absolute top-20 left-10 w-72 h-72 ${theme === 'dark' ? 'bg-blue-500/10' : 'bg-blue-400/20'} rounded-full blur-3xl animate-pulse`}></div>
-        <div className={`absolute bottom-20 right-10 w-96 h-96 ${theme === 'dark' ? 'bg-purple-500/10' : 'bg-purple-400/20'} rounded-full blur-3xl animate-pulse`} style={{ animationDelay: '1s' }}></div>
+        <div className={`absolute top-20 left-10 w-72 h-72 ${theme === 'dark' ? 'bg-indigo-500/10' : 'bg-blue-500/20'} rounded-full blur-3xl animate-pulse`}></div>
+        <div className={`absolute bottom-20 right-10 w-96 h-96 ${theme === 'dark' ? 'bg-purple-500/10' : 'bg-purple-500/20'} rounded-full blur-3xl animate-pulse`} style={{ animationDelay: '1s' }}></div>
       </div>
 
       {/* NAVIGATION BAR */}
-      <nav className={`fixed top-0 w-full z-50 backdrop-blur-2xl ${theme === 'dark' ? 'bg-white/5 border-white/10' : 'bg-white/80 border-slate-200'} border-b shadow-2xl transition-all duration-500`}>
+      <nav className={`fixed top-0 w-full z-50 backdrop-blur-2xl ${theme === 'dark' ? 'bg-black/60 border-white/5' : 'bg-white/5 border-white/10'} border-b shadow-2xl transition-all duration-500`}>
         <div className="max-w-7xl mx-auto px-3 sm:px-6 py-3 sm:py-4">
           <div className="flex justify-between items-center">
 
@@ -1313,26 +1313,26 @@ const App = () => {
                 </div>
               </div>
               <div className="flex flex-col">
-                <span className={`text-xl sm:text-2xl font-black tracking-tighter transition-colors ${theme === 'dark' ? 'text-white' : 'text-slate-800'}`}>
+                <span className="text-xl sm:text-2xl font-black tracking-tighter transition-colors text-white">
                   ARABIYYA<span className="text-blue-500">PRO</span>
                 </span>
-                <span className={`hidden sm:block text-[10px] font-bold ${theme === 'dark' ? 'text-white/40' : 'text-slate-400'} -mt-1 tracking-wider`}>AI-POWERED PLATFORM</span>
+                <span className={`hidden sm:block text-[10px] font-bold ${theme === 'dark' ? 'text-white/40' : 'text-white/50'} -mt-1 tracking-wider`}>AI-POWERED PLATFORM</span>
               </div>
             </div>
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center gap-1">
               {[
-                { label: 'Kurslar', view: 'levels', icon: GraduationCap },
-                { label: 'Sertifikatlar', view: 'certificates', icon: Award },
-                { label: 'Yordam', view: 'help', icon: HelpCircle }
+                { label: t('courses'), view: 'levels', icon: GraduationCap },
+                { label: t('certificates'), view: 'certificates', icon: Award },
+                { label: t('about'), view: 'help', icon: HelpCircle }
               ].map((item) => (
                 <button
                   key={item.view}
                   onClick={() => setView(item.view)}
                   className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-300 ${view === item.view
-                    ? (theme === 'dark' ? 'bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-white border-white/20' : 'bg-blue-600 text-white shadow-lg shadow-blue-500/20')
-                    : (theme === 'dark' ? 'text-white/60 hover:text-white hover:bg-white/10' : 'text-slate-600 hover:bg-slate-200/50')
+                    ? 'bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-white border border-white/20'
+                    : 'text-white/60 hover:text-white hover:bg-white/10'
                     }`}
                 >
                   <item.icon size={18} />
@@ -1443,10 +1443,10 @@ const App = () => {
         {mobileMenuOpen && (
           <div className="md:hidden bg-black/40 backdrop-blur-2xl border-t border-white/10 py-4 px-4 space-y-2">
             {[
-              { label: 'Kurslar', view: 'levels', icon: GraduationCap },
-              { label: 'Sertifikatlar', view: 'certificates', icon: Award },
-              { label: 'Profil', view: 'profile', icon: User },
-              { label: 'Yordam', view: 'help', icon: HelpCircle }
+              { label: t('courses'), view: 'levels', icon: GraduationCap },
+              { label: t('certificates'), view: 'certificates', icon: Award },
+              { label: t('profile'), view: 'profile', icon: User },
+              { label: t('about'), view: 'help', icon: HelpCircle }
             ].map((item) => (
               <button
                 key={item.view}
@@ -1505,27 +1505,26 @@ const App = () => {
                 <div className="inline-flex items-center gap-3 bg-gradient-to-r from-blue-500/20 to-purple-600/20 backdrop-blur-xl px-8 py-4 rounded-full border border-white/20 mb-6 group hover:scale-105 transition-all duration-300">
                   <Sparkles size={24} className="text-blue-400 animate-pulse" />
                   <span className="text-base font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                    AI bilan professional arab tilini o'rganing
+                    {t('hero_badge')}
                   </span>
                   <Sparkles size={24} className="text-purple-400 animate-pulse" />
                 </div>
 
                 <div className="space-y-6">
                   <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black leading-tight tracking-tight">
-                    Arab tilini <br />
+                    {t('hero_title_1')} <br />
                     <span className="relative inline-block">
                       <span className="absolute inset-0 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 blur-2xl opacity-50 animate-pulse"></span>
                       <span className="relative bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent">
-                        Professional
+                        {t('hero_title_2')}
                       </span>
                     </span>
                     <br />
-                    darajada o'rganing
+                    {t('hero_title_3')}
                   </h1>
 
                   <p className="text-lg sm:text-xl md:text-2xl text-white/70 max-w-4xl mx-auto font-medium leading-relaxed">
-                    Sun'iy intellekt yordamida shaxsiy ta'lim rejangizni yarating. <br className="hidden sm:block" />
-                    A1 boshlang'ich darajadan C2 professional darajagacha.
+                    {t('hero_subtitle')}
                   </p>
                 </div>
 
@@ -1537,7 +1536,7 @@ const App = () => {
                     <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-300"></div>
                     <div className="relative bg-gradient-to-r from-blue-500 to-purple-600 text-white px-10 py-5 rounded-2xl font-black text-lg hover:scale-105 transition-all duration-300 shadow-2xl flex items-center gap-3">
                       <Rocket size={24} />
-                      Bepul Boshlash
+                      {t('start_free')}
                       <ArrowRight className="group-hover:translate-x-2 transition-transform" size={24} />
                     </div>
                   </button>
@@ -1547,7 +1546,7 @@ const App = () => {
                     className="bg-white/10 backdrop-blur-xl text-white px-10 py-5 rounded-2xl font-black text-lg hover:bg-white/20 transition-all duration-300 border-2 border-white/20 hover:border-white/40 flex items-center gap-3"
                   >
                     <BookOpen size={24} />
-                    Kurslarni Ko'rish
+                    {t('view_courses')}
                   </button>
                 </div>
 
@@ -1573,8 +1572,8 @@ const App = () => {
               {/* Features */}
               <div className="space-y-12">
                 <div className="text-center space-y-4">
-                  <h2 className="text-4xl md:text-5xl font-black">Nima uchun Arabiyya Pro?</h2>
-                  <p className="text-xl text-white/60">Professional ta'lim platformasining afzalliklari</p>
+                  <h2 className="text-4xl md:text-5xl font-black">{t('features_title')}</h2>
+                  <p className="text-xl text-white/60">{t('features_subtitle')}</p>
                 </div>
 
                 <div className="grid md:grid-cols-3 gap-8">
@@ -1637,8 +1636,8 @@ const App = () => {
               {/* CEFR Levels Preview */}
               <div className="space-y-12">
                 <div className="text-center space-y-4">
-                  <h2 className="text-4xl md:text-5xl font-black">CEFR Darajalari</h2>
-                  <p className="text-xl text-white/60">Boshlang'ichdan professional darajagacha</p>
+                  <h2 className="text-4xl md:text-5xl font-black">{t('levels_preview_title')}</h2>
+                  <p className="text-xl text-white/60">{t('levels_preview_subtitle')}</p>
                 </div>
 
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -1716,9 +1715,9 @@ const App = () => {
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 rounded-3xl blur-3xl"></div>
                 <div className="relative bg-gradient-to-br from-blue-950/80 via-indigo-950/80 to-purple-950/80 backdrop-blur-2xl p-16 rounded-3xl border border-white/10 text-center space-y-8">
                   <div className="space-y-4">
-                    <h2 className="text-4xl md:text-5xl font-black">Bugun boshlang!</h2>
+                    <h2 className="text-4xl md:text-5xl font-black">{t('cta_title')}</h2>
                     <p className="text-xl text-white/70 max-w-2xl mx-auto">
-                      Professional arab tilini o'rganish sayohatingizni AI bilan birga boshlang
+                      {t('cta_subtitle')}
                     </p>
                   </div>
 
@@ -1729,7 +1728,7 @@ const App = () => {
                     <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-300"></div>
                     <div className="relative bg-gradient-to-r from-blue-500 to-purple-600 text-white px-12 py-6 rounded-2xl font-black text-xl hover:scale-105 transition-all duration-300 shadow-2xl flex items-center gap-3">
                       <Rocket size={28} />
-                      Bepul Ro'yxatdan O'tish
+                      {t('cta_btn')}
                       <ArrowRight className="group-hover:translate-x-2 transition-transform" size={28} />
                     </div>
                   </button>
@@ -1761,8 +1760,8 @@ const App = () => {
                           </div>
                         </div>
                         <div className="space-y-3">
-                          <h2 className="text-5xl font-black">Xush kelibsiz!</h2>
-                          <p className="text-xl text-white/70">Professional ta'lim sayohatingizni boshlang</p>
+                          <h2 className="text-5xl font-black">{t('welcome')}</h2>
+                          <p className="text-xl text-white/70">{t('welcome_subtitle')}</p>
                         </div>
                       </div>
 
@@ -1773,7 +1772,7 @@ const App = () => {
                           <div id="googleDiv" className="relative flex justify-center w-full transform transition-transform duration-300 hover:scale-[1.02]"></div>
                         </div>
                         <p className="text-white/40 text-sm font-medium">
-                          Xavfsiz va tezkor kirish
+                          {t('google_hint')}
                         </p>
                       </div>
 
@@ -1789,7 +1788,7 @@ const App = () => {
                         <div className="flex justify-between items-center">
                           <h2 className="text-3xl font-black flex items-center gap-3">
                             <Target className="text-blue-400" />
-                            Darajani Aniqlash Testi
+                            {t('placement_test_title')}
                           </h2>
                           <div className="bg-white/10 px-6 py-3 rounded-xl border border-white/20">
                             <span className="text-2xl font-black">{testStep + 1}</span>
