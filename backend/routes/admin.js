@@ -338,6 +338,120 @@ router.post('/grant-level', [authMiddleware, adminMiddleware], async (req, res) 
     }
 });
 
+// @route   POST /api/admin/revoke-level
+// @desc    Revoke a specific level from a user
+// @access  Private/Super-Admin
+router.post('/revoke-level', [authMiddleware, adminMiddleware], async (req, res) => {
+    try {
+        const { userId, levelId } = req.body;
+
+        const currentAdmin = await User.findById(req.userId);
+        const superAdmins = ['humoyunanvarjonov466@gmail.com', 'humoyunanvarjonov52@gmail.com'];
+
+        if (!currentAdmin || !superAdmins.includes(currentAdmin.email)) {
+            return res.status(403).json({
+                success: false,
+                message: 'Kechirasiz, faqat super-admin daraja qaytarib ola oladi!'
+            });
+        }
+
+        if (!userId || !levelId) {
+            return res.status(400).json({
+                success: false,
+                message: 'Foydalanuvchi va daraja ma\'lumotlari yetarli emas.'
+            });
+        }
+
+        const targetUser = await User.findById(userId);
+        if (!targetUser) {
+            return res.status(404).json({
+                success: false,
+                message: 'Foydalanuvchi bazadan topilmadi'
+            });
+        }
+
+        // A1 darajasini qaytarib bo'lmaydi (standart daraja)
+        if (levelId === 'A1') {
+            return res.status(400).json({
+                success: false,
+                message: 'A1 asosiy daraja, uni qaytarib bo\'lmaydi.'
+            });
+        }
+
+        // Remove level
+        if (targetUser.purchasedLevels) {
+            targetUser.purchasedLevels = targetUser.purchasedLevels.filter(l => l !== levelId);
+            await targetUser.save();
+        }
+
+        console.log(`🔒 Daraja qaytarildi: ${levelId} <- ${targetUser.email}`);
+
+        res.json({
+            success: true,
+            message: `${targetUser.name} dan ${levelId} darajasi muvaffaqiyatli qaytarib olindi!`
+        });
+
+    } catch (error) {
+        console.error('Revoke Level API Error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Tizimda xatolik: ' + error.message
+        });
+    }
+});
+
+// @route   POST /api/admin/revoke-all-levels
+// @desc    Revoke all levels from a user (keep A1)
+// @access  Private/Super-Admin
+router.post('/revoke-all-levels', [authMiddleware, adminMiddleware], async (req, res) => {
+    try {
+        const { userId } = req.body;
+
+        const currentAdmin = await User.findById(req.userId);
+        const superAdmins = ['humoyunanvarjonov466@gmail.com', 'humoyunanvarjonov52@gmail.com'];
+
+        if (!currentAdmin || !superAdmins.includes(currentAdmin.email)) {
+            return res.status(403).json({
+                success: false,
+                message: 'Kechirasiz, faqat super-admin daraja qaytarib ola oladi!'
+            });
+        }
+
+        if (!userId) {
+            return res.status(400).json({
+                success: false,
+                message: 'Foydalanuvchi ma\'lumotlari yetarli emas.'
+            });
+        }
+
+        const targetUser = await User.findById(userId);
+        if (!targetUser) {
+            return res.status(404).json({
+                success: false,
+                message: 'Foydalanuvchi bazadan topilmadi'
+            });
+        }
+
+        // Keep only A1 (base level)
+        targetUser.purchasedLevels = ['A1'];
+        await targetUser.save();
+
+        console.log(`🔒 Barcha darajalar qaytarildi <- ${targetUser.email}`);
+
+        res.json({
+            success: true,
+            message: `${targetUser.name} dan barcha darajalar qaytarib olindi! (A1 qoldi)`
+        });
+
+    } catch (error) {
+        console.error('Revoke All Levels API Error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Tizimda xatolik: ' + error.message
+        });
+    }
+});
+
 // --- BOOK UPLOAD LOGIC ---
 const uploadsPath = path.join(process.cwd(), 'uploads');
 if (!fs.existsSync(uploadsPath)) {

@@ -8,7 +8,7 @@ import {
   TrendingUp, Zap, Headphones, CheckCircle, XCircle, Volume2,
   GraduationCap, Brain, Rocket, Clock, Users, BarChart,
   Lightbulb, Heart, Flag, Compass, ZoomIn, Search, LayoutDashboard, Settings, Layers, Trash2, ArrowLeft, Plus, Activity, Upload, Gift,
-  Info, PenTool, Home, Save, List, Sun, Moon
+  Info, PenTool, Home, Save, List, Sun, Moon, ShieldOff
 } from 'lucide-react';
 
 import ArabiyyaCertificateFinal from './components/ArabiyyaCertificateFinal';
@@ -5158,66 +5158,72 @@ const App = () => {
         )
       }
 
-      {/* Grant Level Modal (Admin) */}
+      {/* Level Management Modal (Admin) */}
       {
         showGrantLevelModal && grantingLevelTo && (
           <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-300">
-            <div className="bg-gradient-to-br from-slate-900/95 to-slate-800/95 backdrop-blur-2xl rounded-3xl max-w-md w-full border border-white/20 shadow-2xl p-8 animate-in slide-in-from-bottom-4 duration-500 relative">
-              <button
-                onClick={() => {
-                  setShowGrantLevelModal(false);
-                  setGrantingLevelTo(null);
-                  setSelectedGrantLevel('');
-                }}
-                className="absolute top-4 right-4 p-2 hover:bg-white/10 rounded-xl transition-all text-white/60 hover:text-white"
-              >
-                <X size={24} />
-              </button>
+            <div className="bg-gradient-to-br from-slate-900/98 to-slate-800/98 backdrop-blur-2xl rounded-3xl max-w-lg w-full border border-white/20 shadow-2xl animate-in slide-in-from-bottom-4 duration-500 relative overflow-hidden max-h-[90vh] flex flex-col">
 
-              <div className="text-center space-y-6">
-                {/* User info */}
-                <div className="flex items-center gap-4 bg-white/5 rounded-2xl p-4 text-left border border-white/10">
-                  <div className="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center font-black text-2xl text-white shadow-lg">
+              {/* Header */}
+              <div className="p-5 border-b border-white/10 bg-gradient-to-r from-blue-600/10 to-purple-600/10 flex items-center justify-between flex-shrink-0">
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center font-black text-xl text-white shadow-lg">
                     {grantingLevelTo.name?.charAt(0)}
                   </div>
                   <div>
-                    <div className="font-black text-white text-lg">{grantingLevelTo.name}</div>
-                    <div className="text-white/40 text-xs font-mono">{grantingLevelTo.email}</div>
-                    <div className="flex gap-1 mt-1 flex-wrap">
-                      {['A1', 'A2', 'B1', 'B2', 'C1', 'C2'].map(lvl => (
-                        <span key={lvl} className={`text-[10px] font-black px-1.5 py-0.5 rounded border ${grantingLevelTo.purchasedLevels?.includes(lvl)
-                            ? 'bg-green-500/20 text-green-400 border-green-500/30'
-                            : 'bg-white/5 text-white/20 border-white/10'
-                          }`}>{lvl}</span>
-                      ))}
-                    </div>
+                    <div className="font-black text-white text-sm">{grantingLevelTo.name}</div>
+                    <div className="text-white/40 text-xs font-mono truncate max-w-[180px]">{grantingLevelTo.email}</div>
+                  </div>
+                </div>
+                <button
+                  onClick={() => { setShowGrantLevelModal(false); setGrantingLevelTo(null); setSelectedGrantLevel(''); }}
+                  className="p-2 hover:bg-white/10 rounded-xl transition-all text-white/60 hover:text-white"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              {/* Scrollable body */}
+              <div className="overflow-y-auto custom-scrollbar p-5 space-y-4">
+
+                {/* Current levels status */}
+                <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
+                  <div className="text-[10px] font-black text-white/40 uppercase tracking-wider mb-2">Darajalar holati</div>
+                  <div className="grid grid-cols-6 gap-2">
+                    {['A1', 'A2', 'B1', 'B2', 'C1', 'C2'].map(lvl => (
+                      <div key={lvl} className={`text-center py-2 rounded-xl border font-black text-xs ${
+                        grantingLevelTo.purchasedLevels?.includes(lvl)
+                          ? 'bg-green-500/20 text-green-400 border-green-500/30'
+                          : 'bg-white/5 text-white/20 border-white/10'
+                      }`}>
+                        {lvl}
+                        <div className="text-[8px] mt-0.5">{grantingLevelTo.purchasedLevels?.includes(lvl) ? '?' : '?'}</div>
+                      </div>
+                    ))}
                   </div>
                 </div>
 
-                <div className="space-y-3">
-                  {/* Single level grant */}
-                  <div className="bg-white/5 rounded-2xl p-4 border border-white/10 space-y-3">
-                    <div className="flex items-center gap-2 text-sm font-black text-white/60 uppercase tracking-wider">
-                      <Gift size={14} />
-                      {t('grant_level')}
-                    </div>
+                {/* GRANT SECTION */}
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-[10px] font-black text-green-400 uppercase tracking-widest px-1">
+                    <Gift size={10} /> {t('grant_level')}
+                  </div>
+                  <div className="bg-green-500/5 rounded-2xl p-4 border border-green-500/20 space-y-3">
                     <select
                       value={selectedGrantLevel}
                       onChange={(e) => setSelectedGrantLevel(e.target.value)}
-                      className="w-full px-4 py-3 bg-black/30 rounded-xl border border-white/10 outline-none focus:border-green-500 transition-colors text-white font-bold text-sm"
+                      className="w-full px-4 py-2.5 bg-black/30 rounded-xl border border-white/10 outline-none focus:border-green-500 transition-colors text-white font-bold text-sm"
                     >
                       <option value="" className="bg-slate-900">{t('select_level')}</option>
-                      {levels.filter(l => !grantingLevelTo.purchasedLevels?.includes(l.id)).map(lvl => (
-                        <option key={lvl.id} value={lvl.id} className="bg-slate-900">
-                          {lvl.icon} {lvl.id} - {lvl.title}
-                        </option>
+                      {['A1','A2','B1','B2','C1','C2'].filter(l => !grantingLevelTo.purchasedLevels?.includes(l)).map(lvl => (
+                        <option key={lvl} value={lvl} className="bg-slate-900">{lvl}</option>
                       ))}
                     </select>
                     <button
                       onClick={async () => {
                         if (!selectedGrantLevel) return alert(t('fill_all_fields'));
+                        const token = localStorage.getItem('token');
                         try {
-                          const token = localStorage.getItem('token');
                           const res = await fetch('https://arabiyya-pro-backend.onrender.com/api/admin/grant-level', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
@@ -5225,67 +5231,123 @@ const App = () => {
                           });
                           const data = await res.json();
                           if (data.success) {
-                            alert(`✅ ${grantingLevelTo.name} uchun ${selectedGrantLevel} darajasi ochildi!`);
-                            setShowGrantLevelModal(false);
-                            setGrantingLevelTo(null);
+                            alert(`? ${selectedGrantLevel} berildi!`);
                             setSelectedGrantLevel('');
                             fetchAdminStats();
-                          } else {
-                            alert(t('error_prefix') + data.message);
-                          }
-                        } catch (err) {
-                          console.error(err);
-                          alert(t('system_error'));
-                        }
+                            const ud = await (await fetch('https://arabiyya-pro-backend.onrender.com/api/admin/users', { headers: { 'Authorization': `Bearer ${token}` } })).json();
+                            if (ud.success) { const u = ud.users.find(u => u._id === grantingLevelTo._id); if (u) setGrantingLevelTo(u); }
+                          } else alert(t('error_prefix') + data.message);
+                        } catch { alert(t('system_error')); }
                       }}
-                      className="w-full py-3.5 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl font-black text-base hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-green-500/20 flex items-center justify-center gap-2 text-white"
+                      className="w-full py-2.5 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl font-black text-sm hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg flex items-center justify-center gap-2 text-white"
                     >
-                      <Gift size={18} />
-                      {t('grant_level')}
+                      <Gift size={15} /> {t('grant_level')}
                     </button>
                   </div>
 
-                  {/* Divider */}
-                  <div className="flex items-center gap-3">
-                    <div className="flex-1 h-px bg-white/10" />
-                    <span className="text-white/30 text-xs font-bold uppercase tracking-widest">{t('or')}</span>
-                    <div className="flex-1 h-px bg-white/10" />
-                  </div>
-
-                  {/* Grant ALL levels */}
+                  {/* Grant ALL */}
                   <button
                     onClick={async () => {
                       if (!window.confirm(t('grant_all_confirm').replace('{name}', grantingLevelTo.name))) return;
+                      const token = localStorage.getItem('token');
                       try {
-                        const token = localStorage.getItem('token');
-                        const allLevelIds = levels.map(l => l.id);
-                        let granted = 0;
-                        for (const levelId of allLevelIds) {
-                          if (!grantingLevelTo.purchasedLevels?.includes(levelId)) {
+                        for (const lvl of ['A1','A2','B1','B2','C1','C2']) {
+                          if (!grantingLevelTo.purchasedLevels?.includes(lvl)) {
                             await fetch('https://arabiyya-pro-backend.onrender.com/api/admin/grant-level', {
                               method: 'POST',
                               headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                              body: JSON.stringify({ userId: grantingLevelTo._id, levelId })
+                              body: JSON.stringify({ userId: grantingLevelTo._id, levelId: lvl })
                             });
-                            granted++;
                           }
                         }
-                        alert(`✅ ${grantingLevelTo.name} uchun barcha ${granted > 0 ? granted + ' ta' : ''} daraja ochildi!`);
-                        setShowGrantLevelModal(false);
-                        setGrantingLevelTo(null);
-                        setSelectedGrantLevel('');
+                        alert(t('grant_all_success').replace('{name}', grantingLevelTo.name));
                         fetchAdminStats();
-                      } catch (err) {
-                        console.error(err);
-                        alert(t('system_error'));
-                      }
+                        const ud = await (await fetch('https://arabiyya-pro-backend.onrender.com/api/admin/users', { headers: { 'Authorization': `Bearer ${token}` } })).json();
+                        if (ud.success) { const u = ud.users.find(u => u._id === grantingLevelTo._id); if (u) setGrantingLevelTo(u); }
+                      } catch { alert(t('system_error')); }
                     }}
-                    className="w-full py-3.5 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-xl font-black text-base hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-yellow-500/20 flex items-center justify-center gap-2 text-white"
+                    className="w-full py-2.5 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-xl font-black text-sm hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg flex items-center justify-center gap-2 text-white"
                   >
-                    <Zap size={18} />
-                    {t('grant_all_levels')}
+                    <Zap size={15} /> {t('grant_all_levels')}
                   </button>
                 </div>
+
+                {/* Divider */}
+                <div className="flex items-center gap-3">
+                  <div className="flex-1 h-px bg-white/10" />
+                  <span className="text-white/20 text-[10px] font-black uppercase tracking-widest">{t('or')}</span>
+                  <div className="flex-1 h-px bg-white/10" />
+                </div>
+
+                {/* REVOKE SECTION */}
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-[10px] font-black text-red-400 uppercase tracking-widest px-1">
+                    <ShieldOff size={10} /> {t('revoke_level')}
+                  </div>
+                  <div className="bg-red-500/5 rounded-2xl p-4 border border-red-500/20 space-y-2">
+                    {(!grantingLevelTo.purchasedLevels || grantingLevelTo.purchasedLevels.filter(l => l !== 'A1').length === 0) ? (
+                      <div className="text-center text-white/30 text-sm py-2">A1 dan boshqa daraja yo'q</div>
+                    ) : (
+                      ['A2','B1','B2','C1','C2'].filter(lvl => grantingLevelTo.purchasedLevels?.includes(lvl)).map(lvl => (
+                        <div key={lvl} className="flex items-center justify-between bg-white/5 rounded-xl px-4 py-2 border border-white/10">
+                          <div className="flex items-center gap-2">
+                            <span className="font-black text-white text-sm">{lvl}</span>
+                            <span className="text-[9px] text-green-400 bg-green-500/10 px-2 py-0.5 rounded-full border border-green-500/20">? Ochiq</span>
+                          </div>
+                          <button
+                            onClick={async () => {
+                              if (!window.confirm(t('revoke_confirm').replace('{name}', grantingLevelTo.name).replace('{level}', lvl))) return;
+                              const token = localStorage.getItem('token');
+                              try {
+                                const res = await fetch('https://arabiyya-pro-backend.onrender.com/api/admin/revoke-level', {
+                                  method: 'POST',
+                                  headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                                  body: JSON.stringify({ userId: grantingLevelTo._id, levelId: lvl })
+                                });
+                                const data = await res.json();
+                                if (data.success) {
+                                  alert(t('revoke_success').replace('{name}', grantingLevelTo.name).replace('{level}', lvl));
+                                  fetchAdminStats();
+                                  const ud = await (await fetch('https://arabiyya-pro-backend.onrender.com/api/admin/users', { headers: { 'Authorization': `Bearer ${token}` } })).json();
+                                  if (ud.success) { const u = ud.users.find(u => u._id === grantingLevelTo._id); if (u) setGrantingLevelTo(u); }
+                                } else alert(t('error_prefix') + data.message);
+                              } catch { alert(t('system_error')); }
+                            }}
+                            className="px-3 py-1.5 text-xs font-black bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/20 rounded-lg transition-all flex items-center gap-1"
+                          >
+                            <ShieldOff size={11} /> {t('revoke_level')}
+                          </button>
+                        </div>
+                      ))
+                    )}
+                  </div>
+
+                  {/* Revoke ALL */}
+                  <button
+                    onClick={async () => {
+                      if (!window.confirm(t('revoke_all_confirm').replace('{name}', grantingLevelTo.name))) return;
+                      const token = localStorage.getItem('token');
+                      try {
+                        const res = await fetch('https://arabiyya-pro-backend.onrender.com/api/admin/revoke-all-levels', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                          body: JSON.stringify({ userId: grantingLevelTo._id })
+                        });
+                        const data = await res.json();
+                        if (data.success) {
+                          alert(t('revoke_all_success').replace('{name}', grantingLevelTo.name));
+                          fetchAdminStats();
+                          const ud = await (await fetch('https://arabiyya-pro-backend.onrender.com/api/admin/users', { headers: { 'Authorization': `Bearer ${token}` } })).json();
+                          if (ud.success) { const u = ud.users.find(u => u._id === grantingLevelTo._id); if (u) setGrantingLevelTo(u); }
+                        } else alert(t('error_prefix') + data.message);
+                      } catch { alert(t('system_error')); }
+                    }}
+                    className="w-full py-2.5 bg-gradient-to-r from-red-600 to-rose-600 rounded-xl font-black text-sm hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg flex items-center justify-center gap-2 text-white"
+                  >
+                    <ShieldOff size={15} /> {t('revoke_all_levels')}
+                  </button>
+                </div>
+
               </div>
             </div>
           </div>
