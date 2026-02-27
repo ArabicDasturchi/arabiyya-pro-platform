@@ -4754,15 +4754,15 @@ const App = () => {
           <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-300">
             <div className={`w-full h-full max-w-7xl rounded-3xl border shadow-2xl flex overflow-hidden relative ${theme === 'dark'
                 ? 'bg-[#0f172a] border-white/10'
-                : 'bg-white border-blue-100 shadow-blue-200'
+                : 'bg-gradient-to-br from-[#0d1b3e] via-[#1a1060] to-[#2d0a5e] border-indigo-500/30 shadow-indigo-900'
               }`}>
 
               {/* SIDEBAR */}
-              <div className={`${chatView === 'list' ? 'flex' : 'hidden'} md:flex flex-col w-full md:w-80 border-r ${theme === 'dark' ? 'border-white/10 bg-black/20' : 'border-gray-200 bg-gray-50'
+              <div className={`${chatView === 'list' ? 'flex' : 'hidden'} md:flex flex-col w-full md:w-80 border-r ${theme === 'dark' ? 'border-white/10 bg-black/20' : 'border-indigo-500/20 bg-indigo-950/60'
                 }`}>
-                <div className={`p-5 border-b flex justify-between items-center ${theme === 'dark' ? 'border-white/10 bg-white/5' : 'border-gray-200 bg-white'
+                <div className={`p-5 border-b flex justify-between items-center ${theme === 'dark' ? 'border-white/10 bg-white/5' : 'border-indigo-500/20 bg-indigo-900/50'
                   }`}>
-                  <h3 className={`font-black text-lg flex items-center gap-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'
+                  <h3 className={`font-black text-lg flex items-center gap-2 ${theme === 'dark' ? 'text-white' : 'text-white'
                     }`}>
                     <Brain className="text-blue-500" /> {t('ai_assistant')}
                   </h3>
@@ -4773,7 +4773,7 @@ const App = () => {
 
                 <div className="flex-1 overflow-y-auto p-3 space-y-2 custom-scrollbar">
                   {chats.length === 0 ? (
-                    <div className={`text-center py-10 text-sm ${theme === 'dark' ? 'text-white/40' : 'text-gray-400'
+                    <div className={`text-center py-10 text-sm ${theme === 'dark' ? 'text-white/40' : 'text-indigo-300/60'
                       }`}>{t('ai_chat_history')}</div>
                   ) : (
                     chats.map(chat => (
@@ -4784,13 +4784,13 @@ const App = () => {
                             ? 'bg-blue-500/20 border-blue-500/50'
                             : theme === 'dark'
                               ? 'bg-white/5 border-white/10 hover:bg-white/10'
-                              : 'bg-white border-gray-200 hover:bg-blue-50 hover:border-blue-200'
+                              : 'bg-white/5 border-indigo-500/20 hover:bg-indigo-500/20 hover:border-indigo-400/40'
                           }`}
                       >
                         <div className="truncate pr-2 overflow-hidden flex-1">
-                          <div className={`font-bold truncate text-sm mb-1 group-hover:text-blue-500 ${activeChatId === chat._id ? 'text-blue-400' : theme === 'dark' ? 'text-white' : 'text-gray-800'
+                          <div className={`font-bold truncate text-sm mb-1 group-hover:text-blue-500 ${activeChatId === chat._id ? 'text-blue-400' : theme === 'dark' ? 'text-white' : 'text-white'
                             }`}>{chat.title}</div>
-                          <span className={`text-xs ${theme === 'dark' ? 'text-white/40' : 'text-gray-400'
+                          <span className={`text-xs ${theme === 'dark' ? 'text-white/40' : 'text-indigo-300/60'
                             }`}>{new Date(chat.createdAt).toLocaleDateString()}</span>
                         </div>
                         <button onClick={(e) => deleteChat(chat._id, e)} className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/20 rounded-lg transition-all">
@@ -4802,7 +4802,7 @@ const App = () => {
                 </div>
 
                 {chats.length > 0 && (
-                  <div className={`p-4 border-t ${theme === 'dark' ? 'border-white/10' : 'border-gray-200'}`}>
+                  <div className={`p-4 border-t ${theme === 'dark' ? 'border-white/10' : 'border-indigo-500/20'}`}>
                     <button onClick={clearAllChats} className="w-full py-3 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all">
                       <Trash2 size={16} /> {t('delete_all_chats')}
                     </button>
@@ -4811,22 +4811,22 @@ const App = () => {
               </div>
 
               {/* MAIN CHAT AREA */}
-              <div className={`${chatView === 'messages' ? 'flex' : 'hidden'} md:flex flex-1 flex-col relative ${theme === 'dark' ? 'bg-slate-900/50' : 'bg-gray-50'
+              <div className={`${chatView === 'messages' ? 'flex' : 'hidden'} md:flex flex-1 flex-col relative ${theme === 'dark' ? 'bg-slate-900/50' : 'bg-gradient-to-br from-[#0a1535] via-[#110d48] to-[#1a0840]'
                 }`}>
                 {/* Header */}
-                <div className={`p-4 border-b flex justify-between items-center backdrop-blur-md ${theme === 'dark' ? 'border-white/10 bg-white/5' : 'border-gray-200 bg-white shadow-sm'
+                <div className={`p-4 border-b flex justify-between items-center backdrop-blur-md ${theme === 'dark' ? 'border-white/10 bg-white/5' : 'border-indigo-500/20 bg-indigo-900/50'
                   }`}>
                   <div className="flex items-center gap-3">
-                    <button className={`md:hidden p-2 hover:bg-white/10 rounded-lg transition-colors ${theme === 'dark' ? 'text-white' : 'text-gray-700 hover:bg-gray-100'
+                    <button className={`md:hidden p-2 hover:bg-white/10 rounded-lg transition-colors ${theme === 'dark' ? 'text-white' : 'text-white hover:bg-indigo-500/20'
                       }`} onClick={() => setChatView('list')}>
                       <ChevronLeft size={24} />
                     </button>
                     <div>
-                      <h3 className={`font-bold text-lg ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{t('ai_assistant')}</h3>
+                      <h3 className={`font-bold text-lg ${theme === 'dark' ? 'text-white' : 'text-white'}`}>{t('ai_assistant')}</h3>
                       <p className="text-xs text-green-500 flex items-center gap-1"><span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> {status === 'typing' ? t('ai_typing') : 'Online'}</p>
                     </div>
                   </div>
-                  <button onClick={() => setShowChat(false)} className={`p-2 rounded-xl transition-all ${theme === 'dark' ? 'hover:bg-red-500/20 hover:text-red-400 text-white/60' : 'hover:bg-red-50 hover:text-red-500 text-gray-400'
+                  <button onClick={() => setShowChat(false)} className={`p-2 rounded-xl transition-all ${theme === 'dark' ? 'hover:bg-red-500/20 hover:text-red-400 text-white/60' : 'hover:bg-red-500/20 hover:text-red-400 text-white/60'
                     }`}>
                     <X size={24} />
                   </button>
@@ -4837,13 +4837,13 @@ const App = () => {
                   {chatMessages.length === 0 && (
                     <div className="text-center py-20 space-y-6">
                       <Brain size={64} className="mx-auto text-blue-500/50 animate-pulse" />
-                      <h3 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>{t('ai_greeting')}</h3>
-                      <p className={theme === 'dark' ? 'text-white/60' : 'text-gray-500'}>{t('ai_help_text')}</p>
+                      <h3 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-white'}`}>{t('ai_greeting')}</h3>
+                      <p className={theme === 'dark' ? 'text-white/60' : 'text-indigo-200/70'}>{t('ai_help_text')}</p>
                       <div className="grid grid-cols-2 gap-4 max-w-lg mx-auto">
                         {["Grammatika", "So'zlashuv", "Tarjima", "Mashqlar"].map(category => (
                           <button key={category} onClick={() => setChatInput(category)} className={`p-4 border rounded-xl text-sm font-bold transition-all ${theme === 'dark'
                               ? 'bg-white/5 hover:bg-white/10 border-white/10 text-white'
-                              : 'bg-white hover:bg-blue-50 border-gray-200 text-gray-700 hover:border-blue-300 shadow-sm'
+                              : 'bg-indigo-500/20 hover:bg-indigo-500/30 border-indigo-400/30 text-white hover:border-indigo-400'
                             }`}>
                             {t(`ai_starter_${category.toLowerCase().replace(/[' ]/g, '')}`)}
                           </button>
@@ -4864,10 +4864,10 @@ const App = () => {
                           ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg'
                           : theme === 'dark'
                             ? 'bg-white/10 border border-white/10 text-white'
-                            : 'bg-white border border-gray-200 text-gray-800 shadow-sm'
+                            : 'bg-indigo-800/60 border border-indigo-500/30 text-white'
                         }`}>
                         {msg.role === 'ai' && (
-                          <div className={`flex justify-between items-center mb-2 text-xs font-bold uppercase tracking-wider ${theme === 'dark' ? 'text-blue-400' : 'text-blue-600'
+                          <div className={`flex justify-between items-center mb-2 text-xs font-bold uppercase tracking-wider ${theme === 'dark' ? 'text-blue-400' : 'text-indigo-300'
                             }`}>
                             <span className="flex items-center gap-2"><Brain size={14} /> AI</span>
                             <button onClick={() => navigator.clipboard.writeText(msg.content)} className="hover:text-blue-500 opacity-0 group-hover:opacity-100 transition-opacity"><ClipboardCheck size={14} /></button>
@@ -4878,7 +4878,7 @@ const App = () => {
                     </div>
                   ))}
                   {isChatLoading && (
-                    <div className={`flex items-center gap-2 p-4 rounded-xl w-fit ${theme === 'dark' ? 'text-white/50 bg-white/5' : 'text-gray-500 bg-white border border-gray-200 shadow-sm'
+                    <div className={`flex items-center gap-2 p-4 rounded-xl w-fit ${theme === 'dark' ? 'text-white/50 bg-white/5' : 'text-indigo-200 bg-indigo-800/60 border border-indigo-500/30'
                       }`}>
                       <Loader2 className="animate-spin" size={18} /> {t('ai_typing')}
                     </div>
@@ -4886,7 +4886,7 @@ const App = () => {
                 </div>
 
                 {/* Input Area */}
-                <div className={`p-5 border-t backdrop-blur-md ${theme === 'dark' ? 'border-white/10 bg-black/20' : 'border-gray-200 bg-white shadow-inner'
+                <div className={`p-5 border-t backdrop-blur-md ${theme === 'dark' ? 'border-white/10 bg-black/20' : 'border-indigo-500/20 bg-indigo-950/50'
                   }`}>
                   <div className="flex gap-3 max-w-4xl mx-auto w-full">
                     <input
@@ -4898,7 +4898,7 @@ const App = () => {
                       disabled={isChatLoading}
                       className={`flex-1 border rounded-xl px-5 py-4 focus:outline-none focus:border-blue-500 transition-all ${theme === 'dark'
                           ? 'bg-white/5 border-white/10 text-white placeholder:text-white/20'
-                          : 'bg-gray-50 border-gray-300 text-gray-900 placeholder:text-gray-400'
+                          : 'bg-indigo-800/40 border-indigo-500/30 text-white placeholder:text-indigo-300/40'
                         }`}
                     />
                     <button onClick={sendChatMessage} disabled={!chatInput.trim() || isChatLoading} className="bg-gradient-to-r from-blue-600 to-purple-600 p-4 rounded-xl text-white hover:scale-105 transition-all shadow-lg disabled:opacity-50 disabled:hover:scale-100">
