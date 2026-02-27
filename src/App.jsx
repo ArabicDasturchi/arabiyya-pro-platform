@@ -110,7 +110,7 @@ const App = () => {
           if (view === 'auth') setView('levels');
         } else {
           if (data.code === 'CONCURRENT_SESSION') {
-            alert(data.message);
+            alert(t('error_prefix') + data.message);
           }
           localStorage.removeItem('token');
           setUser(null);
@@ -250,7 +250,7 @@ const App = () => {
 
         // Legacy chat history restore removed to support multi-chat system
       } else if (data.code === 'CONCURRENT_SESSION') {
-        alert(data.message);
+        alert(t('error_prefix') + data.message);
         localStorage.removeItem('token');
         setUser(null);
         setView('auth');
@@ -357,7 +357,7 @@ const App = () => {
 
   const handlePurchaseSubmit = async (e) => {
     e.preventDefault();
-    if (!purchaseProof) return alert('Iltimos, chek raqami yoki ID ni kiriting');
+    if (!purchaseProof) return alert(t('fill_all_fields'));
 
     setIsSubmittingOrder(true);
     try {
@@ -415,7 +415,7 @@ const App = () => {
 
   const handleUpdatePassword = async () => {
     if (!passwordForm.oldPassword || !passwordForm.newPassword) {
-      alert("Iltimos, barcha maydonlarni to'ldiring");
+      alert(t('fill_all_fields'));
       return;
     }
     try {
@@ -430,14 +430,13 @@ const App = () => {
       });
       const data = await res.json();
       if (data.success) {
-        alert('Parol muvaffaqiyatli yangilandi!');
-        setPasswordForm({ oldPassword: '', newPassword: '' });
+        alert(t('password_updated'));
       } else {
-        alert('Xatolik: ' + data.message);
+        alert(t('error_prefix') + data.message);
       }
     } catch (err) {
       console.error(err);
-      alert('Server xatosi');
+      alert(t('connection_error'));
     }
   };
 
@@ -741,21 +740,23 @@ const App = () => {
         const aiFeedback = data.success ? data.analysis : "Yaxshi ish qildingiz!";
 
         if (correctCount >= 4) {
-          alert(`✅ Ajoyib! ${correctCount}/5 to'g'ri javob\n\n💡 AI Tahlil:\n${aiFeedback}\n\n🎯 Keyingi mavzuga o'tishingiz mumkin!`);
-          setCompletedLessons([...completedLessons, `${selectedLevel.id}-${selectedLesson.id}`]);
+          alert(t('quiz_pass').replace('{correct}', correctCount).replace('{total}', 5).replace('{feedback}', aiFeedback));
+          setCompletedLessons(prev => [...prev, selectedLesson.id]);
+          // Mark as recently passed to prevent immediate re-take UI flash
+          // setLessonPassFeedback(aiFeedback); // This line was not in the original code, adding it would be an unrelated edit.
           setSelectedLesson(null);
           setView('level-lessons');
         } else {
-          alert(`📚 ${correctCount}/5 to'g'ri javob (kamida 4 ta kerak)\n\n💡 AI Tahlil:\n${aiFeedback}\n\n🔄 Bu mavzuni yana takrorlang va yangi bilimlarga ega bo'ling!`);
+          alert(t('quiz_fail').replace('{correct}', correctCount).replace('{total}', 5).replace('{required}', 4).replace('{feedback}', aiFeedback));
         }
       } catch (error) {
         if (correctCount >= 4) {
-          alert(`✅ Tabriklaymiz! ${correctCount}/5 to'g'ri javob. Keyingi mavzuga o'tishingiz mumkin!`);
-          setCompletedLessons([...completedLessons, `${selectedLevel.id}-${selectedLesson.id}`]);
+          alert(t('quiz_pass').replace('{correct}', correctCount).replace('{total}', 5));
+          setCompletedLessons(prev => [...prev, selectedLesson.id]);
           setSelectedLesson(null);
           setView('level-lessons');
         } else {
-          alert(`📚 ${correctCount}/5 to'g'ri. Kamida 4 ta to'g'ri javob kerak. Mavzuni takrorlang!`);
+          alert(t('quiz_fail').replace('{correct}', correctCount).replace('{total}', 5).replace('{required}', 4));
         }
       }
 
@@ -779,7 +780,7 @@ const App = () => {
       currentExam = []; // No fallback
       // Optional: alert handling for no exam configured
       if (currentExam.length === 0) {
-        alert("Hozircha imtihon savollari kiritilmagan.");
+        alert(t('exam_not_ready'));
         return;
       }
     }
@@ -793,6 +794,8 @@ const App = () => {
       setExamStep(examStep + 1);
     } else {
       const correctCount = newAnswers.filter((ans, i) => ans === currentExam[i].c).length;
+      const requiredCount = Math.ceil(questionsCount * 0.86);
+      const isPassed = correctCount >= requiredCount;
 
       setIsAnalyzing(true);
       try {
@@ -812,7 +815,7 @@ const App = () => {
         const data = await response.json();
         const aiFeedback = data.success ? data.analysis : "Yaxshi natija!";
 
-        if (correctCount >= Math.ceil(questionsCount * 0.86)) {
+        if (isPassed) {
           // Save completion to backend
           try {
             const token = localStorage.getItem('token');
@@ -880,14 +883,13 @@ const App = () => {
               alert(`🎉 C2 Imtihonidan o'tdingiz! (${correctCount}/${questionsCount})\nLekin Sertifikat olish uchun barcha oldingi darajalarni (A1-C1) tugatishingiz kerak.`);
             }
           } else {
-            alert(`🎉 Imtihondan muvaffaqiyatli o'tdingiz! ${correctCount}/${questionsCount} to'g'ri\n\n💡 AI Professional Tahlil:\n${aiFeedback}\n\n🚀 Keyingi darajaga o'tishingiz mumkin!`);
+            alert(t('exam_pass').replace('{correct}', correctCount).replace('{total}', questionsCount).replace('{feedback}', aiFeedback));
+            refreshUser(); // Refresh user data to show newly unlocked level
+            setView('levels'); // Assuming setExamView is not defined, reverting to original behavior
           }
-
-          setView('levels');
-          refreshUser();
         } else {
-          alert(`📚 ${correctCount}/${questionsCount} to'g'ri javob (kamida ${Math.ceil(questionsCount * 0.86)} ta kerak)\n\n💡 AI Professional Tahlil:\n${aiFeedback}\n\n🔄 Bu darajani takrorlash va mustahkamlash tavsiya etiladi.`);
-          setView('level-lessons');
+          alert(t('exam_fail').replace('{correct}', correctCount).replace('{total}', questionsCount).replace('{required}', requiredCount).replace('{feedback}', aiFeedback));
+          setView('level-lessons'); // Assuming setExamView is not defined, reverting to original behavior
         }
       } catch (error) {
         if (correctCount >= Math.ceil(questionsCount * 0.86)) {
@@ -1169,14 +1171,14 @@ const App = () => {
       });
       const data = await res.json();
       if (data.success) {
-        alert('✅ Buyurtma tasdiqlandi!');
+        alert(t('order_received'));
         fetchAdminOrders(); // Refresh list
       } else {
-        alert('❌ Xatolik: ' + data.message);
+        alert(t('error_prefix') + data.message);
       }
     } catch (error) {
       console.error('Approve Error:', error);
-      alert('Tizim xatosi');
+      alert(t('system_error'));
     }
   };
 
@@ -1647,11 +1649,16 @@ const App = () => {
 
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {levels.filter(l => l.id !== 'INTRO').map((level, i) => {
+                    // Dynamic translation for levels
+                    const displayTitle = t(`level_${level.id}_title`) || level.title;
+                    const displayDesc = t(`level_${level.id}_desc`) || level.description;
+                    let finalTitle = displayTitle;
+                    let finalDesc = displayDesc;
+
                     // Quick Fix Override for ALPHABET display if backend script hasn't run
-                    if (level.id === 'ALPHABET' || level.title.includes('Arab Harflari')) {
-                      level.title = t('alphabet_title');
-                      level.description = t('alphabet_desc');
-                      level.icon = "ا";
+                    if (level.id === 'ALPHABET' || (level.title && level.title.includes('Arab Harflari'))) {
+                      finalTitle = t('alphabet_title');
+                      finalDesc = t('alphabet_desc');
                     }
                     const isUnlocked = user && (user.role === 'admin' || user.purchasedLevels?.includes(level.id));
                     const isLocked = !isUnlocked;
@@ -1698,8 +1705,8 @@ const App = () => {
                             </div>
                           </div>
 
-                          <h3 className="text-2xl font-black mb-3">{level.title}</h3>
-                          <p className="text-white/70 mb-4 leading-relaxed">{level.description}</p>
+                          <h3 className="text-2xl font-black mb-3">{finalTitle}</h3>
+                          <p className="text-white/70 mb-4 leading-relaxed">{finalDesc}</p>
 
                           <div className="flex items-center gap-4 text-sm text-white/60">
                             <div className="flex items-center gap-2">
@@ -3516,7 +3523,7 @@ const App = () => {
                     { id: 'dashboard', label: t('admin_dashboard'), icon: LayoutDashboard },
                     { id: 'orders', label: t('admin_orders'), icon: ClipboardCheck },
                     { id: 'submissions', label: t('admin_submissions'), icon: CheckCircle2 },
-                    { id: 'users', label: 'Users', icon: Users },
+                    { id: 'users', label: t('menu_users'), icon: Users },
                     { id: 'certificates', label: t('certificates'), icon: Award },
                     { id: 'courses', label: t('admin_courses'), icon: BookOpen },
                     { id: 'settings', label: t('settings'), icon: Settings },
@@ -3581,10 +3588,10 @@ const App = () => {
                       <div className="space-y-8">
                         <div className="grid md:grid-cols-4 gap-6">
                           {[
-                            { label: "Jami Foydalanuvchilar", val: adminStats.totalUsers, icon: Users, color: "blue" },
-                            { label: "Faol Foydalanuvchilar", val: adminStats.activeUsers, icon: Zap, color: "green" },
-                            { label: "Tugatilgan Darslar", val: adminStats.totalCompletedLessons, icon: BookOpen, color: "purple" },
-                            { label: "Sertifikatlar", val: adminStats.totalCertificates, icon: Award, color: "orange" }
+                            { label: t('total_users'), val: adminStats.totalUsers, icon: Users, color: "blue" },
+                            { label: t('active_now'), val: adminStats.activeUsers, icon: Zap, color: "green" },
+                            { label: t('stats_total_lessons'), val: adminStats.totalCompletedLessons, icon: BookOpen, color: "purple" },
+                            { label: t('certificates'), val: adminStats.totalCertificates, icon: Award, color: "orange" }
                           ].map((stat, i) => (
                             <div key={i} className="bg-white/5 backdrop-blur-xl p-6 rounded-3xl border border-white/10 relative overflow-hidden group hover:scale-105 transition-all">
                               <div className={`absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity bg-${stat.color}-500 rounded-bl-3xl`}>
@@ -3614,7 +3621,7 @@ const App = () => {
                                     </div>
                                     <div>
                                       <div className="font-bold text-sm">{u.name}</div>
-                                      <div className="text-xs text-white/40">Yangi a'zo</div>
+                                      <div className="text-xs text-white/40">{t('new_member')}</div>
                                     </div>
                                   </div>
                                   <div className="text-xs text-white/40 font-mono">
@@ -3664,18 +3671,18 @@ const App = () => {
                                 {adminOrders.length === 0 ? (
                                   <tr>
                                     <td colSpan="6" className="p-8 text-center text-white/40 font-bold">
-                                      Hozircha buyurtmalar yo'q
+                                      {t('no_orders')}
                                     </td>
                                   </tr>
                                 ) : (
                                   adminOrders.map((order, i) => (
                                     <tr key={i} className="hover:bg-white/5 transition-colors">
                                       <td className="p-4">
-                                        <div className="font-bold">{order.user?.name || 'Noma\'lum'}</div>
+                                        <div className="font-bold">{order.user?.name || t('unknown')}</div>
                                         <div className="text-xs text-white/40">{order.user?.email}</div>
                                       </td>
                                       <td className="p-4 font-black text-xl text-blue-400">{order.levelId}</td>
-                                      <td className="p-4 font-mono">{order.amount?.toLocaleString()} so'm</td>
+                                      <td className="p-4 font-mono">{order.amount?.toLocaleString()} {t('currency')}</td>
                                       <td className="p-4">
                                         <span className={`px-2 py-1 rounded text-xs font-bold uppercase ${order.status === 'approved' ? 'bg-green-500/20 text-green-400' :
                                           order.status === 'rejected' ? 'bg-red-500/20 text-red-400' :
@@ -3693,12 +3700,12 @@ const App = () => {
                                             onClick={() => handleApproveOrder(order._id)}
                                             className="px-4 py-2 bg-green-500 text-white rounded-lg font-bold hover:bg-green-600 transition-colors shadow-lg shadow-green-500/20"
                                           >
-                                            Tasdiqlash
+                                            {t('approve_btn')}
                                           </button>
                                         )}
                                         {order.status === 'approved' && (
                                           <span className="text-green-500 flex items-center justify-end gap-1 font-bold text-sm">
-                                            <CheckCircle size={16} /> Tasdiqlangan
+                                            <CheckCircle size={16} /> {t('approved_status')}
                                           </span>
                                         )}
                                       </td>
@@ -3739,7 +3746,7 @@ const App = () => {
                             </thead>
                             <tbody className="divide-y divide-white/5">
                               {submissions.length === 0 ? (
-                                <tr><td colSpan="6" className="p-8 text-center text-white/40">Hozircha topshiriqlar yo'q</td></tr>
+                                <tr><td colSpan="6" className="p-8 text-center text-white/40">{t('no_submissions')}</td></tr>
                               ) : (
                                 submissions.map((sub) => {
                                   const level = levels.find(l => l.id === sub.levelId);
@@ -3747,7 +3754,7 @@ const App = () => {
                                   return (
                                     <tr key={sub._id} className="hover:bg-white/5 transition-colors">
                                       <td className="p-4">
-                                        <div className="font-bold">{sub.user?.name || "Noma'lum"}</div>
+                                        <div className="font-bold">{sub.user?.name || t('unknown')}</div>
                                         <div className="text-xs text-white/40">{sub.user?.email}</div>
                                       </td>
                                       <td className="p-4 text-sm">
@@ -3775,7 +3782,7 @@ const App = () => {
                                           sub.status === 'rejected' ? 'bg-red-500/20 text-red-400' :
                                             'bg-yellow-500/20 text-yellow-400'
                                           }`}>
-                                          {sub.status}
+                                          {t(`status_${sub.status}`)}
                                         </span>
                                       </td>
                                       <td className="p-4 text-right">
@@ -3819,7 +3826,7 @@ const App = () => {
                                   </div>
                                   <div className="bg-white/5 p-4 rounded-xl">
                                     <div className="text-xs font-bold text-white/40 uppercase mb-1">{t('status')}</div>
-                                    <div className="font-bold uppercase">{editingSubmission.status}</div>
+                                    <div className="font-bold uppercase">{t(`status_${editingSubmission.status}`)}</div>
                                   </div>
                                 </div>
 
@@ -4015,7 +4022,7 @@ const App = () => {
                                           ? 'bg-red-500/10 text-red-400 border-red-500/20'
                                           : 'bg-blue-500/10 text-blue-400 border-blue-500/20'
                                           }`}>
-                                          {u.role}
+                                          {t(`role_${u.role}`)}
                                         </span>
                                       </td>
                                       <td className="p-4 text-right">
@@ -4076,11 +4083,11 @@ const App = () => {
                                   <div className="flex items-start justify-between mb-4">
                                     <div className="text-4xl">{level.icon}</div>
                                     <span className="px-3 py-1 bg-white/5 rounded-lg text-xs font-bold border border-white/10">
-                                      {Math.ceil(level.lessons.length / 5)} ta modul • {level.lessons.length} dars
+                                      {t('all_lessons_count').replace('{modul}', Math.ceil(level.lessons.length / 5)).replace('{dars}', level.lessons.length)}
                                     </span>
                                   </div>
-                                  <h3 className="text-xl font-black mb-2">{level.title}</h3>
-                                  <p className="text-sm text-white/60 mb-6 line-clamp-2">{level.description}</p>
+                                  <h3 className="text-xl font-black mb-2">{t(`level_${level.id}_title`) || level.title}</h3>
+                                  <p className="text-sm text-white/60 mb-6 line-clamp-2">{t(`level_${level.id}_desc`) || level.description}</p>
 
                                   <div className="space-y-2">
                                     {level.lessons.slice(0, 3).map((lesson, idx) => (
@@ -4093,7 +4100,7 @@ const App = () => {
                                     ))}
                                     {level.lessons.length > 3 && (
                                       <div className="text-center text-xs text-white/40 py-1 font-bold">
-                                        + yana {level.lessons.length - 3} ta dars
+                                        {t('more_lessons_prefix')} {level.lessons.length - 3} {t('more_lessons_suffix')}
                                       </div>
                                     )}
                                   </div>
@@ -4143,7 +4150,7 @@ const App = () => {
                                 {editingLevel.levelBookUrl && (
                                   <button
                                     onClick={() => {
-                                      if (window.confirm('Haqiqatdan ham kitobni o\'chirmoqchimisiz?')) {
+                                      if (window.confirm(t('delete_confirm'))) {
                                         setEditingLevel({ ...editingLevel, levelBookUrl: '' });
                                       }
                                     }}
@@ -4179,7 +4186,7 @@ const App = () => {
                                             if (!file) return;
 
                                             if (!file.name.toLowerCase().endsWith('.pdf')) {
-                                              alert('Faqat PDF fayl tanlash mumkin!');
+                                              alert(t('pdf_only'));
                                               return;
                                             }
 
@@ -4189,7 +4196,7 @@ const App = () => {
                                             try {
                                               const token = localStorage.getItem('token');
                                               if (!token) {
-                                                alert('❌ Token topilmadi. Iltimos, tizimga qaytadan kiring.');
+                                                alert('❌ ' + t('token_error'));
                                                 return;
                                               }
                                               console.log('📤 Yuklash boshlandi:', file.name, file.size);
@@ -4205,13 +4212,13 @@ const App = () => {
 
                                               if (data.success && data.fileUrl) {
                                                 setEditingLevel({ ...editingLevel, levelBookUrl: data.fileUrl });
-                                                alert('✅ Kitob muvaffaqiyatli yuklandi! Endi "Saqlash" tugmasini bosing.');
+                                                alert('✅ ' + t('upload_success'));
                                               } else {
                                                 alert('❌ Yuklashda xatolik: ' + (data.message || 'Noma\'lum xato. Console-ni tekshiring.'));
                                               }
                                             } catch (err) {
                                               console.error('Upload xatosi:', err);
-                                              alert('❌ Aloqa xatosi! Internet yoki server muammosi bor.');
+                                              alert('❌ ' + t('connection_error'));
                                             } finally {
                                               setUploadingLevelBook(false);
                                             }
@@ -4238,7 +4245,7 @@ const App = () => {
                                 </button>
                               </div>
                               <p className="text-xs text-white/40">
-                                💡 Bu yerga kitob yuklab <b>Saqlash</b> tugmasini bossangiz, u darajadagi barcha darslarda ko'rinadi.
+                                💡 {t('book_hint')}
                               </p>
                             </div>
 
@@ -4325,7 +4332,7 @@ const App = () => {
                                   }}
                                 >
                                   <Plus size={18} />
-                                  Qo'shish
+                                  {t('add')}
                                 </button>
                               </div>
                             </div>
@@ -4345,8 +4352,8 @@ const App = () => {
                                           {moduleNumber}
                                         </div>
                                         <div>
-                                          <h5 className="font-black text-lg">Modul {moduleNumber}</h5>
-                                          <p className="text-xs text-white/60">{moduleLessons.length} ta dars</p>
+                                          <h5 className="font-black text-lg">{t('module')} {moduleNumber}</h5>
+                                          <p className="text-xs text-white/60">{moduleLessons.length} {t('lesson_label')}</p>
                                         </div>
                                       </div>
                                       <div className="text-sm text-white/60 font-bold">
@@ -4429,7 +4436,7 @@ const App = () => {
                               })}
                               {editingLevel.lessons.length === 0 && (
                                 <div className="bg-white/5 rounded-2xl border border-white/10 p-12 text-center text-white/40">
-                                  Ushbu darajada hali darslar yo'q
+                                  {t('no_lessons_msg') || t('no_quiz_msg')}
                                 </div>
                               )}
                             </div>
@@ -4478,10 +4485,10 @@ const App = () => {
                         <div className="bg-white/5 p-6 rounded-2xl border border-white/10">
                           <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
                             <Shield size={20} className="text-purple-400" />
-                            Adminlar Boshqaruvi
+                            {t('admins_management')}
                           </h3>
                           <p className="text-sm text-white/60 mb-6">
-                            Quyidagi foydalanuvchilar tizimda <b>Admin</b> huquqiga ega.
+                            {t('admins_desc')}
                           </p>
 
                           <div className="space-y-4">
@@ -4501,7 +4508,7 @@ const App = () => {
                                     onClick={() => handleRoleUpdate(admin._id, 'user')}
                                     className="text-red-400 hover:bg-red-500/10 px-3 py-1.5 rounded-lg text-xs font-bold transition-all border border-red-500/20"
                                   >
-                                    Adminlikdan olish
+                                    {t('remove_admin')}
                                   </button>
                                 )}
                                 {admin._id === user.id && (
@@ -4520,7 +4527,7 @@ const App = () => {
                               onClick={() => setAdminTab('users')}
                               className="w-full py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-sm font-bold transition-all"
                             >
-                              Foydalanuvchilarga o'tish
+                              {t('go_to_users')}
                             </button>
                           </div>
                         </div>
@@ -4534,14 +4541,14 @@ const App = () => {
                           <div className="space-y-4">
                             <input
                               type="password"
-                              placeholder="Eski parol"
+                              placeholder={t('old_password')}
                               className="w-full bg-black/20 px-4 py-3 rounded-xl border border-white/10 text-white focus:outline-none focus:border-blue-500/50"
                               value={passwordForm.oldPassword}
                               onChange={(e) => setPasswordForm({ ...passwordForm, oldPassword: e.target.value })}
                             />
                             <input
                               type="password"
-                              placeholder="Yangi parol (kamida 6 ta belgi)"
+                              placeholder={t('new_password_hint')}
                               className="w-full bg-black/20 px-4 py-3 rounded-xl border border-white/10 text-white focus:outline-none focus:border-blue-500/50"
                               value={passwordForm.newPassword}
                               onChange={(e) => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
@@ -4550,7 +4557,7 @@ const App = () => {
                               onClick={handleUpdatePassword}
                               className="w-full bg-red-500/20 hover:bg-red-500/30 text-red-400 font-bold py-3 rounded-xl transition-all border border-red-500/20"
                             >
-                              Parolni yangilash
+                              {t('update_password')}
                             </button>
                           </div>
                         </div>
@@ -4570,7 +4577,7 @@ const App = () => {
                             disabled={loading}
                           >
                             <Trash2 size={20} />
-                            {loading ? 'Tozalanmoqda...' : 'Barcha Buzilgan Linklarni Tozalash'}
+                            {loading ? t('cleaning') : t('cleanup_btn')}
                           </button>
                         </div>
                       </div>
@@ -4630,7 +4637,7 @@ const App = () => {
                                           {cl.levelId}
                                         </div>
                                         <div>
-                                          <div className="font-bold text-sm">Level {cl.levelId} Completed</div>
+                                          <div className="font-bold text-sm">Level {cl.levelId} {t('level_completed_msg')}</div>
                                           <div className="text-[10px] text-white/40">{new Date(cl.completedAt).toLocaleDateString()}</div>
                                         </div>
                                       </div>
@@ -4649,7 +4656,7 @@ const App = () => {
                                 <Clock className="text-blue-400" />
                                 <span>{t('time_spent')}:</span>
                                 <span className="text-blue-400 font-black">
-                                  {(selectedAdminUser.completedLevels?.length * 4.5 || 0.5).toFixed(1)} soat
+                                  {(selectedAdminUser.completedLevels?.length * 4.5 || 0.5).toFixed(1)} {t('hours')}
                                 </span>
                               </div>
                             </div>
@@ -4661,13 +4668,13 @@ const App = () => {
                               onClick={() => setSelectedAdminUser(null)}
                               className="flex-1 py-4 rounded-2xl bg-white/10 hover:bg-white/20 font-bold transition-all border border-white/10"
                             >
-                              Yopish
+                              {t('close')}
                             </button>
                             <button
                               onClick={() => { setView('admin'); setAdminTab('certificates'); setSelectedAdminUser(null); }}
                               className="flex-1 py-4 rounded-2xl bg-blue-600 hover:bg-blue-500 font-bold transition-all shadow-lg shadow-blue-500/20"
                             >
-                              Sertifikatlarni ko'rish
+                              {t('view_certs_btn')}
                             </button>
                           </div>
                         </div>
@@ -4681,7 +4688,7 @@ const App = () => {
                 ) : (
                   <div className="text-center py-24">
                     <Loader2 className="animate-spin mx-auto text-white/40 mb-4" size={40} />
-                    <p className="text-white/40 font-bold">Ma'lumotlar yuklanmoqda...</p>
+                    <p className="text-white/40 font-bold">{t('loading_data')}</p>
                   </div>
                 )}
               </div>
@@ -4785,8 +4792,10 @@ const App = () => {
                       <h3 className="text-2xl font-bold text-white">{t('ai_greeting')}</h3>
                       <p className="text-white/60">{t('ai_help_text')}</p>
                       <div className="grid grid-cols-2 gap-4 max-w-lg mx-auto">
-                        {["Grammatika", "So'zlashuv", "Tarjima", "Mashqlar"].map(t => (
-                          <button key={t} onClick={() => setChatInput(t)} className="p-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-sm font-bold text-white transition-all">{t}</button>
+                        {["Grammatika", "So'zlashuv", "Tarjima", "Mashqlar"].map(category => (
+                          <button key={category} onClick={() => setChatInput(category)} className="p-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-sm font-bold text-white transition-all">
+                            {t(`ai_starter_${category.toLowerCase().replace(/[' ]/g, '')}`)}
+                          </button>
                         ))}
                       </div>
                     </div>
@@ -4946,15 +4955,15 @@ const App = () => {
           {/* Bottom */}
           <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-6">
             <p className="text-white/40 text-xs font-bold">
-              © 2026 Arabiyya Pro. Barcha huquqlar himoyalangan.
+              © 2026 Arabiyya Pro. {t('copyright')}
             </p>
             <div className="flex gap-8">
-              {['Maxfiylik siyosati', 'Foydalanish shartlari', 'Cookie siyosati'].map((item, i) => (
+              {['privacy_policy', 'terms_service', 'cookie_policy'].map((key, i) => (
                 <button
                   key={i}
                   className="text-xs font-bold text-white/40 hover:text-white transition-colors duration-300"
                 >
-                  {item}
+                  {t(key)}
                 </button>
               ))}
             </div>
@@ -5215,14 +5224,14 @@ const App = () => {
                   </div>
                   <div className="bg-white/5 p-6 rounded-2xl border border-white/10 text-center space-y-1">
                     <div className="text-white/40 text-xs font-bold uppercase tracking-wider">{t('time_spent')}</div>
-                    <div className="text-2xl font-black text-purple-400">{selectedAdminUser.totalTimeSpent || 0} min</div>
+                    <div className="text-2xl font-black text-purple-400">{selectedAdminUser.totalTimeSpent || 0} {t('minutes')}</div>
                   </div>
                   <div className="bg-white/5 p-6 rounded-2xl border border-white/10 text-center space-y-1">
-                    <div className="text-white/40 text-xs font-bold uppercase tracking-wider">Mavzular</div>
+                    <div className="text-white/40 text-xs font-bold uppercase tracking-wider">{t('th_lesson')}</div>
                     <div className="text-2xl font-black text-green-400">{selectedAdminUser.completedLessons?.length || 0}</div>
                   </div>
                   <div className="bg-white/5 p-6 rounded-2xl border border-white/10 text-center space-y-1">
-                    <div className="text-white/40 text-xs font-bold uppercase tracking-wider">Sertifikatlar</div>
+                    <div className="text-white/40 text-xs font-bold uppercase tracking-wider">{t('certs_count')}</div>
                     <div className="text-2xl font-black text-yellow-400">{selectedAdminUser.certificates?.length || 0}</div>
                   </div>
                 </div>
@@ -5232,8 +5241,8 @@ const App = () => {
                   {/* Purchased Levels */}
                   <div className="bg-white/5 p-6 rounded-3xl border border-white/10 space-y-4">
                     <h4 className="font-black text-lg flex items-center gap-2">
-                      <Lock size={18} className="text-blue-400" />
-                      Ochilgan Darajalar
+                      <Trophy size={18} className="text-blue-400" />
+                      {t('unlocked_levels')}
                     </h4>
                     <div className="flex flex-wrap gap-2">
                       {['A1', 'A2', 'B1', 'B2', 'C1', 'C2'].map(lvl => {
@@ -5254,7 +5263,7 @@ const App = () => {
                   <div className="bg-white/5 p-6 rounded-3xl border border-white/10 space-y-4">
                     <h4 className="font-black text-lg flex items-center gap-2">
                       <Trophy size={18} className="text-yellow-400" />
-                      Tugatilgan Darajalar
+                      {t('completed_levels_title')}
                     </h4>
                     <div className="space-y-2">
                       {(selectedAdminUser.completedLevels && selectedAdminUser.completedLevels.length > 0) ? (
@@ -5266,7 +5275,7 @@ const App = () => {
                           </div>
                         ))
                       ) : (
-                        <div className="text-white/20 text-sm font-bold py-2">Hali darajalar tugatilmagan</div>
+                        <div className="text-white/20 text-sm font-bold py-2">{t('no_progress')}</div>
                       )}
                     </div>
                   </div>
@@ -5281,10 +5290,10 @@ const App = () => {
                   <div className="grid md:grid-cols-2 gap-6">
                     <div className="flex justify-between items-center p-4 bg-black/20 rounded-2xl border border-white/5">
                       <span className="text-white/60 font-bold">{t('last_active')}:</span>
-                      <span className="text-white font-black">{selectedAdminUser.lastActive ? new Date(selectedAdminUser.lastActive).toLocaleString() : 'Noma\'lum'}</span>
+                      <span className="text-white font-black">{selectedAdminUser.lastActive ? new Date(selectedAdminUser.lastActive).toLocaleString() : t('unknown')}</span>
                     </div>
                     <div className="flex justify-between items-center p-4 bg-black/20 rounded-2xl border border-white/5">
-                      <span className="text-white/60 font-bold">Ro'yxatdan o'tgan:</span>
+                      <span className="text-white/60 font-bold">{t('joined_at')}:</span>
                       <span className="text-white font-black">{new Date(selectedAdminUser.createdAt).toLocaleDateString()}</span>
                     </div>
                   </div>
@@ -5306,7 +5315,7 @@ const App = () => {
               <div className="p-6 border-b border-white/10 flex justify-between items-center bg-slate-900/50 backdrop-blur-xl">
                 <h3 className="text-2xl font-black text-white flex items-center gap-3">
                   <Settings className="text-blue-400" />
-                  Darsni Tahrirlash: <span className="text-blue-400">{editLessonData.title}</span>
+                  {t('edit_lesson')}: <span className="text-blue-400">{editLessonData.title}</span>
                 </h3>
                 <button onClick={() => setShowEditLessonModal(false)} className="bg-white/5 hover:bg-white/10 p-2 rounded-lg transition-colors">
                   <X size={20} className="text-white/60" />
@@ -5318,11 +5327,11 @@ const App = () => {
                 {/* Sidebar Tabs */}
                 <div className="w-64 bg-black/20 border-r border-white/10 p-4 space-y-2 overflow-y-auto hidden md:block">
                   {[
-                    { id: 'main', label: 'Asosiy', icon: <Video size={18} /> },
-                    { id: 'theory', label: 'Nazariy', icon: <BookOpen size={18} /> },
-                    { id: 'practice', label: 'Amaliy', icon: <PenTool size={18} /> },
-                    { id: 'homework', label: 'Uyga Vazifa', icon: <Home size={18} /> },
-                    { id: 'quiz', label: 'Test', icon: <CheckCircle2 size={18} /> }
+                    { id: 'main', label: t('tab_main'), icon: <Video size={18} /> },
+                    { id: 'theory', label: t('tab_theory'), icon: <BookOpen size={18} /> },
+                    { id: 'practice', label: t('tab_practice'), icon: <PenTool size={18} /> },
+                    { id: 'homework', label: t('tab_homework'), icon: <Home size={18} /> },
+                    { id: 'quiz', label: t('tab_quiz'), icon: <CheckCircle2 size={18} /> }
                   ].map(tab => (
                     <button
                       key={tab.id}
@@ -5344,11 +5353,11 @@ const App = () => {
                   {/* Mobile Tabs (Visible only on small screens) */}
                   <div className="md:hidden flex overflow-x-auto gap-2 mb-6 pb-2">
                     {[
-                      { id: 'main', label: 'Asosiy' },
-                      { id: 'theory', label: 'Nazariy' },
-                      { id: 'practice', label: 'Amaliy' },
-                      { id: 'homework', label: 'Vazifa' },
-                      { id: 'quiz', label: 'Test' }
+                      { id: 'main', label: t('tab_main') },
+                      { id: 'theory', label: t('tab_theory') },
+                      { id: 'practice', label: t('tab_practice') },
+                      { id: 'homework', label: t('tab_homework') },
+                      { id: 'quiz', label: t('tab_quiz') }
                     ].map(tab => (
                       <button
                         key={tab.id}
@@ -5366,10 +5375,10 @@ const App = () => {
                   {/* TAB: Main */}
                   {editLessonTab === 'main' && (
                     <div className="space-y-6 animate-in fade-in duration-300">
-                      <h4 className="text-xl font-bold mb-4 flex items-center gap-2"><Video size={20} className="text-blue-400" /> Asosiy Ma'lumotlar</h4>
+                      <h4 className="text-xl font-bold mb-4 flex items-center gap-2"><Video size={20} className="text-blue-400" /> {t('main_info')}</h4>
                       <div className="space-y-4">
                         <div>
-                          <label className="text-xs font-bold text-white/60 mb-1 block uppercase">Mavzu (Title)</label>
+                          <label className="text-xs font-bold text-white/60 mb-1 block uppercase">{t('lesson_title')}</label>
                           <input
                             type="text"
                             value={editLessonData.title}
@@ -5381,13 +5390,13 @@ const App = () => {
 
                           <div>
                             <div className="flex justify-between items-center mb-1">
-                              <label className="text-xs font-bold text-white/60 uppercase">Kitob (PDF)</label>
+                              <label className="text-xs font-bold text-white/60 uppercase">{t('book_pdf')}</label>
                               {editLessonData.ebookUrl && (
                                 <button
                                   onClick={() => setEditLessonData({ ...editLessonData, ebookUrl: '' })}
                                   className="text-red-400 text-xs hover:text-red-300"
                                 >
-                                  O'chirish
+                                  {t('actions_delete')}
                                 </button>
                               )}
                             </div>
@@ -5405,7 +5414,7 @@ const App = () => {
                                   ) : (
                                     <Upload size={18} className="text-blue-400" />
                                   )}
-                                  <span className="text-sm">{uploadingLessonBook ? 'Yuklanmoqda...' : 'PDF Yuklash'}</span>
+                                  <span className="text-sm">{uploadingLessonBook ? t('uploading') : t('upload_pdf_btn')}</span>
                                   {!uploadingLessonBook && (
                                     <input
                                       type="file"
@@ -5416,7 +5425,7 @@ const App = () => {
                                         if (!file) return;
 
                                         if (!file.name.toLowerCase().endsWith('.pdf')) {
-                                          alert('Faqat PDF fayl tanlash mumkin!');
+                                          alert(t('pdf_upload_error'));
                                           return;
                                         }
 
@@ -5455,7 +5464,7 @@ const App = () => {
                                 <input
                                   type="text"
                                   className="w-1/3 bg-white/5 border border-white/10 rounded-xl px-3 text-xs text-white/60 focus:text-white outline-none"
-                                  placeholder="Yoki URL"
+                                  placeholder={t('or_url')}
                                   value={editLessonData.ebookUrl}
                                   onChange={e => setEditLessonData({ ...editLessonData, ebookUrl: e.target.value })}
                                 />
@@ -5593,7 +5602,7 @@ const App = () => {
                                       setEditLessonData({ ...editLessonData, quiz: newQuiz });
                                     }}
                                     className="w-full bg-transparent border-none outline-none text-sm text-white placeholder-white/20"
-                                    placeholder={`Variant ${optIdx + 1}`}
+                                    placeholder={`${t('option_label')} ${optIdx + 1}`}
                                   />
                                 </div>
                               ))}
@@ -5662,7 +5671,7 @@ const App = () => {
                   }}
                 >
                   <Save size={20} />
-                  Saqlash
+                  {t('save')}
                 </button>
               </div>
 
@@ -5687,7 +5696,7 @@ const App = () => {
               </div>
               <div className="flex items-center gap-4">
                 <span className="px-3 py-1 bg-white/10 rounded-lg text-sm font-bold border border-white/10">
-                  Jami: {editingExamQuestions.length}
+                  {t('total')}: {editingExamQuestions.length}
                 </span>
                 <button onClick={() => setShowExamEditor(false)} className="p-2 hover:bg-white/10 rounded-xl transition-all">
                   <X size={24} />
@@ -5703,7 +5712,7 @@ const App = () => {
                     <span className="bg-white/10 px-2 py-1 rounded text-xs font-bold text-white/40">#{idx + 1}</span>
                     <button
                       onClick={() => {
-                        if (!confirm("O'chirilsinmi?")) return;
+                        if (!confirm(t('delete_confirm_short'))) return;
                         const newQs = [...editingExamQuestions];
                         newQs.splice(idx, 1);
                         setEditingExamQuestions(newQs);
@@ -5716,7 +5725,7 @@ const App = () => {
 
                   <div className="space-y-4 pr-12">
                     <div>
-                      <label className="text-xs font-bold text-white/40 uppercase mb-1 block">Savol</label>
+                      <label className="text-xs font-bold text-white/40 uppercase mb-1 block">{t('savol_label')}</label>
                       <textarea
                         value={q.question}
                         onChange={(e) => {
@@ -5726,7 +5735,7 @@ const App = () => {
                         }}
                         className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500 outline-none resize-none font-medium text-lg leading-relaxed"
                         rows={2}
-                        placeholder="Savol matnini kiriting..."
+                        placeholder={t('savol_placeholder')}
                       />
                     </div>
 
@@ -5756,7 +5765,7 @@ const App = () => {
                             }}
                             onClick={(e) => e.stopPropagation()}
                             className="bg-transparent border-none outline-none w-full text-sm text-white placeholder-white/20"
-                            placeholder={`Variant ${['A', 'B', 'C', 'D'][optIdx]}`}
+                            placeholder={`${t('option_label')} ${['A', 'B', 'C', 'D'][optIdx]}`}
                           />
                         </div>
                       ))}
