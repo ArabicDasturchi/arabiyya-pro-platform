@@ -3490,16 +3490,16 @@ const App = () => {
               <div className="w-64 flex-shrink-0 hidden md:block">
                 <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-4 sticky top-32 space-y-2">
                   <div className="px-4 py-3 mb-2">
-                    <h3 className="text-white/40 text-xs font-bold uppercase tracking-wider">Menu</h3>
+                    <h3 className="text-white/40 text-xs font-bold uppercase tracking-wider">{t('admin_menu_title') || t('menu')}</h3>
                   </div>
                   {[
-                    { id: 'dashboard', label: 'Boshqaruv', icon: LayoutDashboard },
-                    { id: 'orders', label: 'Buyurtmalar', icon: ClipboardCheck },
-                    { id: 'submissions', label: 'Topshiriqlar', icon: CheckCircle2 },
-                    { id: 'users', label: 'Foydalanuvchilar', icon: Users },
-                    { id: 'certificates', label: 'Sertifikatlar', icon: Award },
-                    { id: 'courses', label: 'Kurslar', icon: BookOpen },
-                    { id: 'settings', label: 'Sozlamalar', icon: Settings },
+                    { id: 'dashboard', label: t('admin_menu_dashboard'), icon: LayoutDashboard },
+                    { id: 'orders', label: t('admin_menu_orders'), icon: ClipboardCheck },
+                    { id: 'submissions', label: t('admin_menu_submissions'), icon: CheckCircle2 },
+                    { id: 'users', label: t('admin_menu_users'), icon: Users },
+                    { id: 'certificates', label: t('admin_menu_certs'), icon: Award },
+                    { id: 'courses', label: t('admin_menu_courses'), icon: BookOpen },
+                    { id: 'settings', label: t('admin_menu_settings'), icon: Settings },
                   ].map((item) => (
                     <button
                       key={item.id}
@@ -3520,13 +3520,13 @@ const App = () => {
               <div className="md:hidden w-full overflow-x-auto pb-4 mb-4 custom-scrollbar">
                 <div className="flex gap-2 min-w-max">
                   {[
-                    { id: 'dashboard', label: t('admin_dashboard'), icon: LayoutDashboard },
-                    { id: 'orders', label: t('admin_orders'), icon: ClipboardCheck },
-                    { id: 'submissions', label: t('admin_submissions'), icon: CheckCircle2 },
-                    { id: 'users', label: t('menu_users'), icon: Users },
-                    { id: 'certificates', label: t('certificates'), icon: Award },
-                    { id: 'courses', label: t('admin_courses'), icon: BookOpen },
-                    { id: 'settings', label: t('settings'), icon: Settings },
+                    { id: 'dashboard', label: t('admin_menu_dashboard'), icon: LayoutDashboard },
+                    { id: 'orders', label: t('admin_menu_orders'), icon: ClipboardCheck },
+                    { id: 'submissions', label: t('admin_menu_submissions'), icon: CheckCircle2 },
+                    { id: 'users', label: t('admin_menu_users'), icon: Users },
+                    { id: 'certificates', label: t('admin_menu_certs'), icon: Award },
+                    { id: 'courses', label: t('admin_menu_courses'), icon: BookOpen },
+                    { id: 'settings', label: t('admin_menu_settings'), icon: Settings },
                   ].map((item) => (
                     <button
                       key={item.id}

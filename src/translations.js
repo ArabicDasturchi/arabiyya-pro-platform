@@ -1087,6 +1087,15 @@ export const translations = {
         level_C1_desc: "Fluent communication at a professional level.",
         level_C2_title: "C2 - Mastery",
         level_C2_desc: "Command of Arabic at a native level.",
+        // Admin Sidebar Menu
+        admin_menu_title: "Menu",
+        admin_menu_dashboard: "Dashboard",
+        admin_menu_orders: "Orders",
+        admin_menu_submissions: "Submissions",
+        admin_menu_users: "Users",
+        admin_menu_certs: "Certificates",
+        admin_menu_courses: "Courses",
+        admin_menu_settings: "Settings",
     },
     ru: {
         home: "Главная",
@@ -1629,5 +1638,14 @@ export const translations = {
         level_C1_desc: "Профессиональное общение на высоком уровне.",
         level_C2_title: "C2 - Совершенство",
         level_C2_desc: "Владение арабским языком на уровне носителя.",
+        // Admin Sidebar Menu
+        admin_menu_title: "Меню",
+        admin_menu_dashboard: "Управление",
+        admin_menu_orders: "Заказы",
+        admin_menu_submissions: "Задания",
+        admin_menu_users: "Пользователи",
+        admin_menu_certs: "Сертификаты",
+        admin_menu_courses: "Курсы",
+        admin_menu_settings: "Настройки",
     }
 };
