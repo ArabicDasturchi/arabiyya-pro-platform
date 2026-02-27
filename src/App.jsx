@@ -1292,16 +1292,16 @@ const App = () => {
   }, []);
 
   return (
-    <div className={`min-h-screen transition-all duration-700 ${theme === 'dark' ? 'bg-[#030712] text-white' : 'bg-gradient-to-br from-blue-950 via-indigo-900 to-purple-950 text-white'} font-sans relative overflow-x-hidden`}>
+    <div className={`min-h-screen transition-all duration-700 ${theme === 'dark' ? 'bg-[#08090a] text-zinc-100' : 'bg-gradient-to-br from-blue-950 via-indigo-900 to-purple-950 text-white'} font-sans relative overflow-x-hidden`}>
 
       {/* Animated background elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className={`absolute top-20 left-10 w-72 h-72 ${theme === 'dark' ? 'bg-blue-600/5' : 'bg-blue-500/20'} rounded-full blur-3xl animate-pulse`}></div>
-        <div className={`absolute bottom-20 right-10 w-96 h-96 ${theme === 'dark' ? 'bg-purple-600/5' : 'bg-purple-500/20'} rounded-full blur-3xl animate-pulse`} style={{ animationDelay: '1s' }}></div>
+        <div className={`absolute top-20 left-10 w-96 h-96 ${theme === 'dark' ? 'bg-blue-600/10' : 'bg-blue-500/20'} rounded-full blur-[120px] animate-pulse`}></div>
+        <div className={`absolute bottom-20 right-10 w-[500px] h-[500px] ${theme === 'dark' ? 'bg-purple-600/10' : 'bg-purple-500/20'} rounded-full blur-[140px] animate-pulse`} style={{ animationDelay: '2s' }}></div>
       </div>
 
       {/* NAVIGATION BAR */}
-      <nav className={`fixed top-0 w-full z-50 backdrop-blur-2xl ${theme === 'dark' ? 'bg-[#030712]/60 border-white/5' : 'bg-white/5 border-white/10'} border-b shadow-2xl transition-all duration-500`}>
+      <nav className={`fixed top-0 w-full z-50 backdrop-blur-3xl ${theme === 'dark' ? 'bg-[#08090a]/80 border-white/5' : 'bg-white/5 border-white/10'} border-b shadow-2xl transition-all duration-500`}>
         <div className="max-w-7xl mx-auto px-3 sm:px-6 py-3 sm:py-4">
           <div className="flex justify-between items-center">
 
@@ -1565,9 +1565,9 @@ const App = () => {
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-6 pt-16 max-w-5xl mx-auto">
                   {[
                     // { icon: Users, num: '5,000+', label: 'Faol O\'quvchi' }, -> Removed
-                    { icon: GraduationCap, num: `${levels.reduce((acc, lvl) => acc + (lvl.lessons?.length || 0), 0)}+`, label: 'Jami Darslar' },
-                    { icon: Brain, num: '24/7', label: 'AI Yordamchi' },
-                    { icon: Award, num: '100%', label: 'Muvaffaqiyat harakatga bog\'liq' }
+                    { icon: GraduationCap, num: `${levels.reduce((acc, lvl) => acc + (lvl.lessons?.length || 0), 0)}+`, label: t('stats_total_lessons') },
+                    { icon: Brain, num: '24/7', label: t('stats_ai_assistant') },
+                    { icon: Award, num: '100%', label: t('stats_success_rate') }
                   ].map((stat, i) => (
                     <div key={i} className="group bg-white/5 backdrop-blur-xl p-6 rounded-2xl border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300 hover:scale-105">
                       <stat.icon className="w-10 h-10 mx-auto mb-3 text-blue-400 group-hover:text-purple-400 transition-colors" />
@@ -1597,32 +1597,26 @@ const App = () => {
                     // }, -> Removed
                     {
                       icon: Brain,
-                      title: '24/7 AI Shaxsiy Yordamchi',
-                      desc: 'Istalgan vaqtda savol bering va professional javob oling. Grammatika, lug\'at, mashqlar',
+                      title: t('feature_ai_chat_title'),
+                      desc: t('feature_ai_chat_desc'),
                       color: 'from-purple-500 to-pink-500'
                     },
                     {
                       icon: Award,
-                      title: 'Sertifikat',
-                      desc: 'Har bir darajani tugatgandan so\'ng sertifikat bilan tasdiqlanadi',
+                      title: t('certificates'),
+                      desc: t('feature_cert_desc'),
                       color: 'from-orange-500 to-red-500'
                     },
-                    // {
-                    //   icon: Video,
-                    //   title: 'HD Video Darslar',
-                    //   desc: 'Professional o\'qituvchilar tomonidan tayyorlangan yuqori sifatli video darslar',
-                    //   color: 'from-green-500 to-teal-500'
-                    // }, -> Removed
                     {
                       icon: Book,
-                      title: 'Elektron Kitoblar',
-                      desc: 'Har bir dars uchun maxsus tayyorlangan PDF kitoblar va materiallar',
+                      title: t('feature_books_title'),
+                      desc: t('feature_books_desc'),
                       color: 'from-indigo-500 to-blue-500'
                     },
                     {
                       icon: TrendingUp,
-                      title: 'Progress Tracking',
-                      desc: 'Real vaqtda o\'z rivojlanishingizni kuzatib boring va maqsadlarga erishing',
+                      title: t('feature_tracking_title'),
+                      desc: t('feature_tracking_desc'),
                       color: 'from-yellow-500 to-orange-500'
                     }
                   ].map((feature, i) => (
@@ -1655,8 +1649,8 @@ const App = () => {
                   {levels.filter(l => l.id !== 'INTRO').map((level, i) => {
                     // Quick Fix Override for ALPHABET display if backend script hasn't run
                     if (level.id === 'ALPHABET' || level.title.includes('Arab Harflari')) {
-                      level.title = "Arab Alifbosi";
-                      level.description = "Harflar, talaffuz va yozish qoidalarini mukammal o'rganing.";
+                      level.title = t('alphabet_title');
+                      level.description = t('alphabet_desc');
                       level.icon = "ا";
                     }
                     const isUnlocked = user && (user.role === 'admin' || user.purchasedLevels?.includes(level.id));
@@ -1936,6 +1930,14 @@ const App = () => {
                     lvl.title = t('alphabet_title');
                     lvl.description = t('alphabet_desc');
                     lvl.icon = "ا";
+                  } else {
+                    // Dynamic translation for A1-C2 levels
+                    const titleKey = `level_${lvl.id}_title`;
+                    const descKey = `level_${lvl.id}_desc`;
+                    if (translations[language]?.[titleKey]) {
+                      lvl.title = t(titleKey);
+                      lvl.description = t(descKey);
+                    }
                   }
                   const isCompleted = completedLevels.includes(lvl.id);
                   const isUnlocked = isLevelUnlocked(lvl.id);
@@ -1971,12 +1973,12 @@ const App = () => {
                             <div className="flex flex-col gap-2 items-end">
                               <div className="px-4 py-2 bg-amber-500/30 backdrop-blur-xl rounded-xl border border-amber-400/40 flex items-center gap-2 shadow-lg">
                                 <Lock size={18} className="text-amber-200" />
-                                <span className="text-xs font-black text-amber-100 uppercase tracking-widest">Yopiq</span>
+                                <span className="text-xs font-black text-amber-100 uppercase tracking-widest">{t('locked')}</span>
                               </div>
                             </div>
                           ) : (
                             <div className="px-4 py-2 bg-emerald-500/30 backdrop-blur-xl rounded-xl border border-emerald-400/40 shadow-lg">
-                              <span className="text-xs font-black text-emerald-100 uppercase tracking-widest">Ochiq</span>
+                              <span className="text-xs font-black text-emerald-100 uppercase tracking-widest">{t('unlocked')}</span>
                             </div>
                           )}
 
@@ -1999,14 +2001,14 @@ const App = () => {
                         {/* Lesson Count */}
                         <div className="flex items-center gap-2 text-white/90">
                           <BookOpen size={18} />
-                          <span className="text-sm font-bold">{lvl.lessons?.length || 0} ta dars</span>
+                          <span className="text-sm font-bold">{lvl.lessons?.length || 0} {t('lesson_label')}</span>
                         </div>
 
                         {/* Progress Bar (Only if unlocked) */}
                         {!isLocked && lvl.lessons?.length > 0 && (
                           <div className="space-y-2">
                             <div className="flex justify-between text-xs font-bold text-white/80 uppercase tracking-wider">
-                              <span>Jarayon</span>
+                              <span>{t('progress')}</span>
                               <span>{Math.round((completedLessons.filter(l => l.startsWith(lvl.id)).length / lvl.lessons.length) * 100) || 0}%</span>
                             </div>
                             <div className="h-2.5 bg-black/30 rounded-full overflow-hidden backdrop-blur-sm border border-white/20">
@@ -2026,11 +2028,11 @@ const App = () => {
                           {isLocked ? (
                             <>
                               <Lock size={22} />
-                              Sotib Olish
+                              {t('buy_now')}
                             </>
                           ) : (
                             <>
-                              Kirish
+                              {t('start')}
                               <ArrowRight size={22} className="group-hover:translate-x-1 transition-transform" />
                             </>
                           )}
@@ -2069,7 +2071,7 @@ const App = () => {
                     {selectedLevel.icon} {selectedLevel.id}
                   </div>
                   <h2 className="text-3xl font-black">{selectedModule.title}</h2>
-                  <p className="text-white/60 text-sm">5 ta dars • Har biri 5 sahifadan</p>
+                  <p className="text-white/60 text-sm">5 {t('lesson_label')} • {t('prof_content')}</p>
                 </div>
               </div>
 
@@ -2307,23 +2309,23 @@ const App = () => {
 
                               <div>
                                 <h3 className="text-2xl font-black mb-1">
-                                  {submission.status === 'approved' ? '✅ Qabul Qilindi!' :
-                                    submission.status === 'rejected' ? '❌ Rad Etildi' :
-                                      '⏳ Tekshirilmoqda...'}
+                                  {submission.status === 'approved' ? `✅ ${t('hw_approved')}` :
+                                    submission.status === 'rejected' ? `❌ ${t('hw_rejected')}` :
+                                      `⏳ ${t('hw_pending')}`}
                                 </h3>
                                 <p className="text-white/60">
-                                  {submission.status === 'approved' ? 'Tabriklaymiz! Vazifangiz mukammal bajarildi.' :
-                                    submission.status === 'rejected' ? 'Qayta urinib ko\'ring.' :
-                                      'Ustoz tez orada tekshirib, baho qo\'yadi.'}
+                                  {submission.status === 'approved' ? t('hw_success_msg') :
+                                    submission.status === 'rejected' ? t('hw_retry_msg') :
+                                      t('hw_waiting_msg')}
                                 </p>
                               </div>
                             </div>
 
                             {submission.status === 'approved' && (
                               <div className="bg-green-500/10 p-6 rounded-2xl border border-green-500/20 max-w-sm mx-auto">
-                                <div className="text-sm font-bold text-green-400 uppercase tracking-widest mb-1">SIZNING BAHOINGIZ</div>
+                                <div className="text-sm font-bold text-green-400 uppercase tracking-widest mb-1">{t('your_grade')}</div>
                                 <div className="text-5xl font-black text-white mb-2">{submission.score || 0}</div>
-                                <div className="text-white/60 text-xs">100 balldan</div>
+                                <div className="text-white/60 text-xs">{t('out_of_100')}</div>
                               </div>
                             )}
 
@@ -2338,10 +2340,10 @@ const App = () => {
                             {/* Rejected bo'lsa qayta yuklash */}
                             {submission.status === 'rejected' && (
                               <div className="bg-red-500/10 border border-red-500/20 rounded-3xl p-8 text-center space-y-6 mt-6">
-                                <h4 className="text-xl font-bold text-red-400">Qayta Yuklash</h4>
+                                <h4 className="text-xl font-bold text-red-400">{t('re_upload')}</h4>
                                 <label className="bg-red-500 hover:bg-red-600 text-white px-8 py-4 rounded-xl font-bold cursor-pointer inline-flex items-center gap-3 shadow-lg shadow-red-500/20 transition-all">
                                   <Upload size={24} />
-                                  Yangi Fayl Yuklash
+                                  {t('upload_new')}
                                   <input type="file" className="hidden" onChange={async (e) => {
                                     const file = e.target.files[0];
                                     if (!file) return;
@@ -2361,7 +2363,7 @@ const App = () => {
                                       });
                                       const data = await res.json();
                                       if (data.success) {
-                                        alert("✅ Qayta yuklandi!");
+                                        alert(`✅ ${t('re_uploaded')}!`);
                                         fetchMySubmissions(); // Update status
                                       } else alert("Xatolik: " + data.message);
                                     } catch (err) {
@@ -2381,14 +2383,14 @@ const App = () => {
                         <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-3xl p-8 text-center space-y-6">
                           <Download size={48} className="mx-auto text-emerald-400" />
                           <div>
-                            <h4 className="text-xl font-bold text-emerald-400 mb-2">Vazifani Yuklash</h4>
-                            <p className="text-white/60 text-sm max-w-md mx-auto">Vazifani bajarib bo'lgach, uni rasmga olib yoki audio yozib shu yerga yuklang.</p>
+                            <h4 className="text-xl font-bold text-emerald-400 mb-2">{t('upload_hw')}</h4>
+                            <p className="text-white/60 text-sm max-w-md mx-auto">{t('upload_hw_desc')}</p>
                           </div>
 
                           <div className="flex justify-center">
                             <label className="bg-gradient-to-r from-emerald-500 to-green-600 text-white px-8 py-4 rounded-xl font-bold hover:scale-105 transition-transform cursor-pointer flex items-center gap-3 shadow-lg shadow-emerald-500/20">
                               <Upload size={24} />
-                              Fayl Tanlash (Rasm/Audio)
+                              {t('select_file_hw')}
                               <input type="file" className="hidden" onChange={async (e) => {
                                 const file = e.target.files[0];
                                 if (!file) return;
@@ -2472,7 +2474,7 @@ const App = () => {
                         {lessonTestStep < (selectedLesson.quiz?.length || 0) ? (
                           <div className="space-y-8 mt-4 animate-in slide-in-from-right-8 duration-300">
                             <div className="flex justify-between items-center text-sm font-bold text-white/50 border-b border-white/10 pb-4">
-                              <span>Savol {lessonTestStep + 1} / {selectedLesson.quiz.length}</span>
+                              <span>{t('question')} {lessonTestStep + 1} / {selectedLesson.quiz.length}</span>
                               <span className="bg-blue-500/10 text-blue-400 px-3 py-1 rounded-lg border border-blue-500/20">{t('tab_test')}</span>
                             </div>
 
@@ -2659,7 +2661,7 @@ const App = () => {
                       onClick={() => {
                         setSelectedModule({
                           id: moduleIndex,
-                          title: `Modul ${moduleNumber}`,
+                          title: `${t('module')} ${moduleNumber}`,
                           lessons: moduleLessons
                         });
                         setView('module-detail');
@@ -2674,7 +2676,7 @@ const App = () => {
                             </div>
 
                             <div>
-                              <h3 className="font-black text-2xl leading-tight mb-1">Modul {moduleNumber}</h3>
+                              <h3 className="font-black text-2xl leading-tight mb-1">{t('module')} {moduleNumber}</h3>
                               <div className="flex items-center gap-3 text-xs text-white/60">
                                 <div className="flex items-center gap-1">
                                   <BookOpen size={14} />
@@ -2721,7 +2723,7 @@ const App = () => {
                           ))}
                           {moduleLessons.length > 3 && (
                             <div className="text-xs text-white/40 font-bold pl-7">
-                              + yana {moduleLessons.length - 3} ta dars
+                              {t('more_lessons_prefix')} {moduleLessons.length - 3} {t('more_lessons_suffix')}
                             </div>
                           )}
                         </div>
@@ -2751,7 +2753,7 @@ const App = () => {
                       <div className="flex items-center gap-4 text-sm text-white/80">
                         <div className="flex items-center gap-2">
                           <Clock size={16} />
-                          <span>~30 daqiqa</span>
+                          <span>~30 {t('minutes')}</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <Brain size={16} />
@@ -2838,14 +2840,14 @@ const App = () => {
                                 pdf.save(`ArabiyyaPro_Certificate_${cert.id}.pdf`);
                               } catch (err) {
                                 console.error("PDF generation failed", err);
-                                alert("PDF yuklashda xatolik bo'ldi. Iltimos qayta urinib ko'ring.");
+                                alert(t('pdf_error'));
                               }
                             }
                           }}
                           className="flex items-center gap-2 px-8 py-4 bg-green-600 hover:bg-green-500 text-white rounded-xl font-bold shadow-lg shadow-green-500/20 transition-all hover:scale-105"
                         >
                           <Download size={24} />
-                          PDF Yuklab Olish
+                          {t('download_pdf')}
                         </button>
                       </div>
                     </div>
@@ -2962,7 +2964,7 @@ const App = () => {
                         </div>
                         <div className="text-right">
                           <div className="text-4xl font-black">{examStep + 1}/{(selectedLevel.examQuestions?.length) || 15}</div>
-                          <div className="text-sm text-white/60">Savol</div>
+                          <div className="text-sm text-white/60">{t('exam_step')}</div>
                         </div>
                       </div>
 
@@ -2976,7 +2978,7 @@ const App = () => {
                       </div>
 
                       <div className="flex justify-between text-sm font-bold text-white/60">
-                        <span>O'tish bali: {Math.ceil(((selectedLevel.examQuestions?.length) || 15) * 0.86)}/{(selectedLevel.examQuestions?.length) || 15}</span>
+                        <span>{t('passing_score')}: {Math.ceil(((selectedLevel.examQuestions?.length) || 15) * 0.86)}/{(selectedLevel.examQuestions?.length) || 15}</span>
                         <span>AI Professional Tahlil</span>
                       </div>
                     </div>
@@ -2988,8 +2990,8 @@ const App = () => {
                           <Loader2 size={80} className="relative animate-spin text-purple-400" strokeWidth={3} />
                         </div>
                         <div className="space-y-3">
-                          <p className="text-3xl font-black">AI imtihonni tahlil qilmoqda...</p>
-                          <p className="text-lg text-white/60">Professional baholash jarayoni</p>
+                          <p className="text-3xl font-black">{t('ai_analyzing_exam')}</p>
+                          <p className="text-lg text-white/60">{t('prof_assessment_process')}</p>
                         </div>
                       </div>
                     ) : (
@@ -3079,8 +3081,8 @@ const App = () => {
                     <Award size={48} className="text-white" strokeWidth={2.5} />
                   </div>
                 </div>
-                <h2 className="text-5xl md:text-6xl font-black">Sertifikatlar</h2>
-                <p className="text-2xl text-white/70">Sizning yutuqlaringiz va muvaffaqiyatlaringiz</p>
+                <h2 className="text-5xl md:text-6xl font-black">{t('certificates')}</h2>
+                <p className="text-2xl text-white/70">{t('cert_subtitle')}</p>
               </div>
 
               {certificates.length === 0 ? (
@@ -3092,9 +3094,9 @@ const App = () => {
                     </div>
                   </div>
                   <div className="space-y-4">
-                    <h3 className="text-3xl font-black">Hali sertifikat yo'q</h3>
+                    <h3 className="text-3xl font-black">{t('no_certificates_yet')}</h3>
                     <p className="text-xl text-white/60 max-w-lg mx-auto">
-                      Barcha darajalarni muvaffaqiyatli tugatib professional sertifikat oling
+                      {t('no_cert_desc')}
                     </p>
                   </div>
                   <button
@@ -3104,7 +3106,7 @@ const App = () => {
                     <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl blur group-hover:blur-lg transition-all"></div>
                     <div className="relative px-10 py-5 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-2xl font-black text-lg hover:scale-105 transition-all shadow-xl flex items-center gap-3">
                       <Rocket size={24} />
-                      Kursga Qaytish
+                      {t('back_to_course')}
                     </div>
                   </button>
                 </div>
@@ -3127,7 +3129,7 @@ const App = () => {
                             <Award size={40} className="text-white" />
                           </div>
                           <div className="text-right">
-                            <div className="text-white/80 text-sm font-bold mb-1">Sertifikat №</div>
+                            <div className="text-white/80 text-sm font-bold mb-1">{t('cert_num')}</div>
                             <div className="text-white font-black text-lg">{cert.certificateNumber}</div>
                           </div>
                         </div>
@@ -3135,23 +3137,23 @@ const App = () => {
                         {/* Main Content */}
                         <div className="text-center space-y-6">
                           <div className="space-y-2">
-                            <h4 className="text-white/90 text-lg font-bold">Sertifikat berildi</h4>
+                            <h4 className="text-white/90 text-lg font-bold">{t('cert_issued')}</h4>
                             <h3 className="text-4xl font-black text-white">{cert.name}</h3>
                           </div>
 
                           <div className="py-6 px-8 bg-white/20 backdrop-blur-xl rounded-2xl border-2 border-white/30">
                             <div className="text-3xl font-black text-white mb-2">{cert.level}</div>
-                            <div className="text-white/90 font-bold">Arab Tili Professional Kursi</div>
+                            <div className="text-white/90 font-bold">{t('cert_course_name')}</div>
                           </div>
 
                           <div className="grid grid-cols-2 gap-4 text-white">
                             <div className="p-4 bg-white/10 backdrop-blur-xl rounded-xl">
                               <div className="text-2xl font-black">{cert.score}</div>
-                              <div className="text-sm font-bold text-white/80">Natija</div>
+                              <div className="text-sm font-bold text-white/80">{t('cert_result')}</div>
                             </div>
                             <div className="p-4 bg-white/10 backdrop-blur-xl rounded-xl">
                               <div className="text-sm font-black">{cert.date}</div>
-                              <div className="text-xs font-bold text-white/80">Sana</div>
+                              <div className="text-xs font-bold text-white/80">{t('cert_date')}</div>
                             </div>
                           </div>
                         </div>
@@ -3160,11 +3162,11 @@ const App = () => {
                         <div className="flex gap-4">
                           <button className="flex-1 py-4 bg-white text-orange-600 rounded-xl font-black hover:scale-105 transition-all shadow-xl flex items-center justify-center gap-2">
                             <Download size={20} />
-                            Yuklab Olish
+                            {t('download')}
                           </button>
                           <button className="flex-1 py-4 bg-white/20 backdrop-blur-xl text-white border-2 border-white/30 rounded-xl font-black hover:scale-105 transition-all flex items-center justify-center gap-2">
                             <Send size={20} />
-                            Ulashish
+                            {t('share')}
                           </button>
                         </div>
                       </div>
@@ -3203,14 +3205,14 @@ const App = () => {
                       <h2 className="text-4xl font-black text-white mb-2">{user.name}</h2>
                       <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-4">
                         <span className="px-4 py-2 bg-white/20 backdrop-blur-xl rounded-xl text-white font-bold border border-white/30">
-                          {user.level || 'Yangi O\'quvchi'}
+                          {user.level || t('new_student')}
                         </span>
                         <span className="px-4 py-2 bg-white/20 backdrop-blur-xl rounded-xl text-white font-bold border border-white/30">
-                          {completedLevels.length} Daraja
+                          {completedLevels.length} {t('level_label')}
                         </span>
                       </div>
                       <p className="text-white/90 max-w-2xl">
-                        Professional arab tili o'rganish sayohatingizda muvaffaqiyatlar!
+                        {t('profile_welcome_msg')}
                       </p>
                     </div>
                   </div>
@@ -3223,25 +3225,25 @@ const App = () => {
                   {
                     icon: BookOpen,
                     value: completedLessons.length,
-                    label: 'Tugatilgan Darslar',
+                    label: t('stats_lessons'),
                     color: 'from-blue-500 to-cyan-500'
                   },
                   {
                     icon: Trophy,
                     value: completedLevels.length,
-                    label: 'Tugatilgan Darajalar',
+                    label: t('stats_levels'),
                     color: 'from-green-500 to-emerald-500'
                   },
                   {
                     icon: Award,
                     value: certificates.length,
-                    label: 'Sertifikatlar',
+                    label: t('certificates'),
                     color: 'from-yellow-500 to-orange-500'
                   },
                   {
                     icon: Target,
                     value: `${Math.round((completedLessons.length / (levels.reduce((acc, l) => acc + l.lessons.length, 0))) * 100)}%`,
-                    label: 'Umumiy Progress',
+                    label: t('total_progress'),
                     color: 'from-purple-500 to-pink-500'
                   }
                 ].map((stat, i) => (
@@ -3263,7 +3265,7 @@ const App = () => {
               <div className="bg-white/10 backdrop-blur-xl p-10 rounded-3xl border border-white/20">
                 <h3 className="text-2xl font-black mb-8 flex items-center gap-3">
                   <TrendingUp className="text-blue-400" />
-                  So'nggi Faoliyat
+                  {t('recent_activity')}
                 </h3>
 
                 <div className="space-y-4">
@@ -3281,14 +3283,14 @@ const App = () => {
                           <h4 className="font-bold text-lg">{lesson.title}</h4>
                           <p className="text-sm text-white/60">{level.title}</p>
                         </div>
-                        <span className="text-xs font-bold text-white/50">Tugatilgan</span>
+                        <span className="text-xs font-bold text-white/50">{t('completed')}</span>
                       </div>
                     ) : null;
                   })}
 
                   {completedLessons.length === 0 && (
                     <div className="text-center py-12 text-white/50">
-                      <p>Hali faoliyat yo'q. O'qishni boshlang!</p>
+                      <p>{t('no_activity_yet')}</p>
                     </div>
                   )}
                 </div>
@@ -3310,61 +3312,21 @@ const App = () => {
                     <HelpCircle size={48} className="text-white" strokeWidth={2.5} />
                   </div>
                 </div>
-                <h2 className="text-5xl md:text-6xl font-black">Yordam Markazi</h2>
-                <p className="text-2xl text-white/70">Tez-tez so'raladigan savollar</p>
+                <h2 className="text-5xl md:text-6xl font-black">{t('help_center')}</h2>
+                <p className="text-2xl text-white/70">{t('faq_subtitle')}</p>
               </div>
 
               {/* FAQ Grid */}
               <div className="grid md:grid-cols-2 gap-8">
                 {[
-                  {
-                    icon: Target,
-                    title: 'Darajani aniqlash testi qanday ishlaydi?',
-                    desc: '12 savollik professional test har bir CEFR darajasidan (A1, A2, B1, B2, C1, C2) 2 tadan savolni o\'z ichiga oladi. AI sizning javoblaringizni chuqur tahlil qilib, eng mos darajani belgilaydi va batafsil tavsiyalar beradi.',
-                    color: 'from-blue-500 to-cyan-500'
-                  },
-                  {
-                    icon: Brain,
-                    title: '24/7 AI Chat qanday yordam beradi?',
-                    desc: 'Professional AI yordamchi har doim tayyor. Grammatika qoidalari, lug\'at, talaffuz, mashqlar va boshqa barcha savollaringizga darhol javob olasiz. Har bir savol uchun batafsil tushuntirish va misollar beriladi.',
-                    color: 'from-purple-500 to-pink-500'
-                  },
-                  {
-                    icon: BookOpen,
-                    title: 'Har bir darsda qanday materiallar bor?',
-                    desc: 'Har bir darsda: HD video dars, professional elektron kitob (PDF), amaliy mashqlar, interaktiv testlar va uy vazifalari mavjud. Barcha materiallar yuklab olinadi va offline foydalanish mumkin.',
-                    color: 'from-green-500 to-emerald-500'
-                  },
-                  {
-                    icon: ClipboardCheck,
-                    title: 'Dars testlari qanday baholanadi?',
-                    desc: '5 ta professional savoldan iborat test. Kamida 4 ta to\'g\'ri javob kerak. AI har bir testdan keyin batafsil tahlil va tavsiyalar beradi. Test natijalari real vaqtda saqlanadi.',
-                    color: 'from-orange-500 to-red-500'
-                  },
-                  {
-                    icon: Trophy,
-                    title: 'Daraja imtihonlari qanday o\'tkaziladi?',
-                    desc: 'Har bir daraja oxirida 15 savollik professional imtihon. Kamida 13 ta to\'g\'ri javob kerakимtихонни topshirilgandan keyin AI batafsil tahlil va keyingi qadamlar bo\'yicha maslahat beradi.',
-                    color: 'from-indigo-500 to-purple-500'
-                  },
-                  {
-                    icon: Award,
-                    title: 'Sertifikat qanday olinadi?',
-                    desc: 'Har bir darajani (A1 dan C2 gacha) muvaffaqiyatli tugatganingizda professional rasmiy sertifikat beriladi. Sertifikatda sizning natijangiz, sanasi va noyob raqami ko\'rsatiladi.',
-                    color: 'from-yellow-500 to-orange-500'
-                  },
-                  {
-                    icon: Shield,
-                    title: 'Ma\'lumotlar xavfsizligi',
-                    desc: 'Barcha shaxsiy ma\'lumotlaringiz, o\'quv jarayoningiz va natijalaringiz xavfsiz shifrlangan va maxfiy hisoblanadi. Sizning ma\'lumotlaringiz hech qachon uchinchi shaxslarga berilmaydi.',
-                    color: 'from-red-500 to-pink-500'
-                  },
-                  {
-                    icon: Zap,
-                    title: 'Qancha vaqtda o\'rganish mumkin?',
-                    desc: 'O\'rganish tezligi sizning imkoniyatlaringizga bog\'liq. O\'rtacha: A1-A2 (2-4 oy), B1-B2 (4-6 oy), C1-C2 (6-10 oy). Siz o\'z jadvalingiz bo\'yicha o\'rganishingiz mumkin.',
-                    color: 'from-cyan-500 to-blue-500'
-                  }
+                  { icon: Target, title: t('faq_q1_t'), desc: t('faq_q1_d'), color: 'from-blue-500 to-cyan-500' },
+                  { icon: Brain, title: t('faq_q2_t'), desc: t('faq_q2_d'), color: 'from-purple-500 to-pink-500' },
+                  { icon: BookOpen, title: t('faq_q3_t'), desc: t('faq_q3_d'), color: 'from-green-500 to-emerald-500' },
+                  { icon: ClipboardCheck, title: t('faq_q4_t'), desc: t('faq_q4_d'), color: 'from-orange-500 to-red-500' },
+                  { icon: Trophy, title: t('faq_q5_t'), desc: t('faq_q5_d'), color: 'from-indigo-500 to-purple-500' },
+                  { icon: Award, title: t('faq_q6_t'), desc: t('faq_q6_d'), color: 'from-yellow-500 to-orange-500' },
+                  { icon: Shield, title: t('faq_q7_t'), desc: t('faq_q7_d'), color: 'from-red-500 to-pink-500' },
+                  { icon: Zap, title: t('faq_q8_t'), desc: t('faq_q8_d'), color: 'from-cyan-500 to-blue-500' }
                 ].map((item, i) => (
                   <div
                     key={i}
@@ -3387,9 +3349,9 @@ const App = () => {
               <div className="relative overflow-hidden rounded-3xl">
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500 via-indigo-600 to-purple-600"></div>
                 <div className="relative p-12 text-center space-y-6">
-                  <h3 className="text-3xl font-black text-white">Yana savol bormi?</h3>
+                  <h3 className="text-3xl font-black text-white">{t('more_questions')}</h3>
                   <p className="text-xl text-white/90 max-w-2xl mx-auto">
-                    Bizning 24/7 AI yordamchimiz sizga yordam berishga tayyor!
+                    {t('ai_help_ready')}
                   </p>
                   <button
                     onClick={() => setShowChat(true)}
@@ -3398,7 +3360,7 @@ const App = () => {
                     <div className="absolute inset-0 bg-white rounded-2xl blur group-hover:blur-lg transition-all"></div>
                     <div className="relative px-10 py-5 bg-white text-blue-600 rounded-2xl font-black text-lg hover:scale-110 transition-all shadow-2xl flex items-center gap-3">
                       <MessageCircle size={24} />
-                      AI Chat Ochish
+                      {t('open_ai_chat')}
                     </div>
                   </button>
                 </div>
@@ -3427,7 +3389,7 @@ const App = () => {
                     <div className="flex items-center gap-4 justify-center md:justify-start">
                       <span className="px-4 py-2 bg-white/10 rounded-xl font-bold text-blue-300 border border-white/10 flex items-center gap-2">
                         <Target size={18} />
-                        Daraja: {user.currentLevel || "Aniqlanmagan"}
+                        {t('level_label')}: {user.currentLevel || t('undefined')}
                       </span>
                       <span className="px-4 py-2 bg-white/10 rounded-xl font-bold text-purple-300 border border-white/10 flex items-center gap-2">
                         <User size={18} />
@@ -3446,10 +3408,10 @@ const App = () => {
                     <div className="w-12 h-12 bg-blue-500/20 rounded-2xl flex items-center justify-center text-blue-400">
                       <Target size={24} />
                     </div>
-                    <h3 className="text-xl font-black">Test Natijasi</h3>
+                    <h3 className="text-xl font-black">{t('test_result')}</h3>
                   </div>
                   <div className="text-3xl font-black">{user.placementTestScore ?? 0}/12</div>
-                  <p className="text-white/60 text-sm font-bold">To'g'ri javoblar</p>
+                  <p className="text-white/60 text-sm font-bold">{t('correct_answers')}</p>
                 </div>
 
                 {/* Completed Levels */}
@@ -3458,10 +3420,10 @@ const App = () => {
                     <div className="w-12 h-12 bg-purple-500/20 rounded-2xl flex items-center justify-center text-purple-400">
                       <Trophy size={24} />
                     </div>
-                    <h3 className="text-xl font-black">Tugatilgan Darajalar</h3>
+                    <h3 className="text-xl font-black">{t('stats_levels')}</h3>
                   </div>
                   <div className="text-3xl font-black">{user.completedLevels?.length || 0}</div>
-                  <p className="text-white/60 text-sm font-bold">Muvaffaqiyatli yakunlandi</p>
+                  <p className="text-white/60 text-sm font-bold">{t('successly_completed')}</p>
                 </div>
 
                 {/* Chat Messages Count */}
@@ -3470,10 +3432,10 @@ const App = () => {
                     <div className="w-12 h-12 bg-pink-500/20 rounded-2xl flex items-center justify-center text-pink-400">
                       <MessageCircle size={24} />
                     </div>
-                    <h3 className="text-xl font-black">AI Suhbatlar</h3>
+                    <h3 className="text-xl font-black">{t('ai_conversations')}</h3>
                   </div>
                   <div className="text-3xl font-black">{chatMessages.length}</div>
-                  <p className="text-white/60 text-sm font-bold">Xabarlar almashinuvi</p>
+                  <p className="text-white/60 text-sm font-bold">{t('message_exchange')}</p>
                 </div>
               </div>
 
@@ -3481,7 +3443,7 @@ const App = () => {
               <div className="space-y-6">
                 <h3 className="text-2xl font-black flex items-center gap-3">
                   <MessageCircle className="text-blue-400" />
-                  So'nggi AI Suhbatlari
+                  {t('recent_ai_chats')}
                 </h3>
 
                 {chatMessages.length > 0 ? (
@@ -3490,9 +3452,9 @@ const App = () => {
                       <div key={i} className={`flex flex-col gap-2 p-4 rounded-xl ${msg.role === 'user' ? 'bg-white/5 border border-white/5 ml-auto max-w-[80%]' : 'bg-blue-500/10 border border-blue-500/20 mr-auto max-w-[80%]'}`}>
                         <div className="flex items-center gap-2 text-xs font-bold opacity-50 mb-1">
                           {msg.role === 'user' ? <User size={12} /> : <Brain size={12} />}
-                          {msg.role === 'user' ? 'Siz' : 'AI Yordamchi'}
+                          {msg.role === 'user' ? t('you') : t('ai_assistant')}
                           <span>•</span>
-                          <span>Hozirgina</span>
+                          <span>{t('just_now')}</span>
                         </div>
                         <p className="whitespace-pre-wrap text-sm leading-relaxed">{msg.content}</p>
                       </div>
@@ -3500,7 +3462,7 @@ const App = () => {
                   </div>
                 ) : (
                   <div className="bg-white/5 backdrop-blur-xl p-12 rounded-3xl border border-white/10 text-center text-white/40 font-bold">
-                    Hozircha faol suhbatlar yo'q
+                    {t('no_active_chats')}
                   </div>
                 )}
               </div>
@@ -3551,13 +3513,13 @@ const App = () => {
               <div className="md:hidden w-full overflow-x-auto pb-4 mb-4 custom-scrollbar">
                 <div className="flex gap-2 min-w-max">
                   {[
-                    { id: 'dashboard', label: 'Boshqaruv', icon: LayoutDashboard },
-                    { id: 'orders', label: 'Buyurtmalar', icon: ClipboardCheck },
-                    { id: 'submissions', label: 'Topshiriqlar', icon: CheckCircle2 },
+                    { id: 'dashboard', label: t('admin_dashboard'), icon: LayoutDashboard },
+                    { id: 'orders', label: t('admin_orders'), icon: ClipboardCheck },
+                    { id: 'submissions', label: t('admin_submissions'), icon: CheckCircle2 },
                     { id: 'users', label: 'Users', icon: Users },
-                    { id: 'certificates', label: 'Sertifikatlar', icon: Award },
-                    { id: 'courses', label: 'Kurslar', icon: BookOpen },
-                    { id: 'settings', label: 'Sozlamalar', icon: Settings },
+                    { id: 'certificates', label: t('certificates'), icon: Award },
+                    { id: 'courses', label: t('admin_courses'), icon: BookOpen },
+                    { id: 'settings', label: t('settings'), icon: Settings },
                   ].map((item) => (
                     <button
                       key={item.id}
@@ -3587,26 +3549,26 @@ const App = () => {
                       {adminTab === 'certificates' && <Award className="text-blue-400" size={32} />}
                       {adminTab === 'courses' && <BookOpen className="text-blue-400" size={32} />}
                       {adminTab === 'settings' && <Settings className="text-blue-400" size={32} />}
-                      {adminTab === 'dashboard' ? 'Boshqaruv Paneli' :
-                        adminTab === 'orders' ? 'Buyurtmalar' :
-                          adminTab === 'submissions' ? 'Topshiriqlar' :
-                            adminTab === 'users' ? 'Foydalanuvchilar' :
-                              adminTab === 'certificates' ? 'Sertifikatlar' :
-                                adminTab === 'courses' ? 'Kurslar' : 'Sozlamalar'}
+                      {adminTab === 'dashboard' ? t('dashboard_title') :
+                        adminTab === 'orders' ? t('admin_orders') :
+                          adminTab === 'submissions' ? t('admin_submissions') :
+                            adminTab === 'users' ? t('menu_users') :
+                              adminTab === 'certificates' ? t('certificates') :
+                                adminTab === 'courses' ? t('admin_courses') : t('settings')}
                     </h2>
                     <p className="text-white/60">
-                      {adminTab === 'dashboard' ? 'Platforma statistikasi va umumiy ko\'rsatkichlar' :
-                        adminTab === 'orders' ? 'Yangi kelib tushgan to\'lovlar va buyurtmalar' :
-                          adminTab === 'submissions' ? 'O\'quvchilarning uyga vazifalari va test natijalari' :
-                            adminTab === 'users' ? 'Foydalanuvchilarni boshqarish va nazorat qilish' :
-                              adminTab === 'certificates' ? 'Foydalanuvchilarning natijalari va sertifikatlari' :
-                                adminTab === 'courses' ? 'O\'quv dasturlari va darslar ro\'yxati' : 'Tizim sozlamalari'}
+                      {adminTab === 'dashboard' ? t('admin_stats_desc') :
+                        adminTab === 'orders' ? t('admin_orders_desc') :
+                          adminTab === 'submissions' ? t('admin_subs_desc') :
+                            adminTab === 'users' ? t('admin_users_desc') :
+                              adminTab === 'certificates' ? t('admin_certs_desc') :
+                                adminTab === 'courses' ? t('admin_courses_desc') : t('admin_settings_desc')}
                     </p>
                   </div>
                   <button
                     onClick={fetchAdminStats}
                     className="p-3 bg-white/10 rounded-xl hover:bg-white/20 transition-all"
-                    title="Yangilash"
+                    title={t('update')}
                   >
                     <TrendingUp size={20} />
                   </button>
@@ -3641,7 +3603,7 @@ const App = () => {
                           <div className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 p-8">
                             <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
                               <TrendingUp size={20} className="text-green-400" />
-                              So'ngi Faollik
+                              {t('recent_activity_admin')}
                             </h3>
                             <div className="space-y-4">
                               {adminStats.recentUsers && adminStats.recentUsers.map((u, i) => (
@@ -3684,18 +3646,18 @@ const App = () => {
                         <div className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 p-6">
                           <h3 className="text-xl font-bold mb-6 flex items-center gap-3">
                             <ClipboardCheck className="text-blue-400" />
-                            Barcha Buyurtmalar
+                            {t('all_orders')}
                           </h3>
                           <div className="overflow-x-auto">
                             <table className="w-full text-left">
                               <thead className="bg-white/5 border-b border-white/10">
                                 <tr>
-                                  <th className="p-4 font-bold text-white/60 text-sm uppercase">Foydalanuvchi</th>
-                                  <th className="p-4 font-bold text-white/60 text-sm uppercase">Daraja</th>
-                                  <th className="p-4 font-bold text-white/60 text-sm uppercase">Summa</th>
-                                  <th className="p-4 font-bold text-white/60 text-sm uppercase">Holat</th>
-                                  <th className="p-4 font-bold text-white/60 text-sm uppercase">Isbot</th>
-                                  <th className="p-4 font-bold text-white/60 text-sm uppercase text-right">Amallar</th>
+                                  <th className="p-4 font-bold text-white/60 text-sm uppercase">{t('th_user')}</th>
+                                  <th className="p-4 font-bold text-white/60 text-sm uppercase">{t('th_level')}</th>
+                                  <th className="p-4 font-bold text-white/60 text-sm uppercase">{t('th_amount')}</th>
+                                  <th className="p-4 font-bold text-white/60 text-sm uppercase">{t('th_status')}</th>
+                                  <th className="p-4 font-bold text-white/60 text-sm uppercase">{t('th_proof')}</th>
+                                  <th className="p-4 font-bold text-white/60 text-sm uppercase text-right">{t('th_actions')}</th>
                                 </tr>
                               </thead>
                               <tbody className="divide-y divide-white/5">
@@ -3756,7 +3718,7 @@ const App = () => {
                         <div className="flex justify-between items-center bg-white/5 p-4 rounded-xl border border-white/10">
                           <h3 className="text-xl font-bold flex items-center gap-3">
                             <CheckCircle2 className="text-blue-400" />
-                            Barcha Topshiriqlar
+                            {t('all_submissions')}
                           </h3>
                           <button onClick={fetchSubmissions} className="bg-white/10 p-2 rounded-lg hover:bg-white/20 transition-colors" title="Yangilash">
                             <TrendingUp size={20} />
@@ -3767,12 +3729,12 @@ const App = () => {
                           <table className="w-full text-left">
                             <thead className="bg-white/5 border-b border-white/10 text-white/60 text-xs uppercase font-bold">
                               <tr>
-                                <th className="p-4">O'quvchi</th>
-                                <th className="p-4">Dars</th>
-                                <th className="p-4">Turi</th>
-                                <th className="p-4">Natija</th>
-                                <th className="p-4">Status</th>
-                                <th className="p-4 text-right">Amal</th>
+                                <th className="p-4">{t('th_user')}</th>
+                                <th className="p-4">{t('th_lesson')}</th>
+                                <th className="p-4">{t('th_type')}</th>
+                                <th className="p-4">{t('th_result')}</th>
+                                <th className="p-4">{t('th_status')}</th>
+                                <th className="p-4 text-right">{t('th_actions')}</th>
                               </tr>
                             </thead>
                             <tbody className="divide-y divide-white/5">
@@ -4141,7 +4103,7 @@ const App = () => {
                                     className="w-full mt-6 py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 font-bold text-sm transition-all flex items-center justify-center gap-2"
                                   >
                                     <Settings size={16} />
-                                    Boshqarish
+                                    {t('manage')}
                                   </button>
                                 </div>
                               </div>
@@ -4176,7 +4138,7 @@ const App = () => {
                               <div className="flex justify-between items-center">
                                 <h4 className="font-bold text-lg flex items-center gap-2">
                                   <Book size={20} className="text-blue-400" />
-                                  Daraja Kitobi (Barcha darslar uchun umumiy PDF)
+                                  {t('level_book_desc')}
                                 </h4>
                                 {editingLevel.levelBookUrl && (
                                   <button
@@ -5509,15 +5471,14 @@ const App = () => {
                   {editLessonTab === 'theory' && (
                     <div className="h-full flex flex-col animate-in fade-in duration-300">
                       <div className="flex justify-between items-center mb-4">
-                        <h4 className="text-xl font-bold flex items-center gap-2"><BookOpen size={20} className="text-blue-400" /> Nazariy Qism</h4>
-                        <span className="text-xs text-white/40">Markdown va HTML qo'llab-quvvatlanadi</span>
+                        <h4 className="text-xl font-bold flex items-center gap-2"><BookOpen size={20} className="text-blue-400" /> {t('theory_section')}</h4>
+                        <span className="text-xs text-white/40">{t('md_support')}</span>
                       </div>
                       <textarea
                         value={editLessonData.theory}
                         onChange={e => setEditLessonData({ ...editLessonData, theory: e.target.value })}
                         className="flex-1 w-full bg-white/5 border border-white/10 rounded-xl p-6 text-white focus:border-blue-500 outline-none text-base leading-relaxed font-mono min-h-[400px]"
-                        placeholder="# Darsning nazariy qismi
-Bu yerga dars matnini yozing..."
+                        placeholder={t('theory_placeholder')}
                       ></textarea>
                     </div>
                   )}
@@ -5525,12 +5486,12 @@ Bu yerga dars matnini yozing..."
                   {/* TAB: Practice */}
                   {editLessonTab === 'practice' && (
                     <div className="h-full flex flex-col animate-in fade-in duration-300">
-                      <h4 className="text-xl font-bold mb-4 flex items-center gap-2"><PenTool size={20} className="text-blue-400" /> Amaliy Mashg'ulotlar</h4>
+                      <h4 className="text-xl font-bold mb-4 flex items-center gap-2"><PenTool size={20} className="text-blue-400" /> {t('practice_section')}</h4>
                       <textarea
                         value={editLessonData.practice}
                         onChange={e => setEditLessonData({ ...editLessonData, practice: e.target.value })}
                         className="flex-1 w-full bg-white/5 border border-white/10 rounded-xl p-6 text-white focus:border-blue-500 outline-none text-base leading-relaxed font-mono min-h-[400px]"
-                        placeholder="Amaliy mashqlar va ko'rsatmalar..."
+                        placeholder={t('practice_placeholder')}
                       ></textarea>
                     </div>
                   )}
@@ -5538,12 +5499,12 @@ Bu yerga dars matnini yozing..."
                   {/* TAB: Homework */}
                   {editLessonTab === 'homework' && (
                     <div className="h-full flex flex-col animate-in fade-in duration-300">
-                      <h4 className="text-xl font-bold mb-4 flex items-center gap-2"><Home size={20} className="text-blue-400" /> Uyga Vazifa</h4>
+                      <h4 className="text-xl font-bold mb-4 flex items-center gap-2"><Home size={20} className="text-blue-400" /> {t('homework_section')}</h4>
                       <textarea
                         value={editLessonData.homework}
                         onChange={e => setEditLessonData({ ...editLessonData, homework: e.target.value })}
                         className="flex-1 w-full bg-white/5 border border-white/10 rounded-xl p-6 text-white focus:border-blue-500 outline-none text-base leading-relaxed font-mono min-h-[400px]"
-                        placeholder="Uyga vazifa tavsifi..."
+                        placeholder={t('homework_placeholder')}
                       ></textarea>
                     </div>
                   )}
@@ -5552,7 +5513,7 @@ Bu yerga dars matnini yozing..."
                   {editLessonTab === 'quiz' && (
                     <div className="space-y-6 animate-in fade-in duration-300 pb-20">
                       <div className="flex justify-between items-center mb-4 sticky top-0 bg-slate-900/90 backdrop-blur z-10 py-4 border-b border-white/10">
-                        <h4 className="text-xl font-bold flex items-center gap-2"><CheckCircle2 size={20} className="text-blue-400" /> Test Savollari ({editLessonData.quiz?.length || 0})</h4>
+                        <h4 className="text-xl font-bold flex items-center gap-2"><CheckCircle2 size={20} className="text-blue-400" /> {t('quiz_section')} ({editLessonData.quiz?.length || 0})</h4>
                         <button
                           onClick={() => setEditLessonData({
                             ...editLessonData,
@@ -5560,7 +5521,7 @@ Bu yerga dars matnini yozing..."
                           })}
                           className="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl font-bold text-sm flex items-center gap-2 shadow-lg shadow-green-500/20"
                         >
-                          <Plus size={16} /> Savol Qo'shish
+                          <Plus size={16} /> {t('add_question')}
                         </button>
                       </div>
 
@@ -5583,7 +5544,7 @@ Bu yerga dars matnini yozing..."
                             </div>
 
                             <div>
-                              <label className="text-xs font-bold text-white/40 mb-1 block">Savol Matni</label>
+                              <label className="text-xs font-bold text-white/40 mb-1 block">{t('question_text')}</label>
                               <input
                                 type="text"
                                 value={q.question}
@@ -5593,7 +5554,7 @@ Bu yerga dars matnini yozing..."
                                   setEditLessonData({ ...editLessonData, quiz: newQuiz });
                                 }}
                                 className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/20 focus:border-blue-500 outline-none font-medium"
-                                placeholder="Savol matnini kiriting..."
+                                placeholder={t('enter_question')}
                               />
                             </div>
 
@@ -5642,7 +5603,7 @@ Bu yerga dars matnini yozing..."
                         {editLessonData.quiz?.length === 0 && (
                           <div className="text-center py-16 text-white/30 border-2 border-dashed border-white/10 rounded-2xl flex flex-col items-center gap-4">
                             <CheckCircle2 size={48} className="text-white/10" />
-                            <p>Test savollari yo'q. "Savol Qo'shish" tugmasini bosing.</p>
+                            <p>{t('no_quiz_msg')}</p>
                           </div>
                         )}
                       </div>
@@ -5658,7 +5619,7 @@ Bu yerga dars matnini yozing..."
                   onClick={() => setShowEditLessonModal(false)}
                   className="px-6 py-3 rounded-xl text-white/60 hover:text-white font-bold transition-colors hover:bg-white/5"
                 >
-                  Bekor qilish
+                  {t('cancel')}
                 </button>
                 <button
                   className="px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition-colors shadow-lg shadow-blue-500/20 flex items-center gap-2"
@@ -5690,7 +5651,7 @@ Bu yerga dars matnini yozing..."
                           const updatedLevel = levelsData.levels.find(l => l.id === editingLevel.id);
                           if (updatedLevel) setEditingLevel(updatedLevel);
                         }
-                        alert('✅ Dars muvaffaqiyatli saqlandi!');
+                        alert('✅ ' + t('lesson_saved'));
                       } else {
                         alert('Xatolik: ' + data.message);
                       }
@@ -5720,9 +5681,9 @@ Bu yerga dars matnini yozing..."
               <div>
                 <h3 className="text-2xl font-black flex items-center gap-3">
                   <Brain className="text-blue-500" />
-                  {editingLevel.title} - Imtihon Savollari
+                  {editingLevel.title} - {t('exam_questions_title')}
                 </h3>
-                <p className="text-white/60 text-sm">Kamida 15 ta savol bo'lishi tavsiya etiladi</p>
+                <p className="text-white/60 text-sm">{t('exam_hint')}</p>
               </div>
               <div className="flex items-center gap-4">
                 <span className="px-3 py-1 bg-white/10 rounded-lg text-sm font-bold border border-white/10">
@@ -5812,7 +5773,7 @@ Bu yerga dars matnini yozing..."
                 className="w-full py-4 border-2 border-dashed border-white/10 rounded-2xl text-white/40 hover:text-white hover:border-white/30 hover:bg-white/5 transition-all font-bold flex items-center justify-center gap-2"
               >
                 <Plus size={20} />
-                Yangi Savol Qo'shish
+                {t('add_new_question')}
               </button>
             </div>
 
@@ -5822,7 +5783,7 @@ Bu yerga dars matnini yozing..."
                 onClick={() => setShowExamEditor(false)}
                 className="px-6 py-3 rounded-xl text-white/60 hover:text-white font-bold transition-colors"
               >
-                Bekor qilish
+                {t('cancel')}
               </button>
               <button
                 onClick={async () => {
@@ -5839,7 +5800,7 @@ Bu yerga dars matnini yozing..."
                     });
                     const data = await res.json();
                     if (data.success) {
-                      alert("✅ Imtihon savollari saqlandi!");
+                      alert("✅ " + t('exam_saved'));
                       setShowExamEditor(false);
                       // Refresh levels
                       fetchLevels();
@@ -5854,7 +5815,7 @@ Bu yerga dars matnini yozing..."
                 className="px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition-all shadow-lg shadow-blue-500/20 flex items-center gap-2"
               >
                 <Save size={20} />
-                Saqlash
+                {t('save')}
               </button>
             </div>
 
