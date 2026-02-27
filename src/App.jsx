@@ -3546,9 +3546,9 @@ const App = () => {
               {/* Main Content Area */}
               <div className="flex-1 space-y-8">
 
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h2 className="text-3xl font-black mb-2 flex items-center gap-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+                  <div className="space-y-1">
+                    <h2 className="text-2xl sm:text-3xl font-black flex items-center gap-3">
                       {adminTab === 'dashboard' && <LayoutDashboard className="text-blue-400" size={32} />}
                       {adminTab === 'orders' && <ClipboardCheck className="text-blue-400" size={32} />}
                       {adminTab === 'submissions' && <CheckCircle2 className="text-blue-400" size={32} />}
@@ -3586,7 +3586,7 @@ const App = () => {
                     {/* DASHBOARD TAB */}
                     {adminTab === 'dashboard' && (
                       <div className="space-y-8">
-                        <div className="grid md:grid-cols-4 gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                           {[
                             { label: t('total_users'), val: adminStats.totalUsers, icon: Users, color: "blue" },
                             { label: t('active_now'), val: adminStats.activeUsers, icon: Zap, color: "green" },
@@ -3688,7 +3688,7 @@ const App = () => {
                                           order.status === 'rejected' ? 'bg-red-500/20 text-red-400' :
                                             'bg-yellow-500/20 text-yellow-400'
                                           }`}>
-                                          {order.status}
+                                          {t(`status_${order.status}`)}
                                         </span>
                                       </td>
                                       <td className="p-4 text-sm text-white/60 truncate max-w-[200px]" title={order.transactionProof}>
@@ -4131,7 +4131,7 @@ const App = () => {
                                 <div>
                                   <h3 className="text-2xl font-black flex items-center gap-3">
                                     <span className="text-3xl">{editingLevel.icon}</span>
-                                    {editingLevel.title}
+                                    {t(`level_${editingLevel.id}_title`) || editingLevel.title}
                                   </h3>
                                   <p className="text-white/60 text-sm font-bold">{t('manage_lessons')}</p>
                                 </div>
@@ -4254,12 +4254,12 @@ const App = () => {
                               <div>
                                 <h4 className="text-xl font-bold flex items-center gap-2 mb-1">
                                   <Award className="text-blue-400" />
-                                  Daraja Imtihoni
+                                  {t('level_exam_title')}
                                 </h4>
                                 <p className="text-white/60 text-sm">
                                   {editingLevel.examQuestions && editingLevel.examQuestions.length > 0
-                                    ? `${editingLevel.examQuestions.length} ta savol kiritilgan`
-                                    : "Imtihon savollari kiritilmagan"}
+                                    ? `${editingLevel.examQuestions.length} ${t('questions_entered')}`
+                                    : t('no_questions_entered')}
                                 </p>
                               </div>
                               <button
@@ -4270,7 +4270,7 @@ const App = () => {
                                 className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition-all shadow-lg shadow-blue-500/20 flex items-center gap-2"
                               >
                                 <Settings size={18} />
-                                Imtihonni Tahrirlash
+                                {t('edit_exam')}
                               </button>
                             </div>
 
@@ -4278,13 +4278,13 @@ const App = () => {
                             <div className="bg-white/5 p-6 rounded-2xl border border-white/10">
                               <h4 className="font-bold text-lg mb-4 flex items-center gap-2">
                                 <Plus size={20} className="text-green-400" />
-                                Yangi dars qo'shish
+                                {t('add_lesson')}
                               </h4>
                               <div className="grid md:grid-cols-4 gap-4">
                                 <div className="md:col-span-2">
                                   <input
                                     type="text"
-                                    placeholder="Dars mavzusi (Sarlavha)"
+                                    placeholder={t('lesson_topic')}
                                     className="w-full px-4 py-3 bg-black/20 border border-white/10 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-blue-500/50"
                                     value={newLessonData.title}
                                     onChange={(e) => setNewLessonData({ ...newLessonData, title: e.target.value })}
@@ -4293,7 +4293,7 @@ const App = () => {
                                 <div>
                                   <input
                                     type="text"
-                                    placeholder="Davomiylik (masalan: 10:00)"
+                                    placeholder={t('duration_placeholder')}
                                     className="w-full px-4 py-3 bg-black/20 border border-white/10 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-blue-500/50"
                                     value={newLessonData.duration}
                                     onChange={(e) => setNewLessonData({ ...newLessonData, duration: e.target.value })}
@@ -4323,11 +4323,11 @@ const App = () => {
                                         fetchLevels();
                                         setNewLessonData({ title: '', duration: '', videoUrl: '' });
                                       } else {
-                                        alert('Xatolik: ' + data.message);
+                                        alert(t('error_prefix') + data.message);
                                       }
                                     } catch (err) {
                                       console.error(err);
-                                      alert('Server xatosi');
+                                      alert(t('system_error'));
                                     }
                                   }}
                                 >
