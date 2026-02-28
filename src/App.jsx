@@ -3272,7 +3272,7 @@ const App = () => {
         {/* ============================================ */}
         {
           view === 'profile' && user && (
-            <div className="max-w-5xl mx-auto space-y-10">
+            <div className="max-w-5xl mx-auto space-y-8">
               {/* Profile Header */}
               <div className="relative overflow-hidden rounded-3xl">
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500 via-indigo-600 to-purple-600"></div>
@@ -3350,8 +3350,11 @@ const App = () => {
                 ))}
               </div>
 
+              {/* Divider */}
+              <div className="h-px bg-white/10 rounded-full"></div>
+
               {/* Recent Activity */}
-              <div className="bg-white/10 backdrop-blur-xl p-10 rounded-3xl border border-white/20 mt-4">
+              <div className="bg-white/10 backdrop-blur-xl p-10 rounded-3xl border border-white/20">
                 <h3 className="text-2xl font-black mb-8 flex items-center gap-3">
                   <TrendingUp className="text-blue-400" />
                   {t('recent_activity')}
