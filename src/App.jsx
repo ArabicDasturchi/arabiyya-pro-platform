@@ -3272,7 +3272,7 @@ const App = () => {
         {/* ============================================ */}
         {
           view === 'profile' && user && (
-            <div className="max-w-5xl mx-auto space-y-8">
+            <div className="max-w-5xl mx-auto space-y-8 min-h-[70vh]">
               {/* Profile Header */}
               <div className="relative overflow-hidden rounded-3xl">
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500 via-indigo-600 to-purple-600"></div>
@@ -3381,12 +3381,16 @@ const App = () => {
                   })}
 
                   {completedLessons.length === 0 && (
-                    <div className="text-center py-12 text-white/50">
-                      <p>{t('no_activity_yet')}</p>
+                    <div className="text-center py-16 text-white/50">
+                      <TrendingUp size={40} className="mx-auto mb-4 text-white/20" />
+                      <p className="font-bold">{t('no_activity_yet')}</p>
                     </div>
                   )}
                 </div>
               </div>
+
+              {/* Bottom spacer */}
+              <div className="h-16"></div>
             </div>
           )
         }
