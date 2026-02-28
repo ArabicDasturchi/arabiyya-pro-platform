@@ -1583,60 +1583,142 @@ const App = () => {
               </div>
 
               {/* Features */}
-              <div className="space-y-12">
+              <div className="space-y-16">
                 <div className="text-center space-y-4">
                   <h2 className="text-4xl md:text-5xl font-black">{t('features_title')}</h2>
-                  <p className="text-xl text-white/60">{t('features_subtitle')}</p>
+                  <p className="text-xl text-white/60 max-w-2xl mx-auto">{t('features_subtitle')}</p>
                 </div>
 
-                <div className="grid md:grid-cols-3 gap-8">
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {[
-                    // {
-                    //   icon: Target,
-                    //   title: 'AI Darajani Aniqlash',
-                    //   desc: '12 savollik professional test orqali aniq darajangizni aniqlang va to\'g\'ri boshlang',
-                    //   color: 'from-blue-500 to-cyan-500'
-                    // }, -> Removed
+                    {
+                      icon: Sparkles,
+                      title: t('feature_interactive_title'),
+                      desc: t('feature_interactive_desc'),
+                      color: 'from-blue-500 to-cyan-500',
+                      glow: 'group-hover:shadow-blue-500/20'
+                    },
+                    {
+                      icon: Target,
+                      title: t('feature_personal_title'),
+                      desc: t('feature_personal_desc'),
+                      color: 'from-purple-500 to-pink-500',
+                      glow: 'group-hover:shadow-purple-500/20'
+                    },
+                    {
+                      icon: GraduationCap,
+                      title: t('feature_teacher_title'),
+                      desc: t('feature_teacher_desc'),
+                      color: 'from-emerald-500 to-teal-500',
+                      glow: 'group-hover:shadow-emerald-500/20'
+                    },
                     {
                       icon: Brain,
                       title: t('feature_ai_chat_title'),
                       desc: t('feature_ai_chat_desc'),
-                      color: 'from-purple-500 to-pink-500'
+                      color: 'from-indigo-500 to-blue-600',
+                      glow: 'group-hover:shadow-indigo-500/20'
                     },
                     {
                       icon: Award,
                       title: t('certificates'),
                       desc: t('feature_cert_desc'),
-                      color: 'from-orange-500 to-red-500'
+                      color: 'from-orange-500 to-red-500',
+                      glow: 'group-hover:shadow-orange-500/20'
                     },
                     {
-                      icon: Book,
-                      title: t('feature_books_title'),
-                      desc: t('feature_books_desc'),
-                      color: 'from-indigo-500 to-blue-500'
+                      icon: MessageCircle,
+                      title: t('feature_live_title'),
+                      desc: t('feature_live_desc'),
+                      color: 'from-rose-500 to-pink-600',
+                      glow: 'group-hover:shadow-rose-500/20'
                     },
-                    {
-                      icon: TrendingUp,
-                      title: t('feature_tracking_title'),
-                      desc: t('feature_tracking_desc'),
-                      color: 'from-yellow-500 to-orange-500'
-                    }
                   ].map((feature, i) => (
                     <div
                       key={i}
-                      className="group relative bg-white/5 backdrop-blur-xl p-8 rounded-3xl border border-white/10 hover:bg-white/10 transition-all duration-300 hover:scale-105 overflow-hidden"
+                      className={`group relative bg-white/5 backdrop-blur-xl p-8 rounded-3xl border border-white/10 hover:bg-white/10 transition-all duration-500 hover:scale-[1.03] hover:-translate-y-1 overflow-hidden cursor-default shadow-xl ${feature.glow}`}
                     >
-                      <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      {/* Background gradient glow */}
+                      <div className={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-0 group-hover:opacity-5 transition-opacity duration-500 rounded-3xl`}></div>
+                      {/* Shimmer line */}
+                      <div className={`absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r ${feature.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}></div>
 
                       <div className="relative z-10">
-                        <div className={`w-16 h-16 bg-gradient-to-br ${feature.color} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-lg`}>
-                          <feature.icon size={32} className="text-white" strokeWidth={2.5} />
+                        <div className={`w-16 h-16 bg-gradient-to-br ${feature.color} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-lg`}>
+                          <feature.icon size={30} className="text-white" strokeWidth={2.5} />
                         </div>
-                        <h3 className="text-2xl font-black mb-4">{feature.title}</h3>
-                        <p className="text-white/70 leading-relaxed">{feature.desc}</p>
+                        <h3 className="text-xl font-black mb-3 group-hover:text-white transition-colors">{feature.title}</h3>
+                        <p className="text-white/60 leading-relaxed text-sm group-hover:text-white/80 transition-colors">{feature.desc}</p>
                       </div>
                     </div>
                   ))}
+                </div>
+              </div>
+
+              {/* About Us Section */}
+              <div className="relative space-y-16">
+                {/* Background decoration */}
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-pink-500/5 rounded-3xl blur-3xl pointer-events-none"></div>
+
+                <div className="text-center space-y-4 relative">
+                  <div className="inline-flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/20 px-5 py-2 rounded-full text-indigo-400 text-sm font-bold mb-4">
+                    <Heart size={14} className="text-rose-400" />
+                    {t('about_us_subtitle')}
+                  </div>
+                  <h2 className="text-4xl md:text-5xl font-black">{t('about_us_title')}</h2>
+                </div>
+
+                <div className="grid lg:grid-cols-2 gap-16 items-center relative">
+                  {/* Left: text */}
+                  <div className="space-y-6">
+                    <p className="text-lg text-white/80 leading-relaxed">{t('about_us_desc1')}</p>
+                    <p className="text-lg text-white/60 leading-relaxed">{t('about_us_desc2')}</p>
+
+                    <div className="flex flex-wrap gap-3 pt-4">
+                      {[
+                        { icon: CheckCircle2, text: t('feature_interactive_title'), color: 'text-blue-400' },
+                        { icon: CheckCircle2, text: t('feature_ai_chat_title'), color: 'text-purple-400' },
+                        { icon: CheckCircle2, text: t('feature_teacher_title'), color: 'text-emerald-400' },
+                        { icon: CheckCircle2, text: t('certificates'), color: 'text-orange-400' },
+                      ].map((item, i) => (
+                        <div key={i} className={`flex items-center gap-2 ${item.color} text-sm font-bold bg-white/5 px-4 py-2 rounded-xl border border-white/10`}>
+                          <item.icon size={14} />
+                          {item.text}
+                        </div>
+                      ))}
+                    </div>
+
+                    <button
+                      onClick={() => setView('auth')}
+                      className="group relative inline-flex mt-6"
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl blur-xl group-hover:blur-2xl transition-all"></div>
+                      <div className="relative bg-gradient-to-r from-blue-500 to-purple-600 text-white px-8 py-4 rounded-xl font-black text-base hover:scale-105 transition-all flex items-center gap-2">
+                        <Rocket size={20} />
+                        {t('start_free')}
+                        <ArrowRight className="group-hover:translate-x-1 transition-transform" size={18} />
+                      </div>
+                    </button>
+                  </div>
+
+                  {/* Right: stats grid */}
+                  <div className="grid grid-cols-2 gap-6">
+                    {[
+                      { value: '5,000+', label: t('about_stat_students'), icon: Users, color: 'from-blue-500 to-cyan-500' },
+                      { value: `${levels.reduce((acc, l) => acc + (l.lessons?.length || 0), 0)}+`, label: t('about_stat_lessons'), icon: BookOpen, color: 'from-purple-500 to-pink-500' },
+                      { value: '10+', label: t('about_stat_experts'), icon: GraduationCap, color: 'from-emerald-500 to-teal-500' },
+                      { value: '4.9★', label: t('about_stat_rating'), icon: Star, color: 'from-orange-500 to-yellow-500' },
+                    ].map((stat, i) => (
+                      <div key={i} className="group relative overflow-hidden rounded-3xl hover:scale-105 transition-all duration-300 cursor-default">
+                        <div className={`absolute inset-0 bg-gradient-to-br ${stat.color} opacity-90`}></div>
+                        <div className="relative p-8 text-center space-y-3">
+                          <stat.icon className="w-10 h-10 mx-auto text-white/90 group-hover:scale-110 transition-all" />
+                          <div className="text-3xl font-black text-white">{stat.value}</div>
+                          <div className="text-xs font-bold text-white/90 uppercase tracking-wider">{stat.label}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
 
@@ -3269,7 +3351,7 @@ const App = () => {
               </div>
 
               {/* Recent Activity */}
-              <div className="bg-white/10 backdrop-blur-xl p-10 rounded-3xl border border-white/20">
+              <div className="bg-white/10 backdrop-blur-xl p-10 rounded-3xl border border-white/20 mt-4">
                 <h3 className="text-2xl font-black mb-8 flex items-center gap-3">
                   <TrendingUp className="text-blue-400" />
                   {t('recent_activity')}
@@ -5221,8 +5303,8 @@ const App = () => {
                   <div className="grid grid-cols-6 gap-2">
                     {['A1', 'A2', 'B1', 'B2', 'C1', 'C2'].map(lvl => (
                       <div key={lvl} className={`text-center py-2 rounded-xl border font-black text-xs ${grantingLevelTo.purchasedLevels?.includes(lvl)
-                          ? 'bg-green-500/20 text-green-400 border-green-500/30'
-                          : 'bg-white/5 text-white/20 border-white/10'
+                        ? 'bg-green-500/20 text-green-400 border-green-500/30'
+                        : 'bg-white/5 text-white/20 border-white/10'
                         }`}>
                         {lvl}
                         <div className="text-[8px] mt-0.5">{grantingLevelTo.purchasedLevels?.includes(lvl) ? '?' : '?'}</div>
