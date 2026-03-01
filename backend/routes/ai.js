@@ -7,7 +7,7 @@ import Chat from '../models/Chat.js';
 
 const router = express.Router();
 
-const callOpenAI = async (prompt, retries = 3) => {
+export const callOpenAI = async (prompt, retries = 3) => {
   for (let i = 0; i < retries; i++) {
     try {
       const response = await axios.post(

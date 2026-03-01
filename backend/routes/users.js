@@ -1,6 +1,7 @@
 import express from 'express';
 import User from '../models/User.js';
 import { authMiddleware } from '../middleware/auth.js';
+import { sendBotNotification } from '../bot.js';
 
 const router = express.Router();
 
@@ -115,6 +116,11 @@ router.post('/complete-lesson', authMiddleware, async (req, res) => {
         lessonId
       });
       await user.save();
+
+      // Bot xabarnomasi yuborish
+      if (user.telegramChatId) {
+        sendBotNotification(user.telegramChatId, `✅ <b>Dars yakunlandi!</b>\n\nSiz <b>${levelId}</b> darajadagi <b>#${lessonId}</b> darsni muvaffaqiyatli topshirdingiz. Masha'Alloh! 🚀`);
+      }
     }
 
     res.json({
@@ -157,6 +163,11 @@ router.post('/complete-level', authMiddleware, async (req, res) => {
         examScore
       });
       await user.save();
+
+      // Bot xabarnomasi yuborish
+      if (user.telegramChatId) {
+        sendBotNotification(user.telegramChatId, `🎓 <b>Muborak bo'lsin!</b>\n\nSiz <b>${levelId}</b> darajaning yakuniy imtihonidan muvaffaqiyatli o'tdingiz (Natija: <b>${examScore}</b>). Yangi daraja sari olg'a! 🏆`);
+      }
     }
 
     res.json({
