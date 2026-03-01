@@ -129,6 +129,14 @@ app.use((err, req, res, next) => {
   res.status(500).json({ success: false, message: 'Serverda xatolik yuz berdi' });
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`🚀 Server running on port ${PORT}`);
+
+  // Botni ishga tushirish
+  try {
+    const { initBot } = await import('./bot.js');
+    initBot();
+  } catch (error) {
+    console.log('Botni yuklashda xato:', error);
+  }
 });
