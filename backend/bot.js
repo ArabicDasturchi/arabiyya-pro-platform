@@ -3,6 +3,10 @@ import User from './models/User.js';
 
 let bot;
 
+// Admin chat ID for forwarding messages from users
+// In a real scenario, you would find this ID after the admin first starts the bot
+const ADMIN_CHAT_ID = process.env.ADMIN_CHAT_ID || '6122615431'; // Default placeholder or real ID if known
+
 export const initBot = () => {
     const token = process.env.TELEGRAM_BOT_TOKEN;
 
@@ -11,201 +15,227 @@ export const initBot = () => {
         return;
     }
 
+    // Initialize bot
     bot = new TelegramBot(token, { polling: true });
 
-    console.log('🤖 Telegram bot ishga tushdi...');
+    // Handle Polling errors
+    bot.on('polling_error', (error) => {
+        if (error.code === 'ETELEGRAM' && error.message.includes('409')) {
+            return;
+        }
+        console.error('Bot Polling Error:', error);
+    });
 
-    // Asosiy menyu
+    console.log('🤖 Telegram bot ishga tushdi (Professional Mode)...');
+
+    // Arabic Wisdom Library
+    const wisdoms = [
+        { ar: "العلم في الصغر كالنقش على الحجر", uz: "Yoshlikda o'rganilgan ilm toshga o'yilgan naqsh kabidir." },
+        { ar: "من جد وجد ومن زرع حصد", uz: "Kim intilsa, erishadi; kim eksa, o'radi." },
+        { ar: "الوقت كالسيف إن لم تقطعه قطعك", uz: "Vaqt qilich kabidir, agar sen uni kesmasang, u seni kesadi." },
+        { ar: "الصبر مفتاح الفرج", uz: "Sabr — shodlik kalitidir." },
+        { ar: "اطلبوا العلم من المهد إلى اللحد", uz: "Beshikdan qabrgacha ilm izla." }
+    ];
+
+    // Main Menu
     const getMainMenu = () => ({
         reply_markup: {
             keyboard: [
                 [{ text: '🌐 Platforma haqida' }, { text: '📚 Kurslar' }],
-                [{ text: '👤 Mening Profilim' }, { text: '📞 Yordam' }]
+                [{ text: '👤 Mening Profilim' }, { text: '🏆 Reyting (Top 10)' }],
+                [{ text: '✨ Kun hikmati' }, { text: '✉️ Adminga murojaat' }],
+                [{ text: '📞 Yordam' }]
             ],
             resize_keyboard: true,
             is_persistent: true
         }
     });
 
-    // Buyruqlarni ro'yxatdan o'tkazish
+    // Register Commands
     bot.setMyCommands([
         { command: '/start', description: 'Botni ishga tushirish' },
         { command: '/profile', description: 'Profil ma\'lumotlarini ko\'rish' },
         { command: '/courses', description: 'Barcha kurslar ro\'yxati' },
-        { command: '/help', description: 'Yordam va qo\'llab-quvvatlash' }
+        { command: '/top', description: 'O\'quvchilar reytingi' },
+        { command: '/wisdom', description: 'Kun hikmati' },
+        { command: '/help', description: 'Yordam' }
     ]);
 
-    // Start buyrug'i (Kodni ushlab olish uchun Regex)
+    // Command: /start
     bot.onText(/\/start(?:\s+(.+))?/, async (msg, match) => {
         const chatId = msg.chat.id;
         const name = msg.from.first_name;
-        const code = match[1];
+        const code = match ? match[1] : null;
 
-        // Agar ulanish kodi kiritilgan bo'lsa
         if (code) {
             try {
                 const user = await User.findOne({ telegramSyncCode: code });
                 if (user) {
                     user.telegramChatId = chatId;
                     user.telegramUsername = msg.from.username || '';
-                    user.telegramSyncCode = undefined; // kodni ishlatilgandan so'ng tozalash
+                    user.telegramSyncCode = undefined;
                     await user.save();
 
-                    const successMsg = `🎉 <b>Tabriklaymiz, ${user.name}!</b>\n\n` +
-                        `Sizning akkauntingiz Telegram bilan muvaffaqiyatli sinxronlashtirildi. ` +
-                        `Endi barcha yangiliklar, dars eslatmalari va natijalaringiz haqida shu yerda xabardor bo'lib borasiz.`;
+                    const successMsg = `🎊 <b>Muborak bo'lsin, ${user.name}!</b>\n\n` +
+                        `Sizning platformadagi hisobingiz muvaffaqiyatli ulandi. ` +
+                        `Endi dars natijalari va yangiliklarni bevosita shu yerda qabul qilasiz. ✅`;
 
                     await bot.sendMessage(chatId, successMsg, { parse_mode: 'HTML', ...getMainMenu() });
                     return;
                 } else {
-                    await bot.sendMessage(
-                        chatId,
-                        `❌ <b>Ulanish kodi noto'g'ri yoki allaqachon ishlatilgan!</b>\nIltimos, platformamizga kirib yangi kod oling.`,
-                        { parse_mode: 'HTML', ...getMainMenu() }
-                    );
+                    await bot.sendMessage(chatId, `❌ <b>Xatolik!</b>\nUlanish kodi yaroqsiz yoki eskirgan.`, { parse_mode: 'HTML', ...getMainMenu() });
                 }
             } catch (err) {
-                console.error("Bot link error: ", err);
-                await bot.sendMessage(chatId, `⚠️ Tizimda xatolik yuz berdi. Iltimos keyinroq urinib ko'ring.`);
+                console.error("Link error:", err);
             }
         }
 
-        // Oddiy start
         const welcomeText = `Assalomu alaykum, <b>${name}</b>! ✨\n\n` +
-            `🎓 <b>Arabiyya Pro</b> rasmiy botiga xush kelibsiz!\n\n` +
-            `Bu yerda siz platformamizdagi o'zlashtirishingizni kuzatib borishingiz, ` +
-            `muhim xabarnomalarni olishingiz va kurslarimiz bilan tanishishingiz mumkin.\n\n` +
-            `👇 <i>Quyidagi menyudan kerakli bo'limni tanlang:</i>`;
+            `🎓 <b>Arabiyya Pro</b> — Arab tilini professional darajada o'rganish markaziga xush kelibsiz!\n\n` +
+            `Ushbu bot orqali siz:\n` +
+            `🔹 O'zingizning o'qish <b>progressingizni</b> ko'rishingiz\n` +
+            `🔹 Kurslar haqida <b>ma'lumot</b> olishingiz\n` +
+            `🔹 <b>Kun hikmati</b> bilan til boyligingizni oshirishingiz mumkin.\n\n` +
+            `🚀 <i>O'rganishni boshlashga tayyormisiz?</i>`;
 
         bot.sendMessage(chatId, welcomeText, { parse_mode: 'HTML', ...getMainMenu() });
     });
 
-    // Profile command (also handles the button)
+    // Command: /wisdom
+    const sendWisdom = async (chatId) => {
+        const wisdom = wisdoms[Math.floor(Math.random() * wisdoms.length)];
+        const text = `✨ <b>Kun hikmati</b>\n\n` +
+            `<pre>“${wisdom.ar}”</pre>\n\n` +
+            `📝 <b>Tarjimasi:</b>\n<i>“${wisdom.uz}”</i>`;
+        await bot.sendMessage(chatId, text, { parse_mode: 'HTML' });
+    };
+    bot.onText(/\/wisdom/, (msg) => sendWisdom(msg.chat.id));
+
+    // Profile retrieval
     const sendProfile = async (chatId) => {
         try {
             const user = await User.findOne({ telegramChatId: chatId });
             if (user) {
-                const completedLessonsCount = user.completedLessons?.length || 0;
-                const completedLevelsCount = user.completedLevels?.length || 0;
+                const lessonsCount = user.completedLessons?.length || 0;
+                const levelsCount = user.completedLevels?.length || 0;
 
-                let progressText = '';
-                if (completedLevelsCount === 0 && completedLessonsCount === 0) {
-                    progressText = `O'qishni boshlang! Sizda ajoyib imkoniyat bor. 🚀`;
-                } else {
-                    progressText = `Barakalla! Siz darslarni faol ravishda o'zlashtirmoqdasiz. 🔥`;
-                }
-
-                const profileText = `👤 <b>Foydalanuvchi:</b> ${user.name}\n` +
+                const profileText = `👤 <b>SHAXSIY PROFIL</b>\n` +
+                    `──────────────────\n` +
+                    `📝 <b>Ism:</b> ${user.name}\n` +
                     `📧 <b>Email:</b> ${user.email}\n` +
-                    `──────────────\n` +
-                    `📊 <b>Joriy darajangiz:</b> ${user.currentLevel || 'Belgilanmagan'}\n` +
-                    `🏆 <b>Tugatilgan darslar:</b> ${completedLessonsCount} ta\n` +
-                    `🎓 <b>Tugatilgan bosqichlar:</b> ${completedLevelsCount} ta\n` +
-                    `──────────────\n` +
-                    `<i>${progressText}</i>`;
+                    `📊 <b>Daraja:</b> ${user.currentLevel || 'Yangi'}\n\n` +
+                    `🏆 <b>Yutuqlar:</b>\n` +
+                    `✅ ${lessonsCount} ta dars yakunlandi\n` +
+                    `🎓 ${levelsCount} ta bosqich tugatildi\n` +
+                    `⏰ ${user.totalTimeSpent || 0} daqiqa bilim olindi\n` +
+                    `──────────────────\n` +
+                    `💡 <i>O'qishda davom eting, natijalar kutilganidan ham yaxshi bo'ladi!</i>`;
 
-                const inlineKeyboard = {
+                const keyboard = {
                     reply_markup: {
-                        inline_keyboard: [[{ text: "🖥 Platformaga o'tish", url: "https://arabiyya.pro" }]]
+                        inline_keyboard: [[{ text: "🖥 Veb-saytga kirish", url: "https://arabiyya.pro" }]]
                     }
                 };
-                await bot.sendMessage(chatId, profileText, { parse_mode: 'HTML', ...inlineKeyboard });
+                await bot.sendMessage(chatId, profileText, { parse_mode: 'HTML', ...keyboard });
             } else {
-                const profileText = `⚠️ <b>Profilingiz tasdiqlanmagan!</b>\n\n` +
-                    `Sizning Telegram akkauntingiz platformamizga ulanmagan.\n\n` +
-                    `✅ <b>Ulanish uchun qo'llanma:</b>\n` +
-                    `1. Platformamizga (www.arabiyya.pro) shaxsiy kabinetingizga kiring.\n` +
-                    `2. <b>Profil</b> bo'limiga o'ting.\n` +
-                    `3. <b>Telegramga ulash</b> tugmasini bosing va maxsus kodni ushbu botga yuboring.`;
-
-                await bot.sendMessage(chatId, profileText, { parse_mode: 'HTML' });
+                await bot.sendMessage(chatId, `🙁 <b>Profil topilmadi.</b>\n\nIltimos, avval platformamizda ro'yxatdan o'tib, Telegramni sozlamalar orqali ulang.`, { parse_mode: 'HTML' });
             }
         } catch (err) {
             console.error(err);
-            await bot.sendMessage(chatId, "Serverda xatolik yuz berdi. Iltimos keyinroq urinib ko'ring.");
         }
     };
-
     bot.onText(/\/profile/, (msg) => sendProfile(msg.chat.id));
 
-    // Help command
-    const sendHelp = async (chatId) => {
-        const helpText = `📞 <b>Yordam markazi</b>\n\n` +
-            `Arabiyya Pro platformasi bo'yicha savollaringiz, takliflaringiz yoki texnik muammolar bo'lsa, biz bilan bog'laning:\n\n` +
-            `👨‍💻 <b>Admin:</b> @Humoyun_Arabia\n` +
-            `📱 <b>Tel:</b> +998 50 571 63 98\n\n` +
-            `<i>Biz sizga yordam berishdan doimo xursandmiz!</i>`;
-
-        await bot.sendMessage(chatId, helpText, { parse_mode: 'HTML' });
+    // Top Rating
+    const sendTop = async (chatId) => {
+        try {
+            const topUsers = await User.find({}).sort({ totalTimeSpent: -1 }).limit(10);
+            let text = `🏆 <b>TOP 10 O'QUVCHILAR REYTINGI</b>\n\n`;
+            topUsers.forEach((u, i) => {
+                const icon = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '🔹';
+                text += `${icon} <b>${u.name}</b> — ${u.totalTimeSpent || 0} ball\n`;
+            });
+            await bot.sendMessage(chatId, text, { parse_mode: 'HTML' });
+        } catch (err) {
+            console.error(err);
+        }
     };
+    bot.onText(/\/top/, (msg) => sendTop(msg.chat.id));
 
-    bot.onText(/\/help/, (msg) => sendHelp(msg.chat.id));
+    // Admin message state
+    const userState = {};
 
-    // Courses command
-    const sendCourses = async (chatId) => {
-        const coursesText = `📚 <b>Arabiyya Pro Kurslari</b>\n\n` +
-            `Platformamiz sizni qadam-baqadam yuqoriga olib chiqadigan tizimli darajalarga ega:\n\n` +
-            `1️⃣ <b>Arab Harflari (Maxraj)</b>\n` +
-            `2️⃣ <b>A1 - Boshlang'ich (Mubtadiy)</b>\n` +
-            `3️⃣ <b>A2 - Elementar (Mutavassit)</b>\n` +
-            `4️⃣ <b>B1 - O'rta</b>\n` +
-            `5️⃣ <b>B2 - O'rta Maxsus</b>\n` +
-            `6️⃣ <b>C1 - Yuqori</b>\n` +
-            `7️⃣ <b>C2 - Mukammal</b>\n\n` +
-            `Siz darslarni istalgan vaqtda, xohlagan qurilmangizda o'rganishingiz mumkin.`;
-
-        const inlineKeyboard = {
-            reply_markup: {
-                inline_keyboard: [[{ text: "🚀 Darslarni boshlash", url: "https://arabiyya.pro/#courses" }]]
-            }
-        };
-
-        await bot.sendMessage(chatId, coursesText, { parse_mode: 'HTML', ...inlineKeyboard });
-    };
-
-    bot.onText(/\/courses/, (msg) => sendCourses(msg.chat.id));
-
-    // Matnli xabarlarni ushlash
     bot.on('message', async (msg) => {
         const chatId = msg.chat.id;
         const text = msg.text;
 
-        // Buyruqlarni e'tiborsiz qoldirish
         if (!text || text.startsWith('/')) return;
 
-        if (text === '🌐 Platforma haqida') {
-            const aboutText = `🌟 <b>Arabiyya Pro Haqida</b>\n\n` +
-                `Arab tilini professional, tez va samarali o'rganish uchun yaratilgan innovatsion platforma!\n\n` +
-                `🎯 <b>Nimalarga ega bo'lasiz?</b>\n` +
-                `• <b>Maxsus video darslar</b>\n` +
-                `• <b>Jonli va AI yordamchi 24/7</b>\n` +
-                `• <b>Nazariy va amaliy mashqlar</b>\n` +
-                `• <b>Shaxsiy taraqqiyot nazorati</b>\n` +
-                `• <b>Rasmiy sertifikatlar</b>\n\n` +
-                `<i>Biz bilan birgalikda arab tilini chuqur o'zlashtiring!</i>`;
-
-            await bot.sendMessage(chatId, aboutText, { parse_mode: 'HTML' });
-            return;
-        }
-
+        // Custom Keyboards handling
+        if (text === '✨ Kun hikmati') return sendWisdom(chatId);
+        if (text === '👤 Mening Profilim') return sendProfile(chatId);
+        if (text === '🏆 Reyting (Top 10)') return sendTop(chatId);
         if (text === '📚 Kurslar') {
-            return sendCourses(chatId);
+            const coursesMsg = `📚 <b>MAVJUD KURSLARIMIZ</b>\n\n` +
+                `1. <b>Alippbo</b> — Arab harflari va maxraj.\n` +
+                `2. <b>A1-A2</b> — Boshlang'ich muloqot.\n` +
+                `3. <b>B1-B2</b> — O'rta daraja (Grammatika).\n` +
+                `4. <b>C1-C2</b> — Professional daraja.\n\n` +
+                `Darslarni saytda yoki bot orqali doimiy kuzatishingiz mumkin.`;
+            return bot.sendMessage(chatId, coursesMsg, { parse_mode: 'HTML' });
         }
-
-        if (text === '👤 Mening Profilim') {
-            return sendProfile(chatId);
+        if (text === '✉️ Adminga murojaat') {
+            userState[chatId] = 'WAITING_ADMIN_MSG';
+            return bot.sendMessage(chatId, `📝 <b>Murojaatingizni yozib qoldiring:</b>\n\nBarcha xabarlar ko'rib chiqiladi va javob beriladi.`, { parse_mode: 'HTML' });
         }
-
         if (text === '📞 Yordam') {
-            return sendHelp(chatId);
+            const help = `🆘 <b>YORDAM</b>\n\n` +
+                `Muammo yuzaga kelsa:\n` +
+                `👤 <b>Admin:</b> @Humoyun_Arabia\n` +
+                `📞 <b>Tel:</b> +998 50 571 63 98\n\n` +
+                `<i>Siz bilan hamkorlikdan mamnunmiz!</i>`;
+            return bot.sendMessage(chatId, help, { parse_mode: 'HTML' });
+        }
+        if (text === '🌐 Platforma haqida') {
+            const about = `💎 <b>Arabiyya Pro</b>\n\nArab tilini oson va sifatli o'rgatish uchun tashkil etilgan zamonaviy platforma. Biz bilan til o'rganish qiziqarli va samarali!`;
+            return bot.sendMessage(chatId, about, { parse_mode: 'HTML' });
         }
 
-        // Default handler
-        const fallbackText = `Kechirasiz, <b>${msg.from.first_name}</b>, men bu xabarni tushunmadim.\n\n` +
-            `Iltimos, pastdagi menyudan kerakli bo'limni tanlang yoki /help buyrug'ini bosing.`;
+        // Process admin message forwarding
+        if (userState[chatId] === 'WAITING_ADMIN_MSG') {
+            userState[chatId] = null;
+            const userRef = msg.from.username ? `@${msg.from.username}` : msg.from.first_name;
 
-        bot.sendMessage(chatId, fallbackText, { parse_mode: 'HTML', ...getMainMenu() });
+            // Forward to admin (if ID exists)
+            if (ADMIN_CHAT_ID) {
+                const adminForward = `📩 <b>YANGI MUROJAAT!</b>\n\n` +
+                    `👤 <b>Kimdan:</b> ${msg.from.first_name} (${userRef})\n` +
+                    `🆔 <b>ID:</b> <code>${chatId}</code>\n\n` +
+                    `💬 <b>Murojaat:</b>\n<i>“${text}”</i>`;
+
+                bot.sendMessage(ADMIN_CHAT_ID, adminForward, { parse_mode: 'HTML' });
+            }
+
+            return bot.sendMessage(chatId, `✅ <b>Murojaatingiz qabul qilindi.</b> Rahmat!`, { parse_mode: 'HTML', ...getMainMenu() });
+        }
+
+        // Default
+        bot.sendMessage(chatId, `Tushunmadim. Marhamat, menyudan foydalaning.`, { ...getMainMenu() });
     });
+};
+
+/**
+ * Send custom notification to a user via Telegram
+ * @param {string} chatId - Telegram chat ID of the user
+ * @param {string} message - HTML formatted message
+ */
+export const sendNotification = async (chatId, message) => {
+    if (!bot || !chatId) return;
+    try {
+        await bot.sendMessage(chatId, message, { parse_mode: 'HTML' });
+    } catch (err) {
+        console.error("Notify error:", err);
+    }
 };
 
 export const getBot = () => bot;
