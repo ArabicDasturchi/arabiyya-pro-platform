@@ -28,6 +28,9 @@ router.get('/profile', authMiddleware, async (req, res) => {
         completedLessons: user.completedLessons,
         completedLevels: user.completedLevels,
         certificates: user.certificates,
+        telegramChatId: user.telegramChatId,
+        telegramUsername: user.telegramUsername,
+        telegramSyncCode: user.telegramSyncCode,
         createdAt: user.createdAt
       }
     });
@@ -226,6 +229,25 @@ router.post('/update-time', authMiddleware, async (req, res) => {
     res.json({ success: true, totalTimeSpent: user.totalTimeSpent });
   } catch (error) {
     console.error('Update time error:', error);
+    res.status(500).json({ success: false, message: 'Server xatosi' });
+  }
+});
+// @route   POST /api/users/bot/generate-code
+// @desc    Generate a code to sync with telegram bot
+// @access  Private
+router.post('/bot/generate-code', authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findById(req.userId);
+    if (!user) return res.status(404).json({ success: false, message: 'Foydalanuvchi topilmadi' });
+
+    // Generate a 6 character code
+    const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+    user.telegramSyncCode = code;
+    await user.save();
+
+    res.json({ success: true, code });
+  } catch (error) {
+    console.error('Bot generate code error:', error);
     res.status(500).json({ success: false, message: 'Server xatosi' });
   }
 });

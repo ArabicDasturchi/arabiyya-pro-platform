@@ -93,6 +93,37 @@ const App = () => {
 
   const apiKey = "AIzaSyBsmkZPeYer67MBM8Ac-hkUFMsrgNaUrc4"; // API key integration point
 
+  // Bot Integratsiyasi State
+  const [telegramCode, setTelegramCode] = useState(null);
+  const [generatingCode, setGeneratingCode] = useState(false);
+
+  const handleGenerateBotCode = async () => {
+    try {
+      setGeneratingCode(true);
+      const token = localStorage.getItem('token');
+      const res = await fetch('https://arabiyya-pro-backend.onrender.com/api/users/bot/generate-code', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (data.success) {
+        setTelegramCode(data.code);
+        // Refresh session
+        const meRes = await fetch('https://arabiyya-pro-backend.onrender.com/api/auth/me', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const meData = await meRes.json();
+        if (meData.success) {
+          setUser(meData.user);
+        }
+      }
+    } catch (err) {
+      console.error('Bot kodi generatsiya xatosi', err);
+    } finally {
+      setGeneratingCode(false);
+    }
+  };
+
   // Check for existing session on load
   useEffect(() => {
     const checkAuth = async () => {
@@ -3336,10 +3367,7 @@ const App = () => {
                     color: 'from-purple-500 to-pink-500'
                   }
                 ].map((stat, i) => (
-                  <div
-                    key={i}
-                    className="group relative overflow-hidden rounded-3xl"
-                  >
+                  <div className="group relative overflow-hidden rounded-3xl" key={i}>
                     <div className={`absolute inset-0 bg-gradient-to-br ${stat.color} opacity-90`}></div>
                     <div className="relative p-8 text-center space-y-3">
                       <stat.icon className="w-12 h-12 mx-auto text-white group-hover:scale-110 transition-all" />
@@ -3348,6 +3376,60 @@ const App = () => {
                     </div>
                   </div>
                 ))}
+              </div>
+
+              {/* Telegram Bot Integration */}
+              <div className="bg-white/10 backdrop-blur-xl p-8 rounded-3xl border border-white/20 mt-8 mb-8 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/20 rounded-full blur-3xl -mr-20 -mt-20"></div>
+                <div className="relative z-10 flex-1">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-12 h-12 bg-blue-500 rounded-2xl flex items-center justify-center shadow-lg">
+                      <Send size={24} className="text-white" />
+                    </div>
+                    <h3 className="text-2xl font-black">{t('telegram_bot')} Telegram Bot</h3>
+                  </div>
+                  {user.telegramChatId ? (
+                    <p className="text-white/70">
+                      Sizning profilingiz muvaffaqiyatli Telegram orqali ulangan (<b>@{user.telegramUsername || 'Foydalanuvchi'}</b>). Endi bot orqali natijalaringiz va xabarnomalar olishingiz mumkin.
+                    </p>
+                  ) : (
+                    <p className="text-white/70">
+                      Profilni Telegram bilan sinxronlashtiring va <b>@arabicproacademy_official_bot</b> orqali o'rganish natijalaringizni, darslaringizni kuzatib boring.
+                    </p>
+                  )}
+                </div>
+                <div className="relative z-10 w-full md:w-auto text-center">
+                  {user.telegramChatId ? (
+                    <div className="inline-flex items-center gap-2 bg-green-500/20 text-green-400 px-6 py-3 rounded-xl font-bold border border-green-500/20">
+                      <CheckCircle size={20} /> Ulangan
+                    </div>
+                  ) : (user.telegramSyncCode || telegramCode) ? (
+                    <div className="space-y-3">
+                      <div className="bg-black/30 px-6 py-4 rounded-xl border border-white/10 text-center">
+                        <p className="text-sm text-white/60 mb-2">Botga kirib ushbu kodni yuboring:</p>
+                        <div className="text-4xl font-black tracking-widest text-blue-400 font-mono">
+                          /start {user.telegramSyncCode || telegramCode}
+                        </div>
+                      </div>
+                      <a
+                        href={`https://t.me/arabicproacademy_official_bot?start=${user.telegramSyncCode || telegramCode}`}
+                        target="_blank" rel="noreferrer"
+                        className="block w-full bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-lg"
+                      >
+                        Botga o'tish <ArrowRight size={18} className="inline ml-1" />
+                      </a>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={handleGenerateBotCode}
+                      disabled={generatingCode}
+                      className="bg-gradient-to-r from-blue-500 to-purple-600 hover:scale-105 text-white px-8 py-4 rounded-xl font-black transition-all shadow-xl flex items-center justify-center gap-2 w-full md:w-auto"
+                    >
+                      {generatingCode ? <Loader2 size={20} className="animate-spin" /> : <Send size={20} />}
+                      Telegramga ulash
+                    </button>
+                  )}
+                </div>
               </div>
 
               {/* Divider */}

@@ -17,6 +17,19 @@ const userSchema = new mongoose.Schema({
     trim: true,
     match: [/^\S+@\S+\.\S+$/, 'To\'g\'ri email manzilini kiriting']
   },
+  telegramChatId: {
+    type: String,
+    unique: true,
+    sparse: true
+  },
+  telegramUsername: {
+    type: String,
+    sparse: true
+  },
+  telegramSyncCode: {
+    type: String,
+    sparse: true
+  },
   role: {
     type: String,
     enum: ['user', 'admin'],

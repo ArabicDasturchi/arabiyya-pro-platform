@@ -15,10 +15,11 @@ export const initBot = () => {
 
     console.log('🤖 Telegram bot ishga tushdi...');
 
-    // Start buyrug'i
-    bot.onText(/\/start/, async (msg) => {
+    // Start buyrug'i (Kodni ushlab olish uchun Regex)
+    bot.onText(/\/start(?:\s+(.+))?/, async (msg, match) => {
         const chatId = msg.chat.id;
         const name = msg.from.first_name;
+        const code = match[1];
 
         const keyboard = {
             reply_markup: {
@@ -29,6 +30,30 @@ export const initBot = () => {
                 resize_keyboard: true
             }
         };
+
+        if (code) {
+            try {
+                const user = await User.findOne({ telegramSyncCode: code });
+                if (user) {
+                    user.telegramChatId = chatId;
+                    user.telegramUsername = msg.from.username;
+                    user.telegramSyncCode = undefined;
+                    await user.save();
+
+                    await bot.sendMessage(
+                        chatId,
+                        `✅ <b>Muvaffaqiyatli ulandi!</b>\n\nSizning platformadagi <b>${user.name}</b> akkauntingiz Telegramga ulandi. Endi siz barcha natijalaringizni shu yerdan ko'rishingiz mumkin!`,
+                        { parse_mode: 'HTML', ...keyboard }
+                    );
+                    return;
+                } else {
+                    await bot.sendMessage(chatId, `❌ Ulanish kodi noto'g'ri yoki eskirgan. Sayt orqali yana bir bor urinib ko'ring.`, { ...keyboard });
+                    // Shunda ham start xabarini ko'rsatish
+                }
+            } catch (err) {
+                console.log("Bot link eror: ", err);
+            }
+        }
 
         bot.sendMessage(
             chatId,
@@ -42,7 +67,7 @@ export const initBot = () => {
         const chatId = msg.chat.id;
         const text = msg.text;
 
-        if (text === '/start') return; // Handled above
+        if (!text || text.startsWith('/start')) return; // Handled above
 
         if (text === '🌐 Platforma haqida') {
             const aboutText = `<b>Arabiyya Pro</b> — bu arab tilini o'rganish uchun zamonaviy va innovatsion platforma.\n\n` +
@@ -79,9 +104,29 @@ export const initBot = () => {
         }
 
         if (text === '👤 Mening Profilim') {
-            // Hozircha oddiy mock
-            const profileText = `Profil xizmatlari bot orqali tez kunda ishga tushadi. Hozircha asosiy veb-saytimiz orqali kirishingiz mumkin.`;
-            await bot.sendMessage(chatId, profileText);
+            try {
+                const user = await User.findOne({ telegramChatId: chatId });
+                if (user) {
+                    const profileText = `👤 <b>${user.name}</b>\n\n` +
+                        `📧 <b>Email:</b> ${user.email}\n` +
+                        `📊 <b>Joriy daraja:</b> ${user.currentLevel || 'Belgilanmagan'}\n` +
+                        `🏆 <b>Tugatilgan darslar:</b> ${user.completedLessons?.length || 0} ta\n` +
+                        `🎓 <b>Tugatilgan bosqichlar:</b> ${user.completedLevels?.length || 0} ta\n\n` +
+                        `Platformada o'qishni davom ettiring!`;
+
+                    const inlineKeyboard = {
+                        reply_markup: {
+                            inline_keyboard: [[{ text: "Saytga o'tish", url: "https://arabiyya.pro" }]]
+                        }
+                    };
+                    await bot.sendMessage(chatId, profileText, { parse_mode: 'HTML', ...inlineKeyboard });
+                } else {
+                    const profileText = `Sizning profilingiz hali veb-saytga ulanmagan.\n\nAkkauntni boshqarish va natijalaringizni shu yerda ko'rish uchun saytga kirib, <b>"Profil"</b> bo'limidan <b>"Telegramga ulash"</b> tugmasini bosing!`;
+                    await bot.sendMessage(chatId, profileText, { parse_mode: 'HTML' });
+                }
+            } catch (err) {
+                await bot.sendMessage(chatId, "Serverda xatolik yuz berdi. Iltimos keyinroq urinib ko'ring.");
+            }
             return;
         }
 
