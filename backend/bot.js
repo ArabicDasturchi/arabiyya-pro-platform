@@ -4,10 +4,10 @@ import { callOpenAI } from './routes/ai.js';
 
 let bot;
 
-// --- Premium Branding & ULTIMATE V9 Content ---
+// --- Premium Branding & ULTIMATE V10 Content ---
 const ui = {
     uz: {
-        welcome: (name) => `Assalomu alaykum, muhtaram <b>${name}</b>! ✨\n\n<b>Arabiyya Pro</b> — Arab tilining oliy akademiyasi va innovatsion ta'lim platformasining rasmiy botiga xush kelibsiz.\n\nSiz bu yerda o'z bilimlaringizni xalqaro CEFR standartlari asosida tizimlashtirishingiz, AI Mentor yordamida o'qishingiz va professional natijalarga erishishingiz mumkin.`,
+        welcome: (name) => `Assalomu alaykum, muhtaram <b>${name}</b>! ✨\n\n<b>Arabiyya Pro</b> — Arab tilining oliy akademiyasi va innovatsion ta'lim tizimining rasmiy botiga xush kelibsiz.\n\nSiz bu yerda o'z bilimlaringizni xalqaro CEFR standartlari asosida tizimlashtirishingiz, AI Mentor yordamida o'qishingiz va professional natijalarga erishishingiz mumkin.`,
         menu: {
             about: '🌐 Akademiya haqida',
             courses: '📚 O\'quv Dasturlari',
@@ -17,7 +17,8 @@ const ui = {
             grammar: '📖 Kunlik Grammatika',
             wisdom: '✨ Arab Hikmatlari',
             payment: '💳 Tariflar & To\'lov',
-            resources: '📂 Foydali Resurslar',
+            exam: '📝 Imtihon Markazi', // Yangi xizmat
+            audio: '🎧 Tinglash (Listening)', // Yangi xizmat
             admin: '✉️ Adminga Murojaat',
             help: '📞 Markaziy Yordam',
             cert: '📜 Mening Sertifikatlarim'
@@ -56,10 +57,10 @@ export const initBot = () => {
 
     bot.on('polling_error', (error) => {
         if (error.code === 'ETELEGRAM' && (error.message.includes('409') || error.message.includes('ETIMEDOUT'))) return;
-        console.error('Core Bot Error:', error.message);
+        // console.error('Core Bot Error:', error.message);
     });
 
-    console.log('💎 Arabiyya Pro Professional Academy Bot (V9 ULTIMATE) ishga tushdi...');
+    console.log('💎 Arabiyya Pro Professional Academy Bot (V10 ULTIMATE) ishga tushdi...');
 
     const getMainMenu = () => ({
         reply_markup: {
@@ -68,22 +69,20 @@ export const initBot = () => {
                 [{ text: ui.uz.menu.profile }, { text: ui.uz.menu.cert }],
                 [{ text: ui.uz.menu.grammar }, { text: ui.uz.menu.wisdom }],
                 [{ text: ui.uz.menu.ai }, { text: ui.uz.menu.top }],
-                [{ text: ui.uz.menu.payment }, { text: ui.uz.menu.resources }],
-                [{ text: ui.uz.menu.admin }, { text: ui.uz.menu.help }]
+                [{ text: ui.uz.menu.payment }, { text: ui.uz.menu.exam }],
+                [{ text: ui.uz.menu.audio }, { text: ui.uz.menu.admin }],
+                [{ text: ui.uz.menu.help }]
             ],
             resize_keyboard: true,
             selective: true
         }
     });
 
-    // --- Core Logic Functions ---
-
     const sendTop = async (chatId) => {
         try {
             const users = await User.find({}).sort({ totalTimeSpent: -1 });
             const leaders = [];
             const seenKeys = new Set();
-
             for (const u of users) {
                 const key = (u.email || u.name || "anon").toLowerCase().trim();
                 if (!seenKeys.has(key)) {
@@ -92,7 +91,6 @@ export const initBot = () => {
                 }
                 if (leaders.length >= 10) break;
             }
-
             let text = `🏆 <b>ACADEMY TOP 10 — ILM CHOO'QQISIDAGILAR</b>\n\n`;
             leaders.forEach((u, i) => {
                 const icon = i === 0 ? '👑' : i === 1 ? '🥇' : i === 2 ? '🥈' : i === 3 ? '🥉' : '🎖';
@@ -109,12 +107,10 @@ export const initBot = () => {
         try {
             const user = await User.findOne({ telegramChatId: String(chatId) });
             if (!user) return bot.sendMessage(chatId, "⚠️ <b>Profil bog'lanmagan!</b>\n\nSaytga kiring va botni bog'lang.", { parse_mode: 'HTML' });
-
             const lessons = user.completedLessons?.length || 0;
             const levels = user.completedLevels?.length || 0;
             const progress = Math.min(100, (levels * 14.5) + (lessons * 0.45));
             const bar = '■'.repeat(Math.round(progress / 10)) + '□'.repeat(10 - Math.round(progress / 10));
-
             const text = `👤 <b>SHAXSIY ANALITIKA VA PROFIL</b>\n` +
                 `──────────────────\n` +
                 `📛 <b>Ism:</b> ${user.name}\n` +
@@ -125,26 +121,10 @@ export const initBot = () => {
                 `⭐ <b>Umumiy ball:</b> <code>${user.totalTimeSpent || 0}</code>\n` +
                 `──────────────────\n` +
                 `<i>Har bir natija — kelajaga qilingan katta qadam!</i>`;
-
             bot.sendMessage(chatId, text, { parse_mode: 'HTML' });
         } catch (e) {
             bot.sendMessage(chatId, "Xatolik yuz berdi.");
         }
-    };
-
-    const sendCourses = (chatId) => {
-        const text = `📚 <b>ACADEMY DASTURLARI (CEFR)</b>\n\nArabiyya Pro sizga jahon standartlari asosidagi tizimli o'quv rejasini taklif etadi. Siz hozirda qaysi darajani o'rganmoqchisiz?\n\n👇 <b>O'quv rejasini tanlang:</b>`;
-        const keyboard = {
-            reply_markup: {
-                inline_keyboard: [
-                    [{ text: '🅰️ ALIPPBO (Harflar va Maxraj)', callback_data: 'course_v9_alpha' }],
-                    [{ text: '📘 A1 BOSHLANG\'ICH', callback_data: 'course_v9_a1' }, { text: '📗 A2 ELEMENTAR', callback_data: 'course_v9_a2' }],
-                    [{ text: '📙 B1 O\'RTA', callback_data: 'course_v9_b1' }, { text: '📕 B2 O\'RTA-YUQORI', callback_data: 'course_v9_b2' }],
-                    [{ text: '🎓 C1-C2 PROFESSIONAL', callback_data: 'course_v9_expert' }]
-                ]
-            }
-        };
-        bot.sendMessage(chatId, text, { parse_mode: 'HTML', ...keyboard });
     };
 
     const askAI = async (chatId, text) => {
@@ -158,12 +138,9 @@ export const initBot = () => {
         }
     };
 
-    // --- Main Logics ---
-
     bot.onText(/\/start(?:\s+(.+))?/, async (msg, match) => {
         const chatId = msg.chat.id;
         const code = match ? match[1] : null;
-
         if (code) {
             const user = await User.findOne({ telegramSyncCode: code });
             if (user) {
@@ -171,7 +148,7 @@ export const initBot = () => {
                 user.telegramUsername = msg.from.username || '';
                 user.telegramSyncCode = undefined;
                 await user.save();
-                return bot.sendMessage(chatId, "🎊 <b>Tabriklaymiz!</b>\n\nAkkauntingiz muvaffaqiyatli bog'landi. Endi siz barcha professional xizmatlardan foydalanishingiz mumkin.", { parse_mode: 'HTML', ...getMainMenu() });
+                return bot.sendMessage(chatId, "🎊 <b>Tabriklaymiz!</b>\n\nAkkauntingiz muvaffaqiyatli bog'landi.", { parse_mode: 'HTML', ...getMainMenu() });
             }
         }
         bot.sendMessage(chatId, ui.uz.welcome(msg.from.first_name), { parse_mode: 'HTML', ...getMainMenu() });
@@ -185,77 +162,57 @@ export const initBot = () => {
         const menuItems = Object.values(ui.uz.menu);
 
         if (menuItems.includes(text)) {
-            userStates[chatId] = null; // Reset state
-
+            userStates[chatId] = null;
             if (text === ui.uz.menu.about) return bot.sendMessage(chatId, ui.uz.sections.about, { parse_mode: 'HTML' });
-            if (text === ui.uz.menu.courses) return sendCourses(chatId);
+            if (text === ui.uz.menu.courses) return bot.sendMessage(chatId, "📚 <b>DARAXALIK O'QUV DASTURLARI</b>\n\nPlatformamizda CEFR bo'yicha A1 dan C2 gacha darajalar mavjud. O'zingizga mos darsni saytimizdan tanlashingiz mumkin.", { parse_mode: 'HTML' });
             if (text === ui.uz.menu.profile) return sendProfile(chatId);
             if (text === ui.uz.menu.top) return sendTop(chatId);
-            if (text === ui.uz.menu.payment) return bot.sendMessage(chatId, ui.uz.sections.payment, {
-                parse_mode: 'HTML',
-                reply_markup: { inline_keyboard: [[{ text: '💳 Chekni yuborish (Admin)', url: 'https://t.me/Humoyun_Arabia' }]] }
-            });
+            if (text === ui.uz.menu.payment) return bot.sendMessage(chatId, ui.uz.sections.payment, { parse_mode: 'HTML' });
             if (text === ui.uz.menu.help) return bot.sendMessage(chatId, ui.uz.sections.help, { parse_mode: 'HTML' });
-            if (text === ui.uz.menu.resources) return bot.sendMessage(chatId, "📂 <b>FOYDALI RESURSLAR</b>\n\nUshbu bo'limda siz darslar uchun qo'shimcha PDF kitoblar, lug'atlar va media materiallarni topasiz. Saytimizdagi 'Kutubxona' bo'limiga o'ting.", { parse_mode: 'HTML', reply_markup: { inline_keyboard: [[{ text: '📚 Kutubxonaga o\'tish', url: 'https://arabiyya.pro/library' }]] } });
+
+            if (text === ui.uz.menu.exam) {
+                return bot.sendMessage(chatId, "📝 <b>IMTIHON MARKAZI</b>\n\nDarajangizni aniqlash yoki kursni yakunlash uchun imtihon topshirishingiz mumkin. Imtihonlar saytimizda 24/7 rejimida ishlaydi.", { parse_mode: 'HTML', reply_markup: { inline_keyboard: [[{ text: '📝 Imtihonni boshlash', url: 'https://arabiyya.pro/exams' }]] } });
+            }
+
+            if (text === ui.uz.menu.audio) {
+                return bot.sendMessage(chatId, "🎧 <b>TINGLASH (LISTENING)</b>\n\nArab tilida eshitish qobiliyatingizni rivojlantirish uchun maxsus audiolarni saytimizning 'Media' bo'limidan topishingiz mumkin.", { parse_mode: 'HTML', reply_markup: { inline_keyboard: [[{ text: '🎧 Audioni tinglash', url: 'https://arabiyya.pro/audio' }]] } });
+            }
 
             if (text === ui.uz.menu.grammar) {
                 const g = grammarPoints[Math.floor(Math.random() * grammarPoints.length)];
                 return bot.sendMessage(chatId, `📖 <b>KUNLIK GRAMMATIKA:</b>\n\n<b>📌 ${g.title}</b>\n\n${g.body}`, { parse_mode: 'HTML' });
             }
-
             if (text === ui.uz.menu.wisdom) {
                 const h = wisdoms[Math.floor(Math.random() * wisdoms.length)];
                 return bot.sendMessage(chatId, `✨ <b>ARAB HIKMATI:</b>\n\n<code>${h.ar}</code>\n\n<i>"${h.uz}"</i>`, { parse_mode: 'HTML' });
             }
-
             if (text === ui.uz.menu.cert) {
                 const user = await User.findOne({ telegramChatId: String(chatId) });
                 const certs = user?.certificates || [];
-                if (certs.length === 0) return bot.sendMessage(chatId, "📜 Sertifikatlar mavjud emas. Imtihonlardan o'ting va sohibiga aylaning!");
+                if (certs.length === 0) return bot.sendMessage(chatId, "📜 Sertifikatlar mavjud emas.");
                 let resS = `📜 <b>SERTIFIKATLARINGIZ:</b>\n\n`;
                 certs.forEach((c, i) => { resS += `${i + 1}. ${c.level} — ${new Date(c.issueDate).toLocaleDateString()}\n`; });
                 return bot.sendMessage(chatId, resS, { parse_mode: 'HTML' });
             }
-
             if (text === ui.uz.menu.ai) {
                 userStates[chatId] = 'AI';
-                return bot.sendMessage(chatId, `🤖 <b>AI Mentor Tizimi Faollashdi!</b>\n\nArab tili grammatikasi, so'zlar yoki darslar bo'yicha savolingizni yuboring:`, { parse_mode: 'HTML' });
+                return bot.sendMessage(chatId, "🤖 <b>AI Mentor Faollashdi!</b> Savolingizni yuboring:", { parse_mode: 'HTML' });
             }
-
             if (text === ui.uz.menu.admin) {
                 userStates[chatId] = 'ADMIN';
-                return bot.sendMessage(chatId, "💬 <b>ADMINGA ONLINE MUROJAAT</b>\n\nSizni qiziqtirgan savolni yoki taklifni yozib yuboring:", { parse_mode: 'HTML' });
+                return bot.sendMessage(chatId, "💬 <b>ADMINGA MUROJAAT</b>\n\nSavolingizni yozib qoldiring:", { parse_mode: 'HTML' });
             }
         }
 
-        // --- States ---
         if (userStates[chatId] === 'ADMIN') {
             userStates[chatId] = null;
             const adminId = process.env.ADMIN_CHAT_ID || '6122615431';
-            bot.sendMessage(adminId, `📩 <b>YANGI MUROJAAT:</b>\n\n👤 ${msg.from.first_name} (@${msg.from.username || 'n/a'})\n🆔 <code>${chatId}</code>\n💬 ${text}`, { parse_mode: 'HTML' });
-            return bot.sendMessage(chatId, "✅ <b>Yuborildi!</b> Administrator tez orada sizga javob beradi.", { parse_mode: 'HTML' });
+            bot.sendMessage(adminId, `📩 <b>MUROJAAT:</b>\n\n👤 ${msg.from.first_name}\n🆔 <code>${chatId}</code>\n💬 ${text}`, { parse_mode: 'HTML' });
+            return bot.sendMessage(chatId, "✅ <b>Yuborildi!</b>", { parse_mode: 'HTML' });
         }
 
-        if (userStates[chatId] === 'AI' || text.length > 5) {
-            return askAI(chatId, text);
-        }
-
-        bot.sendMessage(chatId, "Iltimos, pastdagi menyudan foydalaning.", getMainMenu());
-    });
-
-    // --- Inline Callbacks ---
-    bot.on('callback_query', (q) => {
-        const id = q.message.chat.id;
-        const d = q.data;
-
-        const infoD = {
-            'course_v9_alpha': `🅰️ <b>ALIPPBO & MAXRAJ DASTURI</b>\n\nUshbu kurs Arab tilining eng muhim poydevori hisoblanadi. Harflarning yozilishi va to'g'ri talaffuzi (maxraj) o'rgatiladi.\n\n📊 15 ta darslik modul va testlar.`,
-            'course_v9_a1': `📘 <b>A1 BOSHLANG'ICH BOSQICh</b>\n\nKundalik muloqot va o'zaro tanishuv suhbatlari uchun. 200 tadan ortiq eng ko'p qo'llaniladigan so'z va iboralar.\n\n📊 45 ta darslik modul.\n📜 Yakunida rasmiy sertifikat.`,
-            'course_v9_expert': `🎓 <b>C1-C2 PROFESSIONAL</b>\n\nOliy darajadagi grammatika va adabiy bilimlar. Arab tilida ona tilidek so'zlashish.\n\n📜 <b>Yakunida Xalqaro Professional Sertifika taqdim etiladi!</b>`
-        };
-
-        if (infoD[d]) bot.sendMessage(id, infoD[d], { parse_mode: 'HTML' });
-        bot.answerCallbackQuery(q.id);
+        if (userStates[chatId] === 'AI' || text.length > 5) return askAI(chatId, text);
+        bot.sendMessage(chatId, "Iltimos menyudan foydalaning.", getMainMenu());
     });
 };
 
