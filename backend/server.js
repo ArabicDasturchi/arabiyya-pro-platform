@@ -91,8 +91,8 @@ app.use('/uploads', authMiddleware, async (req, res, next) => {
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('✅ MongoDB connected'))
-  .catch((err) => console.error('❌ MongoDB error:', err));
+  .then(() => console.log('✅ MongoDB ulangan (Muvaffaqiyatli)'))
+  .catch((err) => console.error('❌ MongoDB ulanishda xato:', err));
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -119,7 +119,7 @@ app.get('/', (req, res) => res.json({ message: 'Arabiyya Pro API is running' }))
 
 // 404
 app.use((req, res) => {
-  console.log('⚠️ 404 - Topilmadi:', req.method, req.url, 'Token:', !!req.header('Authorization'));
+  console.log('⚠️ 404 - Topilmadi:', req.method, req.url);
   res.status(404).json({ success: false, message: 'Endpoint not found' });
 });
 
@@ -130,13 +130,19 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(PORT, async () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`🚀 Server ${PORT}-portda ishlayapti`);
 
   // Botni ishga tushirish
   try {
-    const { initBot } = await import('./bot.js');
-    initBot();
+    const token = process.env.TELEGRAM_BOT_TOKEN;
+    if (!token) {
+      console.log('⚠️ DIQQAT: TELEGRAM_BOT_TOKEN topilmadi! Bot ishga tushmadi.');
+    } else {
+      console.log(`📡 Bot token topildi: ${token.substring(0, 10)}...`);
+      const { initBot } = await import('./bot.js');
+      initBot();
+    }
   } catch (error) {
-    console.log('Botni yuklashda xato:', error);
+    console.log('❌ Botni yuklashda jiddiy xato:', error);
   }
 });
