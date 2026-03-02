@@ -4,12 +4,11 @@ import { callOpenAI } from './routes/ai.js';
 
 let bot;
 
-// --- Til va Matnlar ---
 const labels = {
-    welcome: (name) => `Assalomu alaykum, <b>${name}</b>! ✨\n\n<b>Arabiyya Pro</b> platformasining rasmiy botiga xush kelibsiz. Bu yerda siz til o'rganish jarayoningizni to'liq nazorat qilishingiz mumkin.`,
+    welcome: (name) => `Assalomu alaykum, <b>${name}</b>! ✨\n\n<b>Arabiyya Pro</b> platformasining professional botiga xush kelibsiz.\n\nSiz bu yerda o'qish natijalaringizni kuzatib borishingiz, AI o'qituvchi bilan muloqot qilishingiz va yangiliklardan birinchi bo'lib xabardor bo'lishingiz mumkin.`,
     menu: {
         about: '🌐 Platforma haqida',
-        courses: '📚 Kurslarimiz', // Kurslar
+        courses: '📚 Kurslarimiz',
         profile: '👤 Mening Profilim',
         top: '🏆 Reyting (Top 10)',
         ai: '🤖 AI O\'qituvchi',
@@ -51,7 +50,6 @@ export const initBot = () => {
         return;
     }
 
-    // Har doim eski instance ni tozalashga harakat qilamiz (Render dagi duplikatlarni oldini olish uchun)
     if (bot) {
         try { bot.stopPolling(); } catch (e) { }
     }
@@ -60,10 +58,10 @@ export const initBot = () => {
 
     bot.on('polling_error', (error) => {
         if (error.code === 'ETELEGRAM' && (error.message.includes('409') || error.message.includes('ETIMEDOUT'))) return;
-        // console.error(error);
+        console.error('Bot Polling Error:', error.message);
     });
 
-    console.log('🤖 Telegram Bot Professional Full v5 ishga tushdi...');
+    console.log('🤖 Telegram Bot Professional Full v6 ishga tushdi...');
 
     const getMainMenu = () => ({
         reply_markup: {
@@ -75,11 +73,14 @@ export const initBot = () => {
                 [{ text: labels.menu.payment }, { text: labels.menu.admin }],
                 [{ text: labels.menu.help }]
             ],
-            resize_keyboard: true
+            resize_keyboard: true,
+            selective: true
         }
     });
 
-    // --- Xizmatlar ---
+    const sendAbout = (chatId) => {
+        bot.sendMessage(chatId, labels.sections.about, { parse_mode: 'HTML' });
+    };
 
     const sendTop = async (chatId) => {
         try {
@@ -110,7 +111,7 @@ export const initBot = () => {
 
     const sendProfile = async (chatId) => {
         try {
-            const user = await User.findOne({ telegramChatId: chatId });
+            const user = await User.findOne({ telegramChatId: String(chatId) });
             if (!user) return bot.sendMessage(chatId, labels.connect_required, { parse_mode: 'HTML' });
 
             const lessons = user.completedLessons?.length || 0;
@@ -138,7 +139,7 @@ export const initBot = () => {
 
     const sendCerts = async (chatId) => {
         try {
-            const user = await User.findOne({ telegramChatId: chatId });
+            const user = await User.findOne({ telegramChatId: String(chatId) });
             if (!user) return bot.sendMessage(chatId, labels.connect_required, { parse_mode: 'HTML' });
 
             const certs = user.certificates || [];
@@ -162,11 +163,11 @@ export const initBot = () => {
         const kb = {
             reply_markup: {
                 inline_keyboard: [
-                    [{ text: '🅰️ ALIPPBO (Boshlash)', callback_data: 'course_v5_alpha' }],
-                    [{ text: '📘 A1 BOSHLANG\'ICH', callback_data: 'course_v5_a1' }, { text: '📗 A2 ELEMENTAR', callback_data: 'course_v5_a2' }],
-                    [{ text: '📙 B1 O\'RTA', callback_data: 'course_v5_b1' }, { text: '📕 B2 O\'RTA-YUQORI', callback_data: 'course_v5_b2' }],
-                    [{ text: '🎓 C1-C2 PROFESSIONAL', callback_data: 'course_v5_expert' }],
-                    [{ text: '💎 To\'liq Kursni Xarid Qilish', callback_data: 'bot_pay_full' }]
+                    [{ text: '🅰️ ALIPPBO (Boshlash)', callback_data: 'course_v6_alpha' }],
+                    [{ text: '📘 A1 BOSHLANG\'ICH', callback_data: 'course_v6_a1' }, { text: '📗 A2 ELEMENTAR', callback_data: 'course_v6_a2' }],
+                    [{ text: '📙 B1 O\'RTA', callback_data: 'course_v6_b1' }, { text: '📕 B2 O\'RTA-YUQORI', callback_data: 'course_v6_b2' }],
+                    [{ text: '🎓 C1-C2 PROFESSIONAL', callback_data: 'course_v6_expert' }],
+                    [{ text: '💎 To\'liq Kursni Xarid Qilish', callback_data: 'bot_pay_v6_full' }]
                 ]
             }
         };
@@ -184,15 +185,13 @@ export const initBot = () => {
         }
     };
 
-    // --- Asosiy Voqealar ---
-
     bot.onText(/\/start(?:\s+(.+))?/, async (msg, match) => {
         const chatId = msg.chat.id;
         const code = match ? match[1] : null;
         if (code) {
             const user = await User.findOne({ telegramSyncCode: code });
             if (user) {
-                user.telegramChatId = chatId;
+                user.telegramChatId = String(chatId);
                 user.telegramUsername = msg.from.username || '';
                 user.telegramSyncCode = undefined;
                 await user.save();
@@ -207,11 +206,9 @@ export const initBot = () => {
         const text = msg.text;
         if (!text || text.startsWith('/')) return;
 
-        // --- Menyudagi tugmalarni tekshirish (Bu doim birinchi bo'lishi kerak!) ---
         const menuValues = Object.values(labels.menu);
 
         if (menuValues.includes(text)) {
-            // Agar menyu tugmasi bosilsa, har qanday eski holatni tozalaymiz
             userStates[chatId] = null;
 
             if (text === labels.menu.about) return sendAbout(chatId);
@@ -234,7 +231,7 @@ export const initBot = () => {
 
             if (text === labels.menu.ai) {
                 userStates[chatId] = 'AI';
-                return bot.sendMessage(chatId, labels.ai_welcome, { parse_mode: 'HTML' });
+                return bot.sendMessage(chatId, `🤖 <b>Men sizning shaxsiy AI o'qituvchingizman!</b>\n\nSavollaringizni bemalol yozib yuboring. Men sizga arab tili grammatikasi, lug'at va madaniyatini o'rganishda yordam beraman.`, { parse_mode: 'HTML' });
             }
 
             if (text === labels.menu.admin) {
@@ -243,7 +240,6 @@ export const initBot = () => {
             }
         }
 
-        // --- Holatlarni boshqarish ---
         if (userStates[chatId] === 'ADMIN') {
             userStates[chatId] = null;
             const adminId = process.env.ADMIN_CHAT_ID || '6122615431';
@@ -258,19 +254,19 @@ export const initBot = () => {
         bot.sendMessage(chatId, "Iltimos, pastdagi menyudan foydalaning.", getMainMenu());
     });
 
-    // --- Inline Callbacks ---
     bot.on('callback_query', (q) => {
         const id = q.message.chat.id;
         const d = q.data;
 
         const info = {
-            'course_v5_alpha': `🅰️ <b>ALIPPBO (MAXRAJ VA YOZUV)</b>\n\nBu Arabiyya Pro platformasidagi eng muhim poydevor darsi. Arab harflari, ularning yozilish uslublari va to'g'ri talaffuz (maxraj) qoidalarini o'rganasiz.\n\n🎬 15 ta dars.\n📋 Har bir dars oxirida test mavjud.`,
-            'course_v5_a1': `📘 <b>A1 — BOSH DARAXA</b>\n\nAgar siz harflarni bilsangiz, muloqotni aynan shu yerdan boshlang. Kundalik hayotda eng ko'p qo'llaniladigan iboralar va tanishuv suhbatlari.\n\n🎬 45 ta dars.\n🎁 200+ yangi lug'at boyligi.`,
-            'course_v5_expert': `🎓 <b>C1-C2 — PROFESSIONAL</b>\n\nBu daraja sizni arab tilini xalqaro standartlarda mukammal tushunishga tayyorlaydi. Arab adabiyoti, ilmiy matnlar va murakkab grammatika.\n\n📜 <b>Yakunida Xalqaro Professional Sertifika beriladi!</b>`,
-            'bot_pay_full': `👑 <b>FULL PREMIUM OBUNA</b>\n\nBarcha 7 ta kursga umrbod ruxsat olish uchun <b>399,000 so'm</b> to'lov qiling. To'lov haqida batafsil ma'lumot "Tarif va To'lov" menyusida bor.`
+            'course_v6_alpha': `🅰️ <b>ALIPPBO (MAXRAJ VA YOZUV)</b>\n\nBu Arabiyya Pro platformasidagi eng muhim poydevor darsi. Arab harflari, ularning yozilish uslublari va to'g'ri talaffuz (maxraj) qoidalarini o'rganasiz.\n\n🎬 15 ta dars.\n📋 Har bir dars oxirida test mavjud.`,
+            'course_v6_a1': `📘 <b>A1 — BOSH DARAXA</b>\n\nAgar siz harflarni bilsangiz, muloqotni aynan shu yerdan boshlang. Kundalik hayotda eng ko'p qo'llaniladigan iboralar va tanishuv suhbatlari.\n\n🎬 45 ta dars.\n🎁 200+ yangi lug'at boyligi.`,
+            'course_v6_expert': `🎓 <b>C1-C2 — PROFESSIONAL</b>\n\nBu daraja sizni arab tilini xalqaro standartlarda mukammal tushunishga tayyorlaydi. Arab adabiyoti, ilmiy matnlar va murakkab grammatika.\n\n📜 <b>Yakunida Xalqaro Professional Sertifika beriladi!</b>`,
+            'bot_pay_v6_full': `👑 <b>FULL PREMIUM OBUNA</b>\n\nBarcha 7 ta kursga umrbod ruxsat olish uchun <b>399,000 so'm</b> to'lov qiling. To'lov haqida batafsil ma'lumot "Tarif va To'lov" menyusida bor.`
         };
 
         if (info[d]) bot.sendMessage(id, info[d], { parse_mode: 'HTML' });
+        bot.answerCallbackQuery(q.id);
     });
 };
 
