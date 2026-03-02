@@ -4,10 +4,10 @@ import { callOpenAI } from './routes/ai.js';
 
 let bot;
 
-// --- Premium UI & Localization ---
-const content = {
+// --- Premium Branding & UI ---
+const ui = {
     uz: {
-        welcome: (name) => `Assalomu alaykum, muhtaram <b>${name}</b>! 🌟\n\n<b>Arabiyya Pro</b> — Arab tilini professional va tizimli o'rganuvchilar uchun maxsus platformaning aqlli botiga xush kelibsiz.\n\nSiz bu yerda o'z bilim darajangizni oshirishingiz, natijalarni kuzatishingiz va jahon standartidagi o'quv materiallaridan foydalanishingiz mumkin.`,
+        welcome: (name) => `Assalomu alaykum, muhtaram <b>${name}</b>! 🌟\n\n<b>Arabiyya Pro</b> — Arab tilini professional va innovatsion o'rganish akademiyasining rasmiy botiga xush kelibsiz.\n\nSiz bu yerda o'z bilim darajangizni oshirishingiz, natijalarni tizimli kuzatishingiz va jahon standartidagi o'quv dasturi bilan tanishishingiz mumkin.`,
         menu: {
             about: '🌐 Platforma haqida',
             courses: '📚 O\'quv Kurslari',
@@ -22,26 +22,24 @@ const content = {
             cert: '📜 Mening Sertifikatlarim'
         },
         sections: {
-            about: `💎 <b>ARABIYYA PRO — TA'LIMDA INNOVATSIYA</b>\n\nBiz Markaziy Osiyodagi eng sifatli arab tili ta'limini taklif etamiz. Tizimimiz <b>CEFR (Common European Framework of Reference for Languages)</b> standartlari asosida ishlab chiqilgan.\n\n<b>Nima uchun aynan biz?</b>\n✅ <b>500+ Video Darslar:</b> Har bir daraja uchun tushunarli va professional yondashuv.\n✅ <b>Sun'iy Intellekt:</b> AI Mentor darslarda sizga yo'l ko'rsatadi.\n✅ <b>Interaktiv Amaliyot:</b> Mashqlar va daraja testlari orqali bilimlarni mustahkamlash.\n✅ <b>Akademik Tan olinish:</b> Yakuniy sertifikatlar mukammal yutuqdir.\n✅ <b>24/7 Qo'llab-quvvatlash:</b> Ustozlar siz bilan doimo aloqada.`,
-            payment: `💳 <b>PLATFORMA TARIFLARI VA TO'LOV</b>\n\nBilim olishda chegaralar yo'q! Quyida sizga mos keladigan tarifni tanlang:\n\n🔓 <b>1. STANDART BOSQICh</b>\n• Bitta tanlangan darajaga to'liq ruxsat.\n• Narxi: <b>145,000 so'm</b>.\n\n👑 <b>2. PREMIUM FULL (VIP)</b>\n• Barcha 7 ta kursga umrbod ruxsat.\n• Yangi darslarga birinchi bo'lib kirish.\n• AI Mentor bilan cheksiz muloqot.\n• Narxi: <b>399,000 so'm</b> (Hozirgi chegirma!).\n\n🏧 <b>TO'LOV USULLARI:</b>\n• Karta: <code>8600 1234 5678 9012</code> (Humoyun A.)\n• Saytda: Click, Payme, Uzum.\n\n<i>👇 To'lov turini tanlab, chekni yuborish uchun pastdagi tugmani bosing:</i>`,
-            help: `📞 <b>YORDAM MARKAZI (FAQ)</b>\n\nSizda savollar bormi? Bizda javoblar bor:\n\n1️⃣ <b>Kursni qanday boshlaydi?</b>\n- <a href="https://arabiyya.pro">Saytdan</a> ro'yxatdan o'ting va Telegramni bog'lang.\n\n2️⃣ <b>To'lov qachon faollashadi?</b>\n- Chekingizni @Humoyun_Arabia ga yuborganingizdan so'ng 5-15 daqiqa ichida.\n\n3️⃣ <b>Sertifikat haqiqiy-mi?</b>\n- Ha, har bir sertifikat unikal ID raqamiga ega bo'lib, platformada tekshirish mumkin.\n\n🆘 <b>Boshqa savollar bo'yicha:</b>\n👨‍💻 Admin: @Humoyun_Arabia\n📞 Tel: +998 50 571 63 98`
+            about: `💎 <b>ARABIYYA PRO — TA'LIMDAGI INNOVATSIYA</b>\n\nArabiyya Pro — bu nafaqat kurslar, balki arab tili olamiga ochilgan eshikdir. Bizning dasturimiz eng ilg'or CEFR metodikalari asosida yaratilgan.\n\n<b>Nima uchun aynan Arabiyya Pro?</b>\n✅ <b>Sun'iy Intellekt Tahlili:</b> Sizning har bir javobingiz AI tomonidan chuqur tahlil qilinadi.\n✅ <b>Interaktiv Amaliyot:</b> Mashqlar va daraja testlari orqali bilimlarni mustahkamlash.\n✅ <b>Akademik Nizom:</b> Bizda ta'lim tartibi va sifat nazorati o'ta jiddiy yo'lga qo'yilgan.\n✅ <b>Xalqaro Sertifikatlar:</b> Har bir daraja yakunida sizning yutug'ingizni tasdiqlovchi rasmiy hujjat.\n✅ <b>24/7 Yordam:</b> Ustozlar va qo'llab-quvvatlash jamoasi doimo aloqada.\n\n<i>Bilim — bu sizning kelajakka kiritayotgan eng katta sarmoyangizdir!</i>`,
+            payment: `💳 <b>PROFESSIONAL TARIFLAR VA TO'LOV TIZIMI</b>\n\nArabiyya Pro platformasida o'qishni boshlash uchun o'zingizga mos tarifni tanlang. Bizda har bir yo'lanish maksimal natijaga qaratilgan:\n\n🔓 <b>1. STANDART BOSQICh (Darajali ochish)</b>\n• Tanlangan bitta darajaga (masalan, A1) 1 yil davomida ruxsat.\n• Interaktiv testlar va AI tahlilini olish.\n• Yakunida rasmiy sertifikat.\n• Narxi: <b>145,000 so'm</b>.\n\n👑 <b>2. PREMIUM FULL ULTIMATE (Hamma kurslar)</b>\n• <b>Barcha bosqichlar:</b> Alippbo + A1, A2, B1, B2, C1, C2.\n• <b>Umrbod Ruxsat:</b> Hech qanday vaqt chegarasisiz foydalanish.\n• <b>AI Mentor Unlimited:</b> Sun'iy intellekt bilan cheksiz muloqot va yordam.\n• <b>Yangi kurslar:</b> Kelajakda qo'shiladigan barcha darslarga bepul ruxsat.\n• Narxi: <b>399,000 so'm</b> (Chegirma vaqtida!).\n\n🏧 <b>TO'LOVNI AMALGA OSHIRISH:</b>\n• 1. <b>Payme/Click/Uzum:</b> Veb-saytimizning o'zida to'lash.\n• 2. <b>Karta orqali:</b>\n   - Karta raqami: <code>8600 1234 5678 9012</code>\n   - Egasi: Humoyun A.\n\n<i>👇 To'lov turini tanlab, chekni yuborish uchun pastdagi tugmani bosing:</i>`,
+            help: `📞 <b>YORDAM VA FAQ (KO'P SO'RALADIGAN SAVOLLAR)</b>\n\n1️⃣ <b>Kursga qanday a'zo bo'lish mumkin?</b>\n- <a href="https://arabiyya.pro">arabiyya.pro</a> saytida ro'yxatdan o'ting va Telegramni bog'lang.\n\n2️⃣ <b>To'lov qilganimdan so'ng qancha vaqtda darslar ochiladi?</b>\n- Admin chekni tasdiqlashi bilan (odatda 5-15 daqiqa) darslar faollashadi.\n\n3️⃣ <b>AI Mentor nima uchun foydali?</b>\n- U sizga 24/7 davomida darslardagi tushunarsiz joylarni o'zbek tilida sharhlab beradi.\n\n🆘 <b>Bog'lanish:</b>\n👨‍💻 Administrator: @Humoyun_Arabia\n📞 Call-markaz: +998 50 571 63 98`
         }
     }
 };
 
 const wisdoms = [
-    { ar: "العلم يبني بيوتا لا عماد لها والجهل يهدم بيت العز والكرم", uz: "Bilim ustuni yo'q uylarni (qalblarni) barpo etadi, johillik esa aziz va karamli xonadonlarni vayron qiladi." },
-    { ar: "من لم يذق مر التعلم ساعة تجرع ذل الجهل طول حياته", uz: "Kimki bir zum bo'lsa-da o'rganish achchig'ini totmasa, butun umr johillik xorligini yutishga majbur bo'ladi." },
-    { ar: "الوقت كالسيف إن لم تقطعه قطعك", uz: "Vaqt qilich kabidir, agar sen uni kesmasang, u seni kesadi." },
-    { ar: "الصبر مفتاح الفرج", uz: "Sabr — shodlik (najot) kalitidir." }
+    { ar: "العلم يبني بيوتا لا عماد لها والجهل يهدم بيت العز والكرم", uz: "Bilim ustuni yo'q uylarni barpo etadi, johillik esa aziz xonadonlarni vayron qiladi." },
+    { ar: "من جد وجد ومن زرع حصد", uz: "Kim intilsa — erishadi, kim eksa — o'radi." },
+    { ar: "خير الناس من ينفع الناس", uz: "Insonlarning eng yaxshisi — boshqalarga foydasi tegadiganidir." }
 ];
 
 const vocabulary = [
-    { ar: 'تعلم', tr: 'Ta\'allama', uz: 'O\'rganish' },
-    { ar: 'لغة', tr: 'Lugah', uz: 'Til' },
-    { ar: 'مستقبل', tr: 'Mustaqbal', uz: 'Kelajak' },
-    { ar: 'نجاح', tr: 'Najah', uz: 'Muvaffaqiyat' },
-    { ar: 'سعادة', tr: 'Sa\'adah', uz: 'Baxt' }
+    { ar: 'عزيمة', tr: 'Azimah', uz: 'Azm-u qaror (Irodali bo\'lish)' },
+    { ar: 'إتقان', tr: 'Itqan', uz: 'Mukammallik (Ishni puxta qilish)' },
+    { ar: 'إخلاص', tr: 'Ikhlas', uz: 'Samimiylik (Ixlos)' },
+    { ar: 'تطوير', tr: 'Tatwir', uz: 'Rivojlanish (Taraqqiyot)' }
 ];
 
 const userStates = {};
@@ -58,48 +56,51 @@ export const initBot = () => {
 
     bot.on('polling_error', (error) => {
         if (error.code === 'ETELEGRAM' && (error.message.includes('409') || error.message.includes('ETIMEDOUT'))) return;
-        console.error('Bot Error:', error.message);
+        console.error('Bot Connection Error:', error.message);
     });
 
-    console.log('🤖 Arabiyya Pro Professional Bot (ULTIMATE V7) ishga tushdi...');
+    console.log('🤖 Arabiyya Pro Professional Bot (V8 FULL) ishga tushdi...');
 
     const getMainMenu = () => ({
         reply_markup: {
             keyboard: [
-                [{ text: content.uz.menu.about }, { text: content.uz.menu.courses }],
-                [{ text: content.uz.menu.profile }, { text: content.uz.menu.cert }],
-                [{ text: content.uz.menu.lughat }, { text: content.uz.menu.wisdom }],
-                [{ text: content.uz.menu.ai }, { text: content.uz.menu.top }],
-                [{ text: content.uz.menu.payment }, { text: content.uz.menu.admin }],
-                [{ text: content.uz.menu.help }]
+                [{ text: ui.uz.menu.about }, { text: ui.uz.menu.courses }],
+                [{ text: ui.uz.menu.profile }, { text: ui.uz.menu.cert }],
+                [{ text: ui.uz.menu.lughat }, { text: ui.uz.menu.wisdom }],
+                [{ text: ui.uz.menu.ai }, { text: ui.uz.menu.top }],
+                [{ text: ui.uz.menu.payment }, { text: ui.uz.menu.admin }],
+                [{ text: ui.uz.menu.help }]
             ],
             resize_keyboard: true,
             selective: true
         }
     });
 
-    // --- Services ---
+    // --- Services Logic ---
 
     const sendTop = async (chatId) => {
         try {
-            // Robust Unique Filtering: Use an object Map grouped by email
+            // Strong Unique Filtering: Prioritize Email, then Name
             const users = await User.find({}).sort({ totalTimeSpent: -1 });
-            const uniqueMap = new Map();
+            const leaders = [];
+            const seenKeys = new Set();
 
-            users.forEach(u => {
-                if (u.email && !uniqueMap.has(u.email.toLowerCase())) {
-                    uniqueMap.set(u.email.toLowerCase(), u);
+            for (const u of users) {
+                // Key can be email or name if email is missing
+                const key = (u.email || u.name || "unknown").toLowerCase().trim();
+                if (!seenKeys.has(key)) {
+                    leaders.push(u);
+                    seenKeys.add(key);
                 }
-            });
+                if (leaders.length >= 10) break;
+            }
 
-            const topUsers = Array.from(uniqueMap.values()).slice(0, 10);
-
-            let text = `👑 <b>TOP 10 — ENG FAOL TALABALARINIMIZ</b>\n\n`;
-            topUsers.forEach((u, i) => {
+            let text = `👑 <b>TOP 10 — ACADEMY STARS (ENG FAOL TALABALAR)</b>\n\n`;
+            leaders.forEach((u, i) => {
                 const icon = i === 0 ? '👑' : i === 1 ? '🥇' : i === 2 ? '🥈' : i === 3 ? '🥉' : '🎖';
                 text += `${icon} <b>${u.name}</b> — <code>${u.totalTimeSpent || 0}</code> ball\n`;
             });
-            text += `\n<i>Ushbu ro'yxatda bo'lish — katta mehnat natijasidir! Olg'a!</i>`;
+            text += `\n<i>Ushbu reyting bilim olishdagi intilishingizni ifodalaydi!</i>`;
             bot.sendMessage(chatId, text, { parse_mode: 'HTML' });
         } catch (e) {
             bot.sendMessage(chatId, "Reytingni yuklashda texnik xatolik.");
@@ -109,40 +110,40 @@ export const initBot = () => {
     const sendProfile = async (chatId) => {
         try {
             const user = await User.findOne({ telegramChatId: String(chatId) });
-            if (!user) return bot.sendMessage(chatId, content.uz.connect_required, { parse_mode: 'HTML' });
+            if (!user) return bot.sendMessage(chatId, "⚠️ <b>Profilingiz bog'lanmagan!</b>\n\nIltimos, saytdang botni bog'lang.", { parse_mode: 'HTML' });
 
             const lessons = user.completedLessons?.length || 0;
             const levels = user.completedLevels?.length || 0;
             const progress = Math.min(100, (levels * 14.2) + (lessons * 0.4));
             const bar = '■'.repeat(Math.round(progress / 10)) + '□'.repeat(10 - Math.round(progress / 10));
 
-            const text = `👤 <b>SHAXSIY KABINET</b>\n` +
+            const text = `👤 <b>SIZNING SHAXSIY KABINETINGIZ</b>\n` +
                 `──────────────────\n` +
-                `🆔 <b>Ism:</b> ${user.name}\n` +
+                `📛 <b>Ism:</b> ${user.name}\n` +
                 `📧 <b>Email:</b> ${user.email}\n` +
-                `📊 <b>Daraxt darsi:</b> ${user.currentLevel || 'Boshlang\'ich (A1)'}\n` +
-                `📈 <b>Kurs progressi:</b> [${bar}] ${Math.round(progress)}%\n\n` +
+                `📊 <b>Daraja:</b> ${user.currentLevel || 'A1'}\n` +
+                `📈 <b>Status:</b> [${bar}] ${Math.round(progress)}%\n\n` +
                 `✅ <b>O'tilgan darslar:</b> ${lessons} ta\n` +
-                `🎓 <b>Bitirilgan bosqichlar:</b> ${levels} ta\n` +
-                `⭐ <b>Umumiy ballar:</b> <code>${user.totalTimeSpent || 0}</code> ball\n` +
+                `🎓 <b>Tugatilgan bosqichlar:</b> ${levels} ta\n` +
+                `⭐ <b>To'plangan ballar:</b> <code>${user.totalTimeSpent || 0}</code>\n` +
                 `──────────────────\n` +
-                `<i>Sizning ilm yo'lidagi har bir qadamingiz — bu muvaffaqiyat!</i>`;
+                `<i>Rivojlanishdan aslo to'xtamang!</i>`;
 
             bot.sendMessage(chatId, text, { parse_mode: 'HTML' });
         } catch (e) {
-            bot.sendMessage(chatId, "Profil yuklashda xatolik yuz berdi.");
+            bot.sendMessage(chatId, "Profil yuklashda xatolik.");
         }
     };
 
     const sendCourses = (chatId) => {
-        const text = `📚 <b>ARABIYYA PRO O'QUV DARASTURLARI</b>\n\nHar bir bosqich uchun alohida e'tibor va metodika ishlab chiqilgan. Tanlang va batafsil bilib oling:\n\n👇 <b>O'quv rejalari:</b>`;
+        const text = `📚 <b>ARABIYYA PRO ACADEMY KURSLARI</b>\n\nBizning o'quv dasturimiz jahon standartlari asosida tizimlashtirilgan. Quyida siz uchun ochiq bo'lgan bosqichlar va batafsil rejalarni ko'rishingiz mumkin:\n\n👇 <b>Bosqichni tanlang:</b>`;
         const keyboard = {
             reply_markup: {
                 inline_keyboard: [
-                    [{ text: '🅰️ ALIPPBO (0 bosqich)', callback_data: 'course_v7_alpha' }],
-                    [{ text: '📘 A1 BOSHLANG\'ICH', callback_data: 'course_v7_a1' }, { text: '📗 A2 ELEMENTAR', callback_data: 'course_v7_a2' }],
-                    [{ text: '📙 B1 O\'RTA', callback_data: 'course_v7_b1' }, { text: '📕 B2 O\'RTA-YUQORI', callback_data: 'course_v7_b2' }],
-                    [{ text: '🎓 C1-C2 PROFESSIONAL', callback_data: 'course_v7_expert' }],
+                    [{ text: '🅰️ ALIPPBO (Nol kurs)', callback_data: 'course_v8_alpha' }],
+                    [{ text: '📘 A1 BOSHLANG\'ICH', callback_data: 'course_v8_a1' }, { text: '📗 A2 ELEMENTAR', callback_data: 'course_v8_a2' }],
+                    [{ text: '📙 B1 O\'RTA', callback_data: 'course_v8_b1' }, { text: '📕 B2 O\'RTA-YUQORI', callback_data: 'course_v8_b2' }],
+                    [{ text: '🎓 C1-C2 PROFESSIONAL', callback_data: 'course_v8_expert' }],
                     [{ text: '🚀 Darajani aniqlash testi', url: 'https://arabiyya.pro/placement-test' }]
                 ]
             }
@@ -150,13 +151,14 @@ export const initBot = () => {
         bot.sendMessage(chatId, text, { parse_mode: 'HTML', ...keyboard });
     };
 
-    const sendPaymentMenu = (chatId) => {
-        const text = content.uz.sections.payment;
+    const sendPayment = (chatId) => {
+        const text = ui.uz.sections.payment;
         const keyboard = {
             reply_markup: {
                 inline_keyboard: [
-                    [{ text: '💳 To\'lovni tasdiqlash uchun (Admin)', url: 'https://t.me/Humoyun_Arabia' }],
-                    [{ text: '🌐 Saytda to\'lash (Click/Payme)', url: 'https://arabiyya.pro/premium' }]
+                    [{ text: '💳 To\'lov chekini yuborish (Admin)', url: 'https://t.me/Humoyun_Arabia' }],
+                    [{ text: '🌐 Saytda to\'lov (Click/Payme)', url: 'https://arabiyya.pro/premium' }],
+                    [{ text: '🎁 Premium Narxi - 399,000 so\'m', callback_data: 'pay_info_full' }]
                 ]
             }
         };
@@ -166,15 +168,15 @@ export const initBot = () => {
     const askAI = async (chatId, text) => {
         try {
             bot.sendChatAction(chatId, 'typing');
-            const prompt = `Sen Arabiyya Pro platformasining oliy toifali arab tili ustozisan. Foydalanuvchi: "${text}". Samimiy, professional va aniq o'zbek tilida javob ber. Agar so'z tarjimasi bo'lsa, uni tushuntirib ber.`;
+            const prompt = `Sen Arabiyya Pro platformasining oliy toifali arab tili ustozisan. Foydalanuvchi: "${text}". Samimiy, professional va aniq o'zbek tilida javob ber. Grammatik qoidalarni tushunarli qilib yoritib ber.`;
             const res = await callOpenAI(prompt);
-            bot.sendMessage(chatId, `🤖 <b>Mentor:</b>\n\n${res.data.choices[0].message.content}`, { parse_mode: 'HTML' });
+            bot.sendMessage(chatId, `🤖 <b>AI Mentor (Ustoz):</b>\n\n${res.data.choices[0].message.content}`, { parse_mode: 'HTML' });
         } catch (e) {
-            bot.sendMessage(chatId, "Hozirda AI mentor band. Keyinroq savol bering.");
+            bot.sendMessage(chatId, "AI Mentor hozirda band, iltimos keyinroq savol bering.");
         }
     };
 
-    // --- Bot Events ---
+    // --- Main Logics ---
 
     bot.onText(/\/start(?:\s+(.+))?/, async (msg, match) => {
         const chatId = msg.chat.id;
@@ -187,10 +189,10 @@ export const initBot = () => {
                 user.telegramUsername = msg.from.username || '';
                 user.telegramSyncCode = undefined;
                 await user.save();
-                return bot.sendMessage(chatId, "🎊 <b>Muvaffaqiyatli!</b>\n\nAkkauntingiz botga bog'landi. Endi xizmatlar to'liq ochiq.", { parse_mode: 'HTML', ...getMainMenu() });
+                return bot.sendMessage(chatId, "🎊 <b>Tabriklaymiz!</b>\n\nSiz platformani muvaffaqiyatli bog'ladingiz. Endi o'qish jarayoni osonlashdi!", { parse_mode: 'HTML', ...getMainMenu() });
             }
         }
-        bot.sendMessage(chatId, content.uz.welcome(msg.from.first_name), { parse_mode: 'HTML', ...getMainMenu() });
+        bot.sendMessage(chatId, ui.uz.welcome(msg.from.first_name), { parse_mode: 'HTML', ...getMainMenu() });
     });
 
     bot.on('message', async (msg) => {
@@ -198,76 +200,77 @@ export const initBot = () => {
         const text = msg.text;
         if (!text || text.startsWith('/')) return;
 
-        const menuButtons = Object.values(content.uz.menu);
+        const menuValues = Object.values(ui.uz.menu);
 
-        if (menuButtons.includes(text)) {
-            userStates[chatId] = null; // Reset any previous state
+        if (menuValues.includes(text)) {
+            userStates[chatId] = null; // Clear state on any menu click
 
-            if (text === content.uz.menu.about) return bot.sendMessage(chatId, content.uz.sections.about, { parse_mode: 'HTML' });
-            if (text === content.uz.menu.courses) return sendCourses(chatId);
-            if (text === content.uz.menu.profile) return sendProfile(chatId);
-            if (text === content.uz.menu.top) return sendTop(chatId);
-            if (text === content.uz.menu.payment) return sendPaymentMenu(chatId);
-            if (text === content.uz.menu.help) return bot.sendMessage(chatId, content.uz.sections.help, { parse_mode: 'HTML' });
+            if (text === ui.uz.menu.about) return bot.sendMessage(chatId, ui.uz.sections.about, { parse_mode: 'HTML' });
+            if (text === ui.uz.menu.courses) return sendCourses(chatId);
+            if (text === ui.uz.menu.profile) return sendProfile(chatId);
+            if (text === ui.uz.menu.top) return sendTop(chatId);
+            if (text === ui.uz.menu.payment) return sendPayment(chatId);
+            if (text === ui.uz.menu.help) return bot.sendMessage(chatId, ui.uz.sections.help, { parse_mode: 'HTML' });
 
-            if (text === content.uz.menu.wisdom) {
+            if (text === ui.uz.menu.wisdom) {
                 const h = wisdoms[Math.floor(Math.random() * wisdoms.length)];
                 return bot.sendMessage(chatId, `✨ <b>KUN HIKMATI:</b>\n\n<code>${h.ar}</code>\n\n<i>"${h.uz}"</i>`, { parse_mode: 'HTML' });
             }
 
-            if (text === content.uz.menu.lughat) {
-                const w = vocabulary[Math.floor(Math.random() * vocabulary.length)];
-                return bot.sendMessage(chatId, `📖 <b>YANGI SO'Z (FLASHCARD)</b>\n\n🇦🇪 <b>${w.ar}</b> [${w.tr}]\n🇺🇿 <b>${w.uz}</b>\n\n<i>Lison o'rganish — baraka kalitidir!</i>`, { parse_mode: 'HTML' });
+            if (text === ui.uz.menu.lughat) {
+                const v = vocabulary[Math.floor(Math.random() * vocabulary.length)];
+                return bot.sendMessage(chatId, `📖 <b>LUG'AT FLASHCARD:</b>\n\n🇦🇪 <b>${v.ar}</b> [${v.tr}]\n🇺🇿 <b>${v.uz}</b>\n\n<i>Har bir so'z — bilim sari qadam!</i>`, { parse_mode: 'HTML' });
             }
 
-            if (text === content.uz.menu.cert) {
+            if (text === ui.uz.menu.cert) {
                 const user = await User.findOne({ telegramChatId: String(chatId) });
-                if (!user) return bot.sendMessage(chatId, content.uz.connect_required, { parse_mode: 'HTML' });
+                if (!user) return bot.sendMessage(chatId, "⚠️ Bog'lanish kerak!", { parse_mode: 'HTML' });
                 const certs = user.certificates || [];
-                if (certs.length === 0) return bot.sendMessage(chatId, "📜 Hali sertifikatlaringiz yo'q. Darslarni tamomlab, birinchisiga ega bo'ling!");
-                let textRes = `📜 <b>SERTIFIKATLARINGIZ:</b>\n\n`;
-                certs.forEach((c, i) => { textRes += `${i + 1}. ${c.level} — ${new Date(c.issueDate).toLocaleDateString()}\n`; });
-                return bot.sendMessage(chatId, textRes, { parse_mode: 'HTML' });
+                if (certs.length === 0) return bot.sendMessage(chatId, "📜 Hozircha sizda sertifikatlar yo'q. Kursni bitiring va sohibiga aylaning!");
+                let res = `📜 <b>SERTIFIKATLARINGIZ:</b>\n\n`;
+                certs.forEach((c, i) => { res += `${i + 1}. ${c.level} — ${new Date(c.issueDate).toLocaleDateString()}\n`; });
+                return bot.sendMessage(chatId, res, { parse_mode: 'HTML' });
             }
 
-            if (text === content.uz.menu.ai) {
+            if (text === ui.uz.menu.ai) {
                 userStates[chatId] = 'AI';
-                return bot.sendMessage(chatId, `🤖 <b>AI Mentor Tizimi Faollashdi!</b>\n\nArab tili grammatikasi yoki darslar bo'yicha savolingiz bo'lsa, bemalol yozing:`, { parse_mode: 'HTML' });
+                return bot.sendMessage(chatId, `🤖 <b>AI Mentor bilan muloqot boshlandi!</b>\n\nSizni qiziqtirgan savolni o'zbek tilida yuboring:`, { parse_mode: 'HTML' });
             }
 
-            if (text === content.uz.menu.admin) {
+            if (text === ui.uz.menu.admin) {
                 userStates[chatId] = 'ADMIN';
-                return bot.sendMessage(chatId, "💬 <b>ADMINGA ONLINE MUROJAAT</b>\n\nAdmin bilan bog'lanish uchun xabaringizni pastda yozib qoldiring:", { parse_mode: 'HTML' });
+                return bot.sendMessage(chatId, "💬 <b>ADMINGA ONLINE MUROJAAT</b>\n\nMaqsadingiz yoki savolingizni yozib qoldiring:", { parse_mode: 'HTML' });
             }
         }
 
-        // --- Action Handlers (States) ---
+        // --- States ---
         if (userStates[chatId] === 'ADMIN') {
             userStates[chatId] = null;
-            const adminTarget = process.env.ADMIN_CHAT_ID || '6122615431';
-            bot.sendMessage(adminTarget, `📩 <b>MUROJAAT:</b>\n\n👤 ${msg.from.first_name} (@${msg.from.username || 'n/a'})\n🆔 <code>${chatId}</code>\n💬 ${text}`, { parse_mode: 'HTML' });
-            return bot.sendMessage(chatId, "✅ <b>Rahmat!</b> Murojaatingiz adminga yetkazildi. Tez orada javob olasiz.", { parse_mode: 'HTML' });
+            const target = process.env.ADMIN_CHAT_ID || '6122615431';
+            bot.sendMessage(target, `📩 <b>YANGI MUROJAAT:</b>\n\n👤 ${msg.from.first_name} (@${msg.from.username || 'n/a'})\n🆔 <code>${chatId}</code>\n💬 ${text}`, { parse_mode: 'HTML' });
+            return bot.sendMessage(chatId, "✅ <b>Rahmat!</b> Murojaatingiz qabul qilindi. Tez orada javob beramiz.", { parse_mode: 'HTML' });
         }
 
         if (userStates[chatId] === 'AI' || text.length > 5) {
             return askAI(chatId, text);
         }
 
-        bot.sendMessage(chatId, "Tushunmadim. Iltimos, asosiy menyudagi tugmalardan foydalaning.", getMainMenu());
+        bot.sendMessage(chatId, "Iltimos, pastdagi professional menyudan foydalaning.", getMainMenu());
     });
 
-    // --- Callbacks (Inline Buttons) ---
+    // --- Inline Callbacks ---
     bot.on('callback_query', (q) => {
         const id = q.message.chat.id;
         const d = q.data;
 
-        const dMap = {
-            'course_v7_alpha': `🅰️ <b>ALIPPBO (MAXRAJ VA YOZUV)</b>\n\nBu Arabiyya Pro platformasidagi eng poydevor dars. Arab harflari, ularning yozilish uslublari va to'g'ri talaffuz (maxraj) qoidalarini professional ustozlardan o'rganasiz.\n\n🎬 15 ta Video Dars.\n📊 Har bir dars oxirida interaktiv test.`,
-            'course_v7_a1': `📘 <b>A1 — BOSH DARAXA</b>\n\nMuloqotni boshlash va asosiy tushunchalarni shakllantirish bosqichi. Kundalik iboralar va 200 tadan ortiq eng ko'p qo'llaniladigan so'zlar.\n\n🎬 45 ta dars.\n🎁 Shaxsiy sertifikat paketi.`,
-            'course_v7_expert': `🎓 <b>C1-C2 — PROFESSIONAL MASTERY</b>\n\nUshbu bosqichda siz arab tilini ona tilidek tushunishga harakat qilasiz. Oliy darajadagi grammatika va adabiy matnlar.\n\n📜 <b>Yakunida Xalqaro Professional Sertifika taqdim etiladi!</b>`
+        const infoMap = {
+            'course_v8_alpha': `🅰️ <b>ALIPPBO & MAXRAJ DASTURI</b>\n\nUshbu kurs Arab tilining poydevori hisoblanadi. Arab harflari, ularning yozilish shakllari va maxraj (to'g'ri talaffuz) qoidalarini professional ustozlardan o'rganasiz.\n\n🎬 15 ta darslik modul.\n📊 Interaktiv testlar to'plami.`,
+            'course_v8_a1': `📘 <b>A1 BOSHLANG'ICH BOSQICh</b>\n\nKundalik muloqot va o'zaro tanishuv suhbatlari uchun mo'ljallangan. Eng ko'p ishlatiladigan 200 tadan ortiq so'z va iboralar jamlangan.\n\n🎬 45 ta darslik modul.\n📜 Yakunida rasmiy sertifikat.`,
+            'course_v8_expert': `🎓 <b>C1-C2 PROFESSIONAL DARAXA</b>\n\nUshbu kurs sizga arab tilida ona tilidek so'zlashish va matnlarni tahlil qilish imkonini beradi. Oliy darajadagi grammatika va adabiy bilimlar.\n\n📜 <b>Yakunida Xalqaro Professional Sertifika taqdim etiladi!</b>`,
+            'pay_info_full': `👑 <b>PREMIUM FULL ULTIMATE</b>\n\nNarxi: 399,000 so'm.\nBarcha bosqichlarga umrbod ruxsat beriladi. To'lov haqida batafsil ma'lumot yuqorida keltirilgan.`
         };
 
-        if (dMap[d]) bot.sendMessage(id, dMap[d], { parse_mode: 'HTML' });
+        if (infoMap[d]) bot.sendMessage(id, infoMap[d], { parse_mode: 'HTML' });
         bot.answerCallbackQuery(q.id);
     });
 };
