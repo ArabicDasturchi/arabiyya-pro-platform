@@ -75,7 +75,7 @@ app.use('/uploads', authMiddleware, async (req, res, next) => {
     const fileLevel = levels.find(l => fileName.startsWith(l));
 
     if (fileLevel) {
-      if (fileLevel === 'ALPHABET' || (user.purchasedLevels && user.purchasedLevels.includes(fileLevel))) {
+      if (fileLevel === 'ALPHABET' || user.isPremium || (user.purchasedLevels && user.purchasedLevels.includes(fileLevel))) {
         return next();
       } else {
         return res.status(403).json({ success: false, message: 'Bu darajani sotib olmagansiz' });

@@ -194,14 +194,35 @@ router.put('/orders/:id/approve', [authMiddleware, adminMiddleware], async (req,
             });
         }
 
-        // Initialize purchasedLevels if undefined
-        if (!user.purchasedLevels) user.purchasedLevels = ['A1'];
+        // Handle levels vs premium plans
+        const premiumPlans = {
+            'monthly': 30,
+            'quarterly': 90,
+            'yearly': 365
+        };
 
-        // Add level if not already purchased
-        if (!user.purchasedLevels.includes(order.levelId)) {
-            user.purchasedLevels.push(order.levelId);
-            await user.save();
+        if (premiumPlans[order.levelId]) {
+            // Is a premium subscription
+            user.isPremium = true;
+            user.premiumType = order.levelId;
+
+            const daysToAdd = premiumPlans[order.levelId];
+            const now = new Date();
+            // If already premium, extend from premiumUntil, else from now
+            const startDate = (user.premiumUntil && user.premiumUntil > now) ? user.premiumUntil : now;
+            user.premiumUntil = new Date(startDate.getTime() + daysToAdd * 24 * 60 * 60 * 1000);
+
+            // Also grant access to ALL levels while premium (optional logic, but usually expected)
+            // Or we can just rely on isPremium check in frontend/backend
+        } else {
+            // Regular level purchase
+            if (!user.purchasedLevels) user.purchasedLevels = ['A1'];
+            if (!user.purchasedLevels.includes(order.levelId)) {
+                user.purchasedLevels.push(order.levelId);
+            }
         }
+
+        await user.save();
 
         res.json({
             success: true,

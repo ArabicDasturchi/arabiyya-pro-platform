@@ -369,9 +369,9 @@ const App = () => {
   }, [view]);
 
   const isLevelUnlocked = (levelId) => {
-    // Check if user purchased it
-    const unlocked = user?.purchasedLevels?.includes(levelId);
-    console.log(`🔓 Checking ${levelId}: ${unlocked ? 'UNLOCKED ✅' : 'LOCKED 🔒'}`, user?.purchasedLevels);
+    // Check if user is premium or purchased it
+    const unlocked = user?.isPremium || user?.purchasedLevels?.includes(levelId);
+    console.log(`🔓 Checking ${levelId}: ${unlocked ? 'UNLOCKED ✅' : 'LOCKED 🔒'}`, user?.isPremium ? 'PREMIUM' : user?.purchasedLevels);
     return unlocked;
   };
 
