@@ -85,9 +85,12 @@ router.post('/login', [
         email: user.email,
         role: user.role, // Added role
         currentLevel: user.currentLevel,
-        purchasedLevels: user.purchasedLevels, // MUHIM: Sotib olingan darajalar
+        purchasedLevels: user.purchasedLevels,
         completedLessons: user.completedLessons,
-        completedLevels: user.completedLevels
+        completedLevels: user.completedLevels,
+        isPremium: user.isPremium,
+        premiumUntil: user.premiumUntil,
+        premiumType: user.premiumType
       }
     });
   } catch (error) {
@@ -188,7 +191,10 @@ router.post('/google', async (req, res) => {
         currentLevel: user.currentLevel,
         purchasedLevels: user.purchasedLevels,
         completedLessons: user.completedLessons,
-        completedLevels: user.completedLevels
+        completedLevels: user.completedLevels,
+        isPremium: user.isPremium,
+        premiumUntil: user.premiumUntil,
+        premiumType: user.premiumType
       }
     });
 
@@ -219,7 +225,10 @@ router.get('/me', authMiddleware, async (req, res) => {
         completedLessons: user.completedLessons,
         completedLevels: user.completedLevels,
         certificates: user.certificates || [],
-        chatHistory: user.chatHistory
+        chatHistory: user.chatHistory,
+        isPremium: user.isPremium,
+        premiumUntil: user.premiumUntil,
+        premiumType: user.premiumType
       }
     });
   } catch (error) {

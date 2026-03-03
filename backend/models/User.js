@@ -39,6 +39,19 @@ const userSchema = new mongoose.Schema({
     type: [String],
     default: []
   },
+  isPremium: {
+    type: Boolean,
+    default: false
+  },
+  premiumUntil: {
+    type: Date,
+    default: null
+  },
+  premiumType: {
+    type: String,
+    enum: ['monthly', 'quarterly', 'yearly', null],
+    default: null
+  },
   password: {
     type: String,
     required: [true, 'Parol kiritish majburiy'],
