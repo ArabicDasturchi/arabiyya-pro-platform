@@ -388,30 +388,28 @@ router.get('/leaderboard', async (req, res) => {
   try {
     const users = await User.find()
       .select('name completedLessons isPremium telegramChatId')
-      .sort({ points: -1 })
       .limit(100);
 
-    // Group by unique ID or name to avoid duplicates in display
-    const uniqueUsers = [];
-    const seenNames = new Set();
+    const leaders = users.map(u => ({
+      name: u.name,
+      points: (u.completedLessons?.length || 0) * 10,
+      isPremium: u.isPremium,
+      tgId: u.telegramChatId
+    }))
+      .sort((a, b) => b.points - a.points);
 
-    users.forEach(u => {
-      const points = (u.completedLessons?.length || 0) * 10;
-      if (!seenNames.has(u.name)) {
-        uniqueUsers.push({
-          name: u.name,
-          points: points,
-          isPremium: u.isPremium
-        });
-        seenNames.add(u.name);
+    // Filter unique users by tgId or name
+    const uniqueLeaders = [];
+    const seen = new Set();
+    for (const l of leaders) {
+      const key = l.tgId || l.name;
+      if (!seen.has(key)) {
+        uniqueLeaders.push(l);
+        seen.add(key);
       }
-    });
+    }
 
-    const leaders = uniqueUsers
-      .sort((a, b) => b.points - a.points)
-      .slice(0, 10);
-
-    res.json({ success: true, users: leaders });
+    res.json({ success: true, users: uniqueLeaders.slice(0, 10) });
   } catch (error) {
     res.status(500).json({ success: false });
   }
