@@ -176,6 +176,23 @@ export const initBot = () => {
         else if (text === '📞 Yordam markazi') {
             bot.sendMessage(chatId, "📞 *AKADEMIYA QO'LLAB-QUVVATLASH*\n\nSavollaringiz bormi? Bizga murojaat qiling:\n\n👨‍💻 Admin: @ArabiyyaPro_Admin\n🌐 Sayt: [arabiyya.pro](https://arabiyya.pro)", { parse_mode: 'Markdown' });
         }
+
+        else {
+            // Treat as AI Question if it's long enough or user just clicked AI Mentor
+            try {
+                const typingMsg = await bot.sendMessage(chatId, "🤖 _AI Mentor o'ylamoqda..._", { parse_mode: 'Markdown' });
+
+                const res = await axios.post(API_URL + '/ai/chat', { message: text });
+
+                if (res.data.success) {
+                    bot.deleteMessage(chatId, typingMsg.message_id);
+                    bot.sendMessage(chatId, "🤖 *AI MENTOR:*\n\n" + res.data.response, { parse_mode: 'Markdown' });
+                }
+            } catch (err) {
+                // If AI fails, just ignore or send a generic help
+                console.error('Bot AI Error:', err.message);
+            }
+        }
     });
 
     bot.on('callback_query', async (query) => {

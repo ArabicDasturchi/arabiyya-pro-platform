@@ -328,7 +328,7 @@ router.post('/telegram-login', async (req, res) => {
 
     if (!user) {
       // Create new user
-      const tempEmail = 	g_ + telegramId + @arabiyya.pro;
+      const tempEmail = `tg_${telegramId}@arabiyya.pro`;
       const tempPassword = Math.random().toString(36).slice(-10);
       user = new User({
         name: name || 'Telegram User',
