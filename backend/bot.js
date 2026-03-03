@@ -1,39 +1,41 @@
-/**
- * ARABIYYA PRO ACADEMY - OFFICIAL ULTIMATE BOT V12
- * Professional, Secure, and Feature-Rich for Global Learners
- * Optimized for ES Modules
- */
-
-import TelegramBot from 'node-telegram-bot-api';
+﻿import TelegramBot from 'node-telegram-bot-api';
 import axios from 'axios';
+import dotenv from 'dotenv';
 
-// Configuration
-const token = process.env.TELEGRAM_BOT_TOKEN || '7990520697:AAHl5N_Iq70A5eYI2kS1iRNDX_An_2361-o';
+dotenv.config();
+
+const WEB_URL = 'https://arabiyya.pro';
 const API_URL = 'https://arabiyya-pro-backend.onrender.com/api';
-const WEB_URL = 'https://arabiyya.pro'; // Professional Domain
 
 let bot;
+let isBotInitialized = false;
 
 export const initBot = () => {
-    if (bot) return; // Prevent multiple instances
+    if (isBotInitialized) {
+        console.log('🤖 Bot allaqachon ishlayapti, qayta yuklash rad etildi.');
+        return bot;
+    }
+
+    const token = process.env.TELEGRAM_BOT_TOKEN;
+    if (!token) {
+        console.log('❌ TELEGRAM_BOT_TOKEN topilmadi.');
+        return;
+    }
 
     bot = new TelegramBot(token, { polling: true });
+    isBotInitialized = true;
 
-    console.log('--- ARABIYYA PRO ACADEMY BOT V12 IS ONLINE ---');
+    console.log('✅ Arabiyya Pro Bot muvaffaqiyatli ishga tushdi.');
 
-    // --- UTILITIES ---
-    const getAuthHeaders = (chatId) => {
-        return { headers: { 'x-telegram-id': chatId.toString() } };
-    };
-
-    // --- KEYBOARDS ---
+    // Keyboards
     const mainKeyboard = {
         reply_markup: {
             keyboard: [
                 [{ text: '💎 Akademiya haqida' }, { text: '📚 O\'quv dasturlari' }],
                 [{ text: '👤 Mening Profilim' }, { text: '👑 Premium Tariflar' }],
                 [{ text: '🏆 Reyting (Top 10)' }, { text: '📜 Sertifikatlarim' }],
-                [{ text: '🤖 AI Mentor (24/7)' }, { text: '📞 Yordam markazi' }]
+                [{ text: '🤖 AI Mentor (24/7)' }, { text: '✨ Kun hikmati' }],
+                [{ text: '📞 Yordam markazi' }]
             ],
             resize_keyboard: true
         }
@@ -46,7 +48,7 @@ export const initBot = () => {
                 [{ text: '🇦 A1 (Boshlang\'ich)', callback_data: 'course_A1' }, { text: '🇧 A2 (O\'rta-quyi)', callback_data: 'course_A2' }],
                 [{ text: '🇨 B1 (O\'rta)', callback_data: 'course_B1' }, { text: '🇩 B2 (O\'rta-yuqori)', callback_data: 'course_B2' }],
                 [{ text: '🎓 C1-C2 (Professional)', callback_data: 'course_C1' }],
-                [{ text: '🌐 Barcha kurslarni ko\'rish', url: `${WEB_URL}/#levels` }]
+                [{ text: '🌐 Barcha kurslarni ko\'rish', url: WEB_URL + '/#levels' }]
             ]
         }
     };
@@ -54,41 +56,37 @@ export const initBot = () => {
     const premiumKeyboard = {
         reply_markup: {
             inline_keyboard: [
-                [{ text: '🚀 1 Oylik (Standard) - 300,000 UZS', callback_data: 'pay_monthly' }],
-                [{ text: '💎 3 Oylik (Professional) - 800,000 UZS', callback_data: 'pay_quarterly' }],
-                [{ text: '👑 1 Yillik (Ultimate) - 1,500,000 UZS', callback_data: 'pay_yearly' }],
-                [{ text: '💳 Platformada to\'lov qilish', url: `${WEB_URL}/billing` }]
+                [{ text: '🚀 1 Oylik (Standard) - 500,000 UZS', callback_data: 'pay_monthly' }],
+                [{ text: '💎 3 Oylik (Professional) - 1,500,000 UZS', callback_data: 'pay_quarterly' }],
+                [{ text: '👑 1 Yillik (Ultimate) - 5,000,000 UZS', callback_data: 'pay_yearly' }],
+                [{ text: '💳 Platformada to\'lov qilish', url: WEB_URL + '/billing' }]
             ]
         }
     };
 
-    // --- HANDLERS ---
-
-    // /start command
+    // Handlers
     bot.onText(/\/start/, async (msg) => {
         const chatId = msg.chat.id;
         const firstName = msg.from.first_name;
 
         try {
-            // Register or get user
-            await axios.post(`${API_URL}/auth/telegram-login`, {
+            await axios.post(API_URL + '/auth/telegram-login', {
                 telegramId: chatId.toString(),
                 name: firstName,
                 username: msg.from.username
             });
 
-            const welcomeMsg = `Assalomu alaykum, muhtaram ${firstName}! ✨\n\n` +
-                `*Arabiyya Pro Academy* — Markaziy Osiyodagi eng ilg'or Arab tili ta'lim tizimining rasmiy intellektual yordamchisiga xush kelibsiz.\n\n` +
-                `Siz bu yerda o'z bilim darajangizni xalqaro *CEFR* standartlari asosida tizimlashtirishingiz, natijalarni real vaqtda kuzatishingiz va professional AI Mentor bilan muloqot qilishingiz mumkin.`;
+            const welcomeMsg = "Assalomu alaykum, muhtaram *" + firstName + "*! ✨\n\n" +
+                "*Arabiyya Pro Academy* — Arab tili oliy akademiyasining rasmiy intellektual boti.\n\n" +
+                "Siz bu yerda o'z bilimingizni xalqaro *CEFR* standartlari asosida tizimlashtirishingiz, AI Mentor bilan o'qishingiz va xalqaro sertifikatlarga ega bo'lishingiz mumkin.\n\n" +
+                "Quyidagi menyudan foydalaning:";
 
             bot.sendMessage(chatId, welcomeMsg, { parse_mode: 'Markdown', ...mainKeyboard });
         } catch (err) {
-            console.error('Login Error:', err.message);
-            bot.sendMessage(chatId, "Assalomu alaykum! Arabiyya Pro platformasiga xush kelibsiz.", mainKeyboard);
+            bot.sendMessage(chatId, "Assalomu alaykum! Arabiyya Pro Akademiyasiga xush kelibsiz.", mainKeyboard);
         }
     });
 
-    // Text commands
     bot.on('message', async (msg) => {
         const chatId = msg.chat.id;
         const text = msg.text;
@@ -96,13 +94,13 @@ export const initBot = () => {
         if (!text || text.startsWith('/')) return;
 
         if (text === '💎 Akademiya haqida') {
-            const aboutMsg = `💎 *ARABIYYA PRO ACADEMY — KELAJAK TA'LIMI BUGUN*\n\n` +
-                `Akademiyamiz arab tilini o'rgatishda eng ilg'or texnologiyalar va jahon pedagogik metodikalarini birlashtirgan.\n\n` +
-                `✅ *Individual AI Mentor:* 24/7 shaxsiy sun'iy intellekt ustozi.\n` +
-                `✅ *Xalqaro Metodika:* CEFR (A1-C2) tizimli o'quv dasturi.\n` +
-                `✅ *Interaktiv Analitika:* topshiriqlar darhol tekshiriladi.\n` +
-                `✅ *Rasmiy Sertifikat:* Xalqaro darajadagi hujjat.\n\n` +
-                `🔗 [Platformaga o'tish](${WEB_URL})`;
+            const aboutMsg = "💎 *ARABIYYA PRO ACADEMY — KELAJAK TA'LIMI BUGUN*\n\n" +
+                "Biz Markaziy Osiyodagi eng ilg'or va innovatsion arab tili platformasimiz.\n\n" +
+                "✅ *AI Mentor:* 24/7 shaxsiy sun'iy intellekt o'qituvchisi.\n" +
+                "✅ *CEFR:* Xalqaro (A1-C2) standartidagi tizimli dastur.\n" +
+                "✅ *Analitika:* Har bir javobingiz AI tomonidan tahlil qilinadi.\n" +
+                "✅ *Sertifikat:* Har bir daraja yakunida rasmiy hujjat.\n\n" +
+                "🔗 [Akademiya Platformasi](" + WEB_URL + ")";
             bot.sendMessage(chatId, aboutMsg, { parse_mode: 'Markdown' });
         }
 
@@ -111,88 +109,75 @@ export const initBot = () => {
         }
 
         else if (text === '👑 Premium Tariflar') {
-            const pricingMsg = `👑 *PREMIUM ACADEMY — INTELLECTUAL INVESTITSIYA*\n\n` +
-                `Premium obuna orqali Akademiyamizning barcha imkoniyatlaridan cheksiz foydalana olasiz:\n\n` +
-                `✅ Barcha (A1-C2) kurslarga kirish\n` +
-                `✅ AI Mentor bilan 24/7 muloqot\n` +
-                `✅ PDF qo'llanmalarni yuklab olish\n` +
-                `✅ Rasmiy sertifikatlar\n\n` +
-                `*Tariflar:*`;
+            const pricingMsg = "👑 *PREMIUM ACADEMY — INTELLECTUAL INVESTITSIYA*\n\n" +
+                "Premium obuna orqali cheksiz imkoniyatga ega bo'ling:\n\n" +
+                "✅ Barcha kurslar va PDF kitoblar\n" +
+                "✅ AI Mentor bilan cheksiz muloqot\n" +
+                "✅ Xalqaro darajadagi sertifikatlar\n\n" +
+                "*PREMIUM TARIFLAR:*";
             bot.sendMessage(chatId, pricingMsg, { parse_mode: 'Markdown', ...premiumKeyboard });
         }
 
         else if (text === '👤 Mening Profilim') {
             try {
-                const res = await axios.get(`${API_URL}/auth/telegram-profile`, getAuthHeaders(chatId));
+                const res = await axios.get(API_URL + '/auth/telegram-profile', {
+                    headers: { 'x-telegram-id': chatId.toString() }
+                });
                 if (res.data.success) {
                     const u = res.data.user;
-                    const profileMsg = `👤 *TALABA PROFILI*\n\n` +
-                        `▫️ *Ism:* ${u.name}\n` +
-                        `▫️ *Daraja:* ${u.level || 'A1'}\n` +
-                        `▫️ *Ball:* ${u.points || 0} ⭐\n` +
-                        `▫️ *Premium:* ${u.isPremium ? '✅ Faol' : '❌ Faol emas'}\n\n` +
-                        `[Mening Profilim](${WEB_URL}/profile)`;
+                    const profileMsg = "👤 *TALABA PROFILI*\n\n" +
+                        "▫️ *Ism:* " + u.name + "\n" +
+                        "▫️ *Daraja:* " + u.level + "\n" +
+                        "▫️ *Natija:* " + u.points + " ball ✨\n" +
+                        "▫️ *Status:* " + (u.isPremium ? '👑 PREMIUM' : 'Standart') + "\n\n" +
+                        "🔗 [Platformada ko'rish](" + WEB_URL + "/profile)";
                     bot.sendMessage(chatId, profileMsg, { parse_mode: 'Markdown' });
                 }
             } catch (err) {
-                bot.sendMessage(chatId, "Profilingizni platformada ko'ring: " + `${WEB_URL}/profile`);
+                bot.sendMessage(chatId, "⚠️ Profil ma'lumotlarini olishda xatolik. Iltimos, platformaga kiring: " + WEB_URL + "/profile");
             }
         }
 
         else if (text === '🏆 Reyting (Top 10)') {
             try {
-                const res = await axios.get(`${API_URL}/auth/leaderboard`);
+                const res = await axios.get(API_URL + '/auth/leaderboard');
                 if (res.data.success) {
-                    const uniqueLeaders = [];
-                    const seen = new Set();
-                    res.data.users
-                        .sort((a, b) => (b.points || 0) - (a.points || 0))
-                        .forEach(u => {
-                            if (!seen.has(u.name)) {
-                                seen.add(u.name);
-                                uniqueLeaders.push(u);
-                            }
-                        });
-
-                    let leadMsg = `🏆 *ACADEMY TOP 10 TALABALARI*\n\n`;
-                    uniqueLeaders.slice(0, 10).forEach((u, i) => {
+                    let leadMsg = "🏆 *ACADEMY TOP 10 TALABALARI*\n\n";
+                    res.data.users.slice(0, 10).forEach((u, i) => {
                         const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '🔹';
-                        leadMsg += `${medal} *${u.name}* — ${u.points || 0} ball\n`;
+                        leadMsg += medal + " *" + u.name + "* — " + u.points + " ball\n";
                     });
                     bot.sendMessage(chatId, leadMsg, { parse_mode: 'Markdown' });
                 }
             } catch (err) {
-                bot.sendMessage(chatId, "Reytingni olishda xatolik.");
+                bot.sendMessage(chatId, "❌ Reytingni yuklashda xatolik yuz berdi.");
             }
         }
 
         else if (text === '📜 Sertifikatlarim') {
-            bot.sendMessage(chatId, `📜 Sertifikatlarni platformadan yuklab oling:\n\n${WEB_URL}/certificates`);
+            bot.sendMessage(chatId, "📜 *SERTIFIKATLAR*\n\nXalqaro sertifikatlaringizni platformaning maxsus bo'limidan yuklab olishingiz mumkin:\n\n🔗 [Sertifikatlar bo'limi](" + WEB_URL + "/certificates)", { parse_mode: 'Markdown' });
         }
 
         else if (text === '🤖 AI Mentor (24/7)') {
-            bot.sendMessage(chatId, "🤖 *MENING ISMIM MUALLIM AI.*\n\nMen sizga arab tilini o'rganishda yordam beraman. Menga istalgan savolingizni yo'llang.");
+            bot.sendMessage(chatId, "🤖 *AI MENTOR BILAN MULOQOT*\n\nMen sizning shaxsiy arab tili o'qituvchingizman. Menga arab tilida har qanday savol yo'llang yoki matnni tarjima qilishni so'rang.\n\n_Hozircha AI muloqoti platformada to'liqroq amalga oshirilgan:_ \n🔗 [AI Mentor Platformasi](" + WEB_URL + "/ai-chat)", { parse_mode: 'Markdown' });
+        }
+
+        else if (text === '✨ Kun hikmati') {
+            const wisdoms = [
+                "اطلبوا العلم من المهد إلى اللحد — Бешикдан қабргача илм изланг.",
+                "الوقت كالسيف إن لم تقطعه قطعك — Вақт қилич кабидир, агар сен уни кесмасанг, у сени кесади.",
+                "من جد وجد — Ким изланса, топади.",
+                "العلم في الصغر كالنقش في الحجر — Ёшликда ўрганилган илм тошга ўйилган нақш кабидир."
+            ];
+            const wisdom = wisdoms[Math.floor(Math.random() * wisdoms.length)];
+            bot.sendMessage(chatId, "✨ *KUN HIKMATI*\n\n_" + wisdom + "_", { parse_mode: 'Markdown' });
         }
 
         else if (text === '📞 Yordam markazi') {
-            bot.sendMessage(chatId, "📞 *ADMINISTRATSIYA*\n\n👨‍💻 Admin: @ArabiyyaPro_Admin\nSizga yordam berishdan mamnunmiz!");
-        }
-
-        // AI Chat
-        else if (text.length > 3) {
-            try {
-                bot.sendChatAction(chatId, 'typing');
-                const res = await axios.post(`${API_URL}/ai/chat`, { message: text, chatId: `tg_${chatId}` }, getAuthHeaders(chatId));
-                if (res.data.success) {
-                    bot.sendMessage(chatId, res.data.response);
-                }
-            } catch (err) {
-                console.error('AI Error:', err.message);
-            }
+            bot.sendMessage(chatId, "📞 *AKADEMIYA QO'LLAB-QUVVATLASH*\n\nSavollaringiz bormi? Bizga murojaat qiling:\n\n👨‍💻 Admin: @ArabiyyaPro_Admin\n🌐 Sayt: [arabiyya.pro](https://arabiyya.pro)", { parse_mode: 'Markdown' });
         }
     });
 
-    // Callback queries
     bot.on('callback_query', async (query) => {
         const chatId = query.message.chat.id;
         const data = query.data;
@@ -200,35 +185,35 @@ export const initBot = () => {
         if (data.startsWith('course_')) {
             const levelId = data.replace('course_', '');
             const levelsInfo = {
-                'ALPHABET': { t: 'Alippbo', d: 'Arab tili harflari va talaffuzi.' },
-                'A1': { t: 'A1 (Boshlang\'ich)', d: 'Asosiy muloqot va grammatika.' },
-                'A2': { t: 'A2 (O\'rta-quyi)', d: 'Erkinroq so\'zlashish.' },
-                'B1': { t: 'B1 (O\'rta)', d: 'Professional mavzularda muloqot.' },
-                'B2': { t: 'B2 (O\'rta-yuqori)', d: 'Ravon nutq.' },
-                'C1': { t: 'C1-C2 (Professional)', d: 'Ona tili darajasi.' }
+                'ALPHABET': { t: 'Alippbo', d: 'Arab tili harflari va talaffuzi xalqaro CEFR standarti asosida.' },
+                'A1': { t: 'A1 (Boshlang\'ich)', d: 'Asosiy muloqot va kundalik iboralar.' },
+                'A2': { t: 'A2 (O\'rta-quyi)', d: 'Elementar darajadagi erkin muloqot.' },
+                'B1': { t: 'B1 (O\'rta)', d: 'Professional darajadagi matnlar va grammatika.' },
+                'B2': { t: 'B2 (O\'rta-yuqori)', d: 'Murakkab mavzularda ravon nutq.' },
+                'C1': { t: 'C1 (Professional)', d: 'Ona tili darajasidagi mukammal bilim.' }
             };
             const info = levelsInfo[levelId];
             if (info) {
-                bot.sendMessage(chatId, `📚 *${info.t}*\n\n${info.d}`, {
+                bot.sendMessage(chatId, "📚 *" + info.t + "*\n\n" + info.d, {
                     parse_mode: 'Markdown',
                     reply_markup: {
-                        inline_keyboard: [[{ text: '🚀 Kursni Boshlash', url: `${WEB_URL}/#levels` }]]
+                        inline_keyboard: [[{ text: '🚀 O\'qishni Boshlash', url: WEB_URL + '/#levels' }]]
                     }
                 });
             }
         }
 
         if (data.startsWith('pay_')) {
-            const prices = { 'monthly': '300,000', 'quarterly': '800,000', 'yearly': '1,500,000' };
-            const period = { 'monthly': '1 Oylik', 'quarterly': '3 Oylik', 'yearly': '1 Yillik' };
+            const prices = { 'monthly': '500,000', 'quarterly': '1,500,000', 'yearly': '5,000,000' };
+            const period = { 'monthly': '1 OYLIK', 'quarterly': '3 OYLIK', 'yearly': 'YILLIK' };
             const selected = data.replace('pay_', '');
 
-            bot.sendMessage(chatId, `💳 *${period[selected]} PREMIUM*\n\nSumma: *${prices[selected]} UZS*\n\nTo'lovni platformada amalga oshiring:`, {
+            bot.sendMessage(chatId, "💳 *" + period[selected] + " PREMIUM ACADEMY*\n\nTo'lov miqdori: *" + prices[selected] + " UZS*\n\nTo'lovni platforma orqali xavfsiz amalga oshirishingiz mumkin:", {
                 parse_mode: 'Markdown',
                 reply_markup: {
                     inline_keyboard: [
-                        [{ text: '💳 Platformada to\'lash', url: `${WEB_URL}/billing` }],
-                        [{ text: '👨‍💻 Operator bilan bog\'lanish', url: 'https://t.me/ArabiyyaPro_Admin' }]
+                        [{ text: '💳 Platformada To\'lash', url: WEB_URL + '/billing' }],
+                        [{ text: '👨‍💻 Ma\'muriyat bilan bog\'lanish', url: 'https://t.me/ArabiyyaPro_Admin' }]
                     ]
                 }
             });

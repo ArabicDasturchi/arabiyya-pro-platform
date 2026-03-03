@@ -1,4 +1,4 @@
-import express from 'express';
+﻿import express from 'express';
 import jwt from 'jsonwebtoken';
 import { OAuth2Client } from 'google-auth-library';
 import { body, validationResult } from 'express-validator';
@@ -312,6 +312,93 @@ router.post('/certificates', [authMiddleware], async (req, res) => {
   } catch (error) {
     console.error('Certificate issue error:', error);
     res.status(500).json({ success: false, message: 'Server xatosi' });
+  }
+});
+
+
+// @route   POST /api/auth/telegram-login
+// @desc    Register or Login via Telegram
+// @access  Public
+router.post('/telegram-login', async (req, res) => {
+  try {
+    const { telegramId, name, username } = req.body;
+    if (!telegramId) return res.status(400).json({ success: false, message: 'Telegram ID missing' });
+
+    let user = await User.findOne({ telegramChatId: telegramId.toString() });
+
+    if (!user) {
+      // Create new user
+      const tempEmail = 	g_ + telegramId + @arabiyya.pro;
+      const tempPassword = Math.random().toString(36).slice(-10);
+      user = new User({
+        name: name || 'Telegram User',
+        email: tempEmail,
+        password: tempPassword,
+        telegramChatId: telegramId.toString(),
+        telegramUsername: username
+      });
+      await user.save();
+    } else {
+      // Update username if changed
+      if (username && user.telegramUsername !== username) {
+        user.telegramUsername = username;
+        await user.save();
+      }
+    }
+
+    res.json({ success: true, user: { id: user._id, name: user.name } });
+  } catch (error) {
+    console.error('Telegram Login Error:', error);
+    res.status(500).json({ success: false, message: 'Server xatosi' });
+  }
+});
+
+// @route   GET /api/auth/telegram-profile
+// @desc    Get user profile by Telegram ID
+// @access  Public (Secure by x-telegram-id header)
+router.get('/telegram-profile', async (req, res) => {
+  try {
+    const tgId = req.header('x-telegram-id');
+    if (!tgId) return res.status(401).json({ success: false, message: 'Unauthorized' });
+
+    const user = await User.findOne({ telegramChatId: tgId });
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+
+    // Calculate points based on completed lessons
+    const points = (user.completedLessons?.length || 0) * 10;
+
+    res.json({
+      success: true,
+      user: {
+        name: user.name,
+        level: user.currentLevel || 'A1',
+        points: points,
+        isPremium: user.isPremium
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false });
+  }
+});
+
+// @route   GET /api/auth/leaderboard
+// @desc    Get top users
+// @access  Public
+router.get('/leaderboard', async (req, res) => {
+  try {
+    const users = await User.find()
+      .select('name completedLessons isPremium')
+      .limit(20);
+
+    const leaders = users.map(u => ({
+      name: u.name,
+      points: (u.completedLessons?.length || 0) * 10,
+      isPremium: u.isPremium
+    })).sort((a, b) => b.points - a.points);
+
+    res.json({ success: true, users: leaders });
+  } catch (error) {
+    res.status(500).json({ success: false });
   }
 });
 
