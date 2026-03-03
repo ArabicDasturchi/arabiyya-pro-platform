@@ -1358,6 +1358,7 @@ const App = () => {
               {[
                 { label: t('courses'), view: 'levels', icon: GraduationCap },
                 { label: t('certificates'), view: 'certificates', icon: Award },
+                { label: t('billing'), view: 'billing', icon: Zap },
                 { label: t('about'), view: 'help', icon: HelpCircle }
               ].map((item) => (
                 <button
@@ -1442,7 +1443,7 @@ const App = () => {
                       </div>
                       <div className="hidden sm:block">
                         <div className="text-sm font-bold">{user.name}</div>
-                        <div className="text-[10px] text-white/50">{user.level || 'A1'}</div>
+                        <div className="text-[10px] text-white/50">{user.isPremium ? '👑 Premium' : (user.level || 'A1')}</div>
                       </div>
                     </div>
                     {user.role === 'admin' && (
@@ -1489,6 +1490,7 @@ const App = () => {
             {[
               { label: t('courses'), view: 'levels', icon: GraduationCap },
               { label: t('certificates'), view: 'certificates', icon: Award },
+              { label: t('billing'), view: 'billing', icon: Zap },
               { label: t('profile'), view: 'profile', icon: User },
               { label: t('about'), view: 'help', icon: HelpCircle }
             ].map((item) => (
@@ -1863,6 +1865,114 @@ const App = () => {
             </div>
           )
         }
+
+        {/* ============================================ */}
+        {/* BILLING PAGE */}
+        {/* ============================================ */}
+        {view === 'billing' && (
+          <div className="max-w-7xl mx-auto px-4 py-20 animate-in fade-in slide-in-from-bottom-5">
+            <div className="text-center space-y-6 mb-16">
+              <h2 className="text-5xl md:text-7xl font-black tracking-tight uppercase">{t('pricing_plans')}</h2>
+              <p className="text-xl text-white/40 font-bold max-w-2xl mx-auto">{t('premium_features_desc')}</p>
+              <div className="flex flex-wrap justify-center gap-4 sm:gap-8 py-4 px-6 bg-white/5 backdrop-blur-xl rounded-2xl w-fit mx-auto border border-white/10">
+                <div className="flex items-center gap-2"><CheckCircle2 className="text-green-400" size={18} /> <span className="text-sm font-bold">A1-C2 Levels</span></div>
+                <div className="flex items-center gap-2"><CheckCircle2 className="text-green-400" size={18} /> <span className="text-sm font-bold">AI Mentor (24/7)</span></div>
+                <div className="flex items-center gap-2"><CheckCircle2 className="text-green-400" size={18} /> <span className="text-sm font-bold">Official Certificates</span></div>
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-8">
+              {[
+                {
+                  id: 'monthly',
+                  name: t('plan_standard'),
+                  price: t('plan_price_standard'),
+                  desc: t('plan_desc_standard'),
+                  badge: 'Standard',
+                  color: 'from-blue-500/10 to-blue-600/10',
+                  border: 'border-blue-500/20',
+                  btn: 'bg-white/10 hover:bg-white/20 text-white'
+                },
+                {
+                  id: 'quarterly',
+                  name: t('plan_pro'),
+                  price: t('plan_price_pro'),
+                  desc: t('plan_desc_pro'),
+                  badge: 'Professional',
+                  color: 'from-purple-500/20 to-indigo-600/20',
+                  border: 'border-purple-500/40',
+                  btn: 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-xl shadow-purple-500/20',
+                  featured: true
+                },
+                {
+                  id: 'yearly',
+                  name: t('plan_ultimate'),
+                  price: t('plan_price_ultimate'),
+                  desc: t('plan_desc_ultimate'),
+                  badge: 'Ultimate',
+                  color: 'from-yellow-500/10 to-orange-600/10',
+                  border: 'border-yellow-500/20',
+                  btn: 'bg-white/10 hover:bg-white/20 text-white'
+                }
+              ].map((plan, i) => (
+                <div key={i} className={`relative bg-gradient-to-br ${plan.color} backdrop-blur-2xl rounded-[2.5rem] border ${plan.border} p-10 flex flex-col justify-between group transition-all duration-500 hover:scale-[1.02] hover:shadow-3xl shadow-black/80`}>
+                  {plan.featured && (
+                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-6 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-full text-[10px] font-black tracking-widest uppercase shadow-lg shadow-purple-500/40">
+                      BEST CHOICE
+                    </div>
+                  )}
+                  <div className="space-y-8">
+                    <div>
+                      <span className="text-xs font-black tracking-widest uppercase text-white/40 mb-2 block">{plan.badge}</span>
+                      <h3 className="text-3xl font-black mb-4">{plan.name}</h3>
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-4xl font-black tracking-tight">{plan.price}</span>
+                      </div>
+                      <p className="text-white/60 font-bold mt-4 leading-relaxed text-sm">{plan.desc}</p>
+                    </div>
+                    <ul className="space-y-4 pt-8 border-t border-white/10">
+                      {[t('feature_all_levels'), t('feature_ai_mentor'), t('feature_certificates'), t('feature_downloads')].map((feat, idx) => (
+                        <li key={idx} className="flex items-center gap-4 group/item">
+                          <div className="p-1 rounded-full bg-blue-500/20 text-blue-400 flex-shrink-0">
+                            <CheckCircle2 size={16} />
+                          </div>
+                          <span className="text-sm font-bold group-hover/item:text-white transition-colors">{feat}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setSelectedLevel({ title: plan.name, id: plan.id });
+                      setShowPurchaseModal(true);
+                    }}
+                    className={`mt-10 w-full py-5 rounded-2xl font-black text-lg transition-all ${plan.btn}`}
+                  >
+                    {t('buy_now')}
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-20 p-8 md:p-12 bg-white/5 backdrop-blur-xl rounded-[2.5rem] border border-white/10 flex flex-col md:flex-row items-center justify-between gap-12 group">
+              <div className="space-y-4 text-center md:text-left">
+                <div className="flex items-center gap-4 justify-center md:justify-start">
+                  <div className="w-14 h-14 bg-blue-600/20 rounded-2xl flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
+                    <HelpCircle size={32} />
+                  </div>
+                  <h3 className="text-3xl font-black">{t('need_help_payment')}</h3>
+                </div>
+                <p className="text-white/40 font-bold max-w-lg">{t('payment_support_desc')}</p>
+              </div>
+              <div className="flex flex-wrap gap-4 justify-center">
+                <a href="https://t.me/ArabiyyaPro_Admin" target="_blank" className="px-8 py-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl font-black transition-all flex items-center gap-2">
+                  <MessageCircle size={20} />
+                  Operator (24/7)
+                </a>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* ============================================ */}
         {/* AUTH & PLACEMENT TEST PAGE */}
