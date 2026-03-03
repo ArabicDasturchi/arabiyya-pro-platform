@@ -393,8 +393,11 @@ const App = () => {
     setIsSubmittingOrder(true);
     try {
       const token = localStorage.getItem('token');
-      // Set fixed price for all levels
-      const amount = 300000;
+      // Set dynamic price based on plan or level
+      let amount = 300000; // Default for single level
+      if (selectedLevel.id === 'monthly') amount = 500000;
+      if (selectedLevel.id === 'quarterly') amount = 1500000;
+      if (selectedLevel.id === 'yearly') amount = 4000000;
 
       const res = await fetch('https://arabiyya-pro-backend.onrender.com/api/purchase', {
         method: 'POST',

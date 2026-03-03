@@ -58,7 +58,7 @@ export const initBot = () => {
             inline_keyboard: [
                 [{ text: '🚀 1 Oylik (Standard) - 500,000 UZS', callback_data: 'pay_monthly' }],
                 [{ text: '💎 3 Oylik (Professional) - 1,500,000 UZS', callback_data: 'pay_quarterly' }],
-                [{ text: '👑 1 Yillik (Ultimate) - 5,000,000 UZS', callback_data: 'pay_yearly' }],
+                [{ text: '👑 1 Yillik (Ultimate) - 4,000,000 UZS', callback_data: 'pay_yearly' }],
                 [{ text: '💳 Platformada to\'lov qilish', url: WEB_URL + '/billing' }]
             ]
         }
@@ -221,7 +221,7 @@ export const initBot = () => {
         }
 
         if (data.startsWith('pay_')) {
-            const prices = { 'monthly': '500,000', 'quarterly': '1,500,000', 'yearly': '5,000,000' };
+            const prices = { 'monthly': '500,000', 'quarterly': '1,500,000', 'yearly': '4,000,000' };
             const period = { 'monthly': '1 OYLIK', 'quarterly': '3 OYLIK', 'yearly': 'YILLIK' };
             const selected = data.replace('pay_', '');
 
