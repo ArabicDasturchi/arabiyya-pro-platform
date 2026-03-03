@@ -387,14 +387,29 @@ router.get('/telegram-profile', async (req, res) => {
 router.get('/leaderboard', async (req, res) => {
   try {
     const users = await User.find()
-      .select('name completedLessons isPremium')
-      .limit(20);
+      .select('name completedLessons isPremium telegramChatId')
+      .sort({ points: -1 })
+      .limit(100);
 
-    const leaders = users.map(u => ({
-      name: u.name,
-      points: (u.completedLessons?.length || 0) * 10,
-      isPremium: u.isPremium
-    })).sort((a, b) => b.points - a.points);
+    // Group by unique ID or name to avoid duplicates in display
+    const uniqueUsers = [];
+    const seenNames = new Set();
+
+    users.forEach(u => {
+      const points = (u.completedLessons?.length || 0) * 10;
+      if (!seenNames.has(u.name)) {
+        uniqueUsers.push({
+          name: u.name,
+          points: points,
+          isPremium: u.isPremium
+        });
+        seenNames.add(u.name);
+      }
+    });
+
+    const leaders = uniqueUsers
+      .sort((a, b) => b.points - a.points)
+      .slice(0, 10);
 
     res.json({ success: true, users: leaders });
   } catch (error) {
