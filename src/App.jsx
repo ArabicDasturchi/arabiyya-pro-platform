@@ -1775,7 +1775,7 @@ const App = () => {
                       finalTitle = t('alphabet_title');
                       finalDesc = t('alphabet_desc');
                     }
-                    const isUnlocked = user && (user.role === 'admin' || user.purchasedLevels?.includes(level.id));
+                    const isUnlocked = user && (user.role === 'admin' || isLevelUnlocked(level.id));
                     const isLocked = !isUnlocked;
 
                     return (
