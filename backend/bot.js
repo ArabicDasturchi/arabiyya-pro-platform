@@ -42,10 +42,11 @@ export const initBot = () => {
     const mainKeyboard = {
         reply_markup: {
             keyboard: [
+                [{ text: '🌐 Platformaga kirish' }],
                 [{ text: '💎 Akademiya haqida' }, { text: '📚 O\'quv dasturlari' }],
-                [{ text: '👤 Mening Profilim' }, { text: '👑 Premium Tariflar' }],
-                [{ text: '🏆 Reyting (Top 10)' }, { text: '📜 Sertifikatlarim' }],
-                [{ text: '🤖 AI Mentor (24/7)' }, { text: '✨ Kun hikmati' }],
+                [{ text: '👤 Mening Profilim' }, { text: '🏆 Reyting (Top 10)' }],
+                [{ text: '🤖 AI Mentor (24/7)' }, { text: '👑 Premium Tariflar' }],
+                [{ text: '📜 Sertifikatlarim' }, { text: '✨ Kun hikmati' }],
                 [{ text: '📞 Yordam markazi' }]
             ],
             resize_keyboard: true
@@ -112,8 +113,25 @@ export const initBot = () => {
                 "✅ *CEFR:* Xalqaro (A1-C2) standartidagi tizimli dastur.\n" +
                 "✅ *Analitika:* Har bir javobingiz AI tomonidan tahlil qilinadi.\n" +
                 "✅ *Sertifikat:* Har bir daraja yakunida rasmiy hujjat.\n\n" +
-                `🔗 [Akademiya Platformasi](${WEB_URL})`;
-            bot.sendMessage(chatId, aboutMsg, { parse_mode: 'Markdown' });
+                "🔗 [Akademiya Platformasi](" + WEB_URL + ")";
+            bot.sendMessage(chatId, aboutMsg, {
+                parse_mode: 'Markdown',
+                reply_markup: {
+                    inline_keyboard: [
+                        [{ text: '🌐 Platformaga o\'tish', url: WEB_URL }],
+                        [{ text: '📚 Kurslar bilan tanishish', callback_data: 'view_courses' }]
+                    ]
+                }
+            });
+        }
+
+        else if (text === '🌐 Platformaga kirish') {
+            bot.sendMessage(chatId, "🚀 *ARABIYYA PRO PLATFORMASI*\n\nBilim olishni platformada davom ettiring. Barcha darslar, testlar va shaxsiy tahlillar shu yerda:", {
+                parse_mode: 'Markdown',
+                reply_markup: {
+                    inline_keyboard: [[{ text: '🌐 Platformani ochish', url: WEB_URL }]]
+                }
+            });
         }
 
         else if (text === '📚 O\'quv dasturlari') {
@@ -187,7 +205,22 @@ export const initBot = () => {
         }
 
         else if (text === '📞 Yordam markazi') {
-            bot.sendMessage(chatId, "📞 *AKADEMIYA QO'LLAB-QUVVATLASH*\n\nSavollaringiz bormi? Bizga murojaat qiling:\n\n👨‍💻 Admin: @ArabiyyaPro_Admin\n🌐 Sayt: [arabiyya.pro](https://arabiyya.pro)", { parse_mode: 'Markdown' });
+            const helpMsg = "📞 *AKADEMIYA QO'LLAB-QUVVATLASH MARKAZI*\n\n" +
+                "Savollaringiz bormi yoki platformada muammoga duch keldingizmu? Biz bilan bog'laning:\n\n" +
+                "🔹 *Admin:* Savollar va texnik yordam uchun.\n" +
+                "🔹 *Guruh:* O'quvchilar bilan muloqot va tajriba almashish.\n" +
+                "🔹 *Sayt:* Batafsil ma'lumotlar.";
+
+            bot.sendMessage(chatId, helpMsg, {
+                parse_mode: 'Markdown',
+                reply_markup: {
+                    inline_keyboard: [
+                        [{ text: '👨‍💻 Admin bilan bog\'lanish', url: 'https://t.me/ArabiyyaPro_Admin' }],
+                        [{ text: '👥 O\'quvchilar guruhi', url: 'https://t.me/ArabiyyaPro_Community' }],
+                        [{ text: '🌐 Rasmiy veb-sayt', url: WEB_URL }]
+                    ]
+                }
+            });
         }
 
         else {
@@ -245,6 +278,10 @@ export const initBot = () => {
                 }
             });
         }
+        if (data === 'view_courses') {
+            bot.sendMessage(chatId, "📚 *AKADEMIK KURSLARIMIZ*\n\nQuyidagi bosqichlardan birini tanlang:", { parse_mode: 'Markdown', ...coursesKeyboard });
+        }
+
         bot.answerCallbackQuery(query.id);
     });
 };
